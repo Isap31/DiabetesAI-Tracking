@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, TrendingUp, AlertTriangle, CheckCircle, Target, Clock, User, Scale, Activity, Utensils, Calendar } from 'lucide-react';
+import { Brain, TrendingUp, AlertTriangle, CheckCircle, Target, Clock, User, Scale, Activity, Utensils, Calendar, Baby, Moon } from 'lucide-react';
 
 const PredictiveInsights = () => {
   const userProfile = {
@@ -9,62 +9,77 @@ const PredictiveInsights = () => {
     weight: 68,
     bmi: 25.0,
     currentStress: 3,
-    yearsSinceDiagnosis: 9
+    yearsSinceDiagnosis: 9,
+    gender: 'female',
+    isPregnant: false,
+    menstrualCycleDay: 14,
+    menstrualCycleLength: 28
+  };
+
+  const getMenstrualPhase = () => {
+    const day = userProfile.menstrualCycleDay;
+    const length = userProfile.menstrualCycleLength;
+    
+    if (day <= 5) return 'Menstrual';
+    if (day <= 13) return 'Follicular';
+    if (day <= 15) return 'Ovulation';
+    return 'Luteal';
   };
 
   const predictions = [
     {
       type: 'warning',
-      title: 'Post-Meal Glucose Spike Risk',
-      message: 'Based on 25g carbs from breakfast, Type 1 diabetes, and 9 years experience, 18% chance of glucose exceeding 140 mg/dL',
-      confidence: 87,
-      action: 'Consider 15-minute walk or adjust insulin timing',
+      title: 'Hormonal Glucose Variability Risk',
+      message: `Based on ovulation phase (day ${userProfile.menstrualCycleDay}) and 25g carbs from breakfast, 22% chance of glucose exceeding 140 mg/dL due to hormonal insulin resistance`,
+      confidence: 89,
+      action: 'Consider reducing carbs by 5-8g or light exercise post-meal',
       icon: AlertTriangle,
       bgColor: 'bg-orange-50',
       borderColor: 'border-orange-200',
       textColor: 'text-orange-700',
       timeframe: '1-2 hours',
-      factors: ['Carb content: 25g', 'Meal timing: 8:00 AM', 'Age: 34', 'Type 1 diabetes', '9 years experience']
+      factors: ['Carb content: 25g', 'Ovulation phase', 'Type 1 diabetes', '9 years experience', 'Hormonal insulin resistance']
     },
     {
       type: 'positive',
       title: 'Optimal Exercise Window',
-      message: 'Current glucose (94 mg/dL), moderate stress, and diabetes experience suggest ideal conditions for physical activity',
-      confidence: 92,
-      action: 'Perfect time for 30-45 minutes moderate exercise',
+      message: 'Current glucose (94 mg/dL), moderate stress, and mid-cycle hormonal profile suggest ideal conditions for physical activity',
+      confidence: 94,
+      action: 'Perfect time for 30-45 minutes moderate exercise - may help counteract hormonal effects',
       icon: CheckCircle,
       bgColor: 'bg-green-50',
       borderColor: 'border-green-200',
       textColor: 'text-green-700',
       timeframe: 'Next 2 hours',
-      factors: ['Current glucose: 94 mg/dL', 'BMI: 25.0', 'Stress level: Moderate', 'Time since meal: 2 hrs', 'Diabetes experience: 9 years']
+      factors: ['Current glucose: 94 mg/dL', 'BMI: 25.0', 'Ovulation phase', 'Time since meal: 2 hrs', 'Diabetes experience: 9 years']
     },
     {
       type: 'info',
-      title: 'Personalized Meal Recommendation',
-      message: 'Based on your 9-year diabetes management experience and current glucose trends, optimal next meal should contain 15-20g carbs',
-      confidence: 78,
-      action: 'Lean protein + vegetables + small portion complex carbs',
+      title: 'Cycle-Aware Meal Recommendation',
+      message: 'Based on ovulation phase insulin sensitivity changes and your diabetes experience, optimal next meal should contain 12-15g carbs (reduced from normal 15-20g)',
+      confidence: 82,
+      action: 'Focus on protein + vegetables, limit complex carbs during ovulation',
       icon: Target,
       bgColor: 'bg-blue-50',
       borderColor: 'border-blue-200',
       textColor: 'text-blue-700',
       timeframe: 'Lunch (12:00 PM)',
-      factors: ['Height/Weight ratio', 'Morning glucose pattern', 'Exercise history', 'Diabetes type', 'Years since diagnosis: 9']
+      factors: ['Ovulation phase effects', 'Morning glucose pattern', 'Exercise history', 'Diabetes type', 'Years since diagnosis: 9']
     }
   ];
 
   const modelMetrics = [
-    { label: 'Prediction Accuracy', value: '91.4%', trend: '+4.2%', description: 'Improved with diabetes experience data' },
-    { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, experience logs' },
-    { label: 'Model Confidence', value: '89.7%', trend: '+3.8%', description: 'Enhanced personalization level' },
-    { label: 'Profile Completeness', value: '98%', trend: 'Complete', description: 'All key parameters including diagnosis date' }
+    { label: 'Prediction Accuracy', value: '93.1%', trend: '+5.8%', description: 'Enhanced with hormonal cycle data' },
+    { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, hormonal logs' },
+    { label: 'Model Confidence', value: '91.2%', trend: '+4.5%', description: 'Hormonal pattern recognition' },
+    { label: 'Profile Completeness', value: '100%', trend: 'Complete', description: 'All parameters including cycle data' }
   ];
 
   const parameterInfluence = [
     { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-red-500' },
     { parameter: 'Exercise Intensity', influence: 72, icon: Activity, color: 'bg-blue-500' },
-    { parameter: 'Time of Day', influence: 68, icon: Clock, color: 'bg-purple-500' },
+    { parameter: 'Menstrual Cycle Phase', influence: 68, icon: Moon, color: 'bg-pink-500' },
+    { parameter: 'Time of Day', influence: 65, icon: Clock, color: 'bg-purple-500' },
     { parameter: 'Years Since Diagnosis', influence: 58, icon: Calendar, color: 'bg-indigo-500' },
     { parameter: 'Stress Level', influence: 45, icon: Brain, color: 'bg-orange-500' },
     { parameter: 'BMI/Weight', influence: 38, icon: Scale, color: 'bg-green-500' },
@@ -80,19 +95,19 @@ const PredictiveInsights = () => {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">FlowSense AI Analytics</h3>
-            <p className="text-sm text-gray-500">Personalized glucose modeling & insights</p>
+            <p className="text-sm text-gray-500">Personalized glucose modeling with hormonal insights</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm font-medium text-gray-900">Model: FlowSense v2.2</p>
-          <p className="text-xs text-gray-500">Enhanced with experience data</p>
+          <p className="text-sm font-medium text-gray-900">Model: FlowSense v2.3</p>
+          <p className="text-xs text-gray-500">Enhanced with hormonal data</p>
         </div>
       </div>
 
       {/* User Profile Integration */}
       <div className="bg-slate-50 p-4 rounded-lg mb-6">
         <h4 className="font-medium text-gray-900 mb-3">Current Profile Parameters</h4>
-        <div className="grid grid-cols-4 gap-4 text-sm">
+        <div className="grid grid-cols-5 gap-4 text-sm">
           <div>
             <span className="text-gray-600">Age/Type:</span>
             <span className="ml-2 font-medium">{userProfile.age}y, {userProfile.diabetesType}</span>
@@ -109,8 +124,32 @@ const PredictiveInsights = () => {
             <span className="text-gray-600">Stress:</span>
             <span className="ml-2 font-medium">Level {userProfile.currentStress}/5</span>
           </div>
+          {userProfile.gender === 'female' && !userProfile.isPregnant && (
+            <div>
+              <span className="text-pink-600">Cycle:</span>
+              <span className="ml-2 font-medium text-pink-700">Day {userProfile.menstrualCycleDay} ({getMenstrualPhase()})</span>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Hormonal Impact Notice */}
+      {userProfile.gender === 'female' && (
+        <div className="bg-pink-50 p-4 rounded-lg mb-6 border border-pink-200">
+          <div className="flex items-center space-x-2 mb-2">
+            <Moon className="h-4 w-4 text-pink-600" />
+            <h4 className="font-medium text-pink-900">Hormonal Cycle Impact</h4>
+          </div>
+          <p className="text-sm text-pink-800">
+            <strong>{getMenstrualPhase()} Phase:</strong> {
+              getMenstrualPhase() === 'Ovulation' ? 'Increased insulin resistance may cause higher glucose levels. Consider reducing carb intake by 20-30%.' :
+              getMenstrualPhase() === 'Luteal' ? 'Progesterone may increase insulin resistance. Monitor glucose more closely.' :
+              getMenstrualPhase() === 'Menstrual' ? 'Hormonal fluctuations may cause glucose variability. Stay hydrated and maintain regular meals.' :
+              'Estrogen levels rising may improve insulin sensitivity. Good time for normal carb intake.'
+            }
+          </p>
+        </div>
+      )}
 
       {/* Model Performance Metrics */}
       <div className="grid grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
@@ -204,7 +243,7 @@ const PredictiveInsights = () => {
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="flex items-center justify-between text-sm text-gray-500">
           <span>Next prediction update in 8 minutes</span>
-          <span>Data sources: CGM, meal logs, exercise tracker, profile data, diagnosis history</span>
+          <span>Data sources: CGM, meal logs, exercise tracker, profile data, hormonal cycle</span>
         </div>
       </div>
     </div>

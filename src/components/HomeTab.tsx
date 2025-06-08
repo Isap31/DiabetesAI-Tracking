@@ -3,7 +3,7 @@ import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
 import ProgressChart from './ProgressChart';
 import PredictiveInsights from './PredictiveInsights';
-import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain } from 'lucide-react';
+import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Baby, Moon } from 'lucide-react';
 
 const HomeTab = () => {
   const [showLogForm, setShowLogForm] = useState(false);
@@ -28,6 +28,11 @@ const HomeTab = () => {
     weight: '',
     stressLevel: '3',
     diagnosisDate: '',
+    gender: 'female',
+    isPregnant: false,
+    pregnancyWeeks: '',
+    menstrualCycleDay: '',
+    menstrualCycleLength: '28',
     // Common fields
     time: new Date().toTimeString().slice(0, 5),
     date: new Date().toISOString().split('T')[0]
@@ -40,7 +45,12 @@ const HomeTab = () => {
     weight: 68, // kg
     bmi: 25.0,
     diagnosisDate: '2015-03-20',
-    yearsSinceDiagnosis: 9
+    yearsSinceDiagnosis: 9,
+    gender: 'female',
+    isPregnant: false,
+    pregnancyWeeks: 0,
+    menstrualCycleDay: 14,
+    menstrualCycleLength: 28
   });
 
   const [allLogs, setAllLogs] = useState([
@@ -133,7 +143,12 @@ const HomeTab = () => {
         weight: parseInt(logData.weight) || userProfile.weight,
         bmi: calculateBMI(parseInt(logData.height) || userProfile.height, parseInt(logData.weight) || userProfile.weight),
         diagnosisDate: logData.diagnosisDate || userProfile.diagnosisDate,
-        yearsSinceDiagnosis: yearsSinceDiagnosis
+        yearsSinceDiagnosis: yearsSinceDiagnosis,
+        gender: logData.gender,
+        isPregnant: logData.isPregnant,
+        pregnancyWeeks: parseInt(logData.pregnancyWeeks) || 0,
+        menstrualCycleDay: parseInt(logData.menstrualCycleDay) || userProfile.menstrualCycleDay,
+        menstrualCycleLength: parseInt(logData.menstrualCycleLength) || userProfile.menstrualCycleLength
       };
       setUserProfile(updatedProfile);
       console.log('Profile updated:', updatedProfile);
@@ -175,6 +190,7 @@ const HomeTab = () => {
       exerciseType: '', duration: '', intensity: 'moderate',
       glucose: '', context: 'fasting', notes: '',
       age: '', diabetesType: 'Type 1', height: '', weight: '', stressLevel: '3', diagnosisDate: '',
+      gender: 'female', isPregnant: false, pregnancyWeeks: '', menstrualCycleDay: '', menstrualCycleLength: '28',
       time: new Date().toTimeString().slice(0, 5),
       date: new Date().toISOString().split('T')[0]
     });
@@ -198,7 +214,12 @@ const HomeTab = () => {
         diabetesType: userProfile.diabetesType,
         height: userProfile.height.toString(),
         weight: userProfile.weight.toString(),
-        diagnosisDate: userProfile.diagnosisDate
+        diagnosisDate: userProfile.diagnosisDate,
+        gender: userProfile.gender,
+        isPregnant: userProfile.isPregnant,
+        pregnancyWeeks: userProfile.pregnancyWeeks.toString(),
+        menstrualCycleDay: userProfile.menstrualCycleDay.toString(),
+        menstrualCycleLength: userProfile.menstrualCycleLength.toString()
       });
     }
     setShowLogForm(true);
@@ -226,6 +247,19 @@ const HomeTab = () => {
       '5': 'Very High'
     };
     return levels[level as keyof typeof levels] || 'Moderate';
+  };
+
+  const getMenstrualPhase = (cycleDay: number, cycleLength: number) => {
+    if (cycleDay <= 5) return 'Menstrual';
+    if (cycleDay <= 13) return 'Follicular';
+    if (cycleDay <= 15) return 'Ovulation';
+    return 'Luteal';
+  };
+
+  const getPregnancyTrimester = (weeks: number) => {
+    if (weeks <= 12) return 'First Trimester';
+    if (weeks <= 27) return 'Second Trimester';
+    return 'Third Trimester';
   };
 
   return (
@@ -442,6 +476,7 @@ const HomeTab = () => {
               {/* Profile-specific fields */}
               {logType === 'profile' && (
                 <>
+                  {/* Basic Information */}
                   <div className="bg-slate-50 p-4 rounded-lg">
                     <h4 className="font-medium text-gray-900 mb-3">Personal Information</h4>
                     <div className="grid grid-cols-2 gap-4">
@@ -466,25 +501,43 @@ const HomeTab = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           <span className="flex items-center space-x-1">
-                            <span>Diabetes Type</span>
+                            <span>Gender</span>
                             <span className="text-red-500">*</span>
                           </span>
                         </label>
                         <select
-                          value={logData.diabetesType}
-                          onChange={(e) => setLogData({...logData, diabetesType: e.target.value})}
+                          value={logData.gender}
+                          onChange={(e) => setLogData({...logData, gender: e.target.value})}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                         >
-                          <option value="Type 1">Type 1</option>
-                          <option value="Type 2">Type 2</option>
-                          <option value="Gestational">Gestational</option>
-                          <option value="MODY">MODY</option>
-                          <option value="Other">Other</option>
+                          <option value="female">Female</option>
+                          <option value="male">Male</option>
+                          <option value="other">Other</option>
                         </select>
                       </div>
                     </div>
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Diabetes Type</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
+                      <select
+                        value={logData.diabetesType}
+                        onChange={(e) => setLogData({...logData, diabetesType: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      >
+                        <option value="Type 1">Type 1</option>
+                        <option value="Type 2">Type 2</option>
+                        <option value="Gestational">Gestational</option>
+                        <option value="MODY">MODY</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
                   </div>
 
+                  {/* Diabetes History */}
                   <div className="bg-slate-50 p-4 rounded-lg">
                     <h4 className="font-medium text-gray-900 mb-3">Diabetes History</h4>
                     <div>
@@ -509,6 +562,7 @@ const HomeTab = () => {
                     </div>
                   </div>
 
+                  {/* Physical Measurements */}
                   <div className="bg-slate-50 p-4 rounded-lg">
                     <h4 className="font-medium text-gray-900 mb-3">Physical Measurements</h4>
                     <div className="grid grid-cols-2 gap-4">
@@ -559,6 +613,109 @@ const HomeTab = () => {
                     )}
                   </div>
 
+                  {/* Women's Health Parameters */}
+                  {logData.gender === 'female' && (
+                    <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
+                      <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
+                        <Baby className="h-4 w-4 text-pink-600" />
+                        <span>Women's Health Parameters</span>
+                      </h4>
+                      
+                      {/* Pregnancy Status */}
+                      <div className="mb-4">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={logData.isPregnant}
+                            onChange={(e) => setLogData({...logData, isPregnant: e.target.checked, pregnancyWeeks: e.target.checked ? logData.pregnancyWeeks : ''})}
+                            className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                          />
+                          <span className="text-sm font-medium text-gray-700">Currently Pregnant</span>
+                        </label>
+                      </div>
+
+                      {/* Pregnancy Weeks */}
+                      {logData.isPregnant && (
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <span className="flex items-center space-x-1">
+                              <span>Pregnancy Weeks</span>
+                              <span className="text-red-500">*</span>
+                            </span>
+                          </label>
+                          <input
+                            type="number"
+                            value={logData.pregnancyWeeks}
+                            onChange={(e) => setLogData({...logData, pregnancyWeeks: e.target.value})}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            placeholder="12"
+                            min="1"
+                            max="42"
+                            required={logData.isPregnant}
+                          />
+                          {logData.pregnancyWeeks && (
+                            <p className="text-xs text-pink-600 mt-1">
+                              {getPregnancyTrimester(parseInt(logData.pregnancyWeeks))}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Menstrual Cycle (only if not pregnant) */}
+                      {!logData.isPregnant && (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <span className="flex items-center space-x-1">
+                                  <Moon className="h-3 w-3" />
+                                  <span>Cycle Day</span>
+                                </span>
+                              </label>
+                              <input
+                                type="number"
+                                value={logData.menstrualCycleDay}
+                                onChange={(e) => setLogData({...logData, menstrualCycleDay: e.target.value})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                placeholder="14"
+                                min="1"
+                                max="50"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Cycle Length</label>
+                              <input
+                                type="number"
+                                value={logData.menstrualCycleLength}
+                                onChange={(e) => setLogData({...logData, menstrualCycleLength: e.target.value})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                placeholder="28"
+                                min="21"
+                                max="35"
+                              />
+                            </div>
+                          </div>
+                          {logData.menstrualCycleDay && logData.menstrualCycleLength && (
+                            <div className="p-2 bg-white rounded border">
+                              <p className="text-xs text-pink-600">
+                                Current phase: <span className="font-medium">
+                                  {getMenstrualPhase(parseInt(logData.menstrualCycleDay), parseInt(logData.menstrualCycleLength))}
+                                </span>
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="mt-3 p-2 bg-pink-100 rounded">
+                        <p className="text-xs text-pink-800">
+                          <strong>Hormonal Impact:</strong> Pregnancy and menstrual cycle phases significantly affect glucose levels and insulin sensitivity.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Stress Level */}
                   <div className="bg-slate-50 p-4 rounded-lg">
                     <h4 className="font-medium text-gray-900 mb-3">Current Stress Level</h4>
                     <div>
@@ -584,7 +741,7 @@ const HomeTab = () => {
 
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <p className="text-xs text-blue-800">
-                      <strong>AI Integration:</strong> These parameters including years since diagnosis are essential for accurate glucose predictions and personalized recommendations.
+                      <strong>AI Integration:</strong> These parameters including hormonal factors are essential for accurate glucose predictions and personalized recommendations.
                     </p>
                   </div>
                 </>
@@ -630,7 +787,7 @@ const HomeTab = () => {
         </div>
       </div>
 
-      {/* User Profile Summary */}
+      {/* Enhanced User Profile Summary */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Health Profile</h3>
@@ -641,7 +798,7 @@ const HomeTab = () => {
             Update Profile
           </button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <User className="h-5 w-5 text-gray-600 mx-auto mb-1" />
             <p className="text-sm font-medium text-gray-900">{userProfile.age} years</p>
@@ -662,6 +819,23 @@ const HomeTab = () => {
             <p className="text-sm font-medium text-gray-900">Moderate</p>
             <p className="text-xs text-gray-500">Current stress</p>
           </div>
+          {userProfile.gender === 'female' && (
+            <div className="text-center p-3 bg-pink-50 rounded-lg">
+              {userProfile.isPregnant ? (
+                <>
+                  <Baby className="h-5 w-5 text-pink-600 mx-auto mb-1" />
+                  <p className="text-sm font-medium text-gray-900">{userProfile.pregnancyWeeks} weeks</p>
+                  <p className="text-xs text-pink-600">Pregnant</p>
+                </>
+              ) : (
+                <>
+                  <Moon className="h-5 w-5 text-pink-600 mx-auto mb-1" />
+                  <p className="text-sm font-medium text-gray-900">Day {userProfile.menstrualCycleDay}</p>
+                  <p className="text-xs text-pink-600">{getMenstrualPhase(userProfile.menstrualCycleDay, userProfile.menstrualCycleLength)}</p>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -745,7 +919,7 @@ const HomeTab = () => {
             {/* Parameter Importance Notice */}
             <div className="bg-blue-50 p-3 rounded-lg mb-4">
               <p className="text-xs text-blue-800">
-                <strong>AI-Powered Insights:</strong> Log meals (carbs), exercise (type/duration/intensity), and glucose readings for accurate predictions.
+                <strong>AI-Powered Insights:</strong> Log meals (carbs), exercise (type/duration/intensity), glucose readings, and hormonal factors for accurate predictions.
               </p>
             </div>
             

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Calendar } from 'lucide-react';
+import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Calendar, Baby, Moon } from 'lucide-react';
 
 const TrackingTab = () => {
   const [showMealForm, setShowMealForm] = useState(false);
@@ -30,7 +30,12 @@ const TrackingTab = () => {
     height: '165',
     weight: '68',
     stressLevel: '3',
-    diagnosisDate: '2015-03-20'
+    diagnosisDate: '2015-03-20',
+    gender: 'female',
+    isPregnant: false,
+    pregnancyWeeks: '',
+    menstrualCycleDay: '14',
+    menstrualCycleLength: '28'
   });
 
   const quickLog = [
@@ -58,7 +63,7 @@ const TrackingTab = () => {
     { 
       icon: User, 
       label: 'Profile', 
-      sublabel: 'Age, BMI, Experience',
+      sublabel: 'Health & Hormones',
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowProfileForm(true)
     }
@@ -91,11 +96,11 @@ const TrackingTab = () => {
     },
     { 
       type: 'profile', 
-      item: 'Experience Updated', 
+      item: 'Cycle Day Updated', 
       time: '9:00 AM', 
-      details: '9 years since diagnosis', 
+      details: 'Day 14 - Ovulation phase', 
       impact: 'neutral',
-      aiNote: 'Enhanced AI prediction accuracy'
+      aiNote: 'Hormonal changes may affect glucose'
     }
   ];
 
@@ -153,6 +158,25 @@ const TrackingTab = () => {
       '5': 'Very High'
     };
     return levels[level as keyof typeof levels] || 'Moderate';
+  };
+
+  const getMenstrualPhase = (cycleDay: string, cycleLength: string) => {
+    const day = parseInt(cycleDay);
+    const length = parseInt(cycleLength);
+    if (!day || !length) return 'Unknown';
+    
+    if (day <= 5) return 'Menstrual';
+    if (day <= 13) return 'Follicular';
+    if (day <= 15) return 'Ovulation';
+    return 'Luteal';
+  };
+
+  const getPregnancyTrimester = (weeks: string) => {
+    const w = parseInt(weeks);
+    if (!w) return '';
+    if (w <= 12) return 'First Trimester';
+    if (w <= 27) return 'Second Trimester';
+    return 'Third Trimester';
   };
 
   return (
@@ -458,7 +482,7 @@ const TrackingTab = () => {
         </div>
       )}
 
-      {/* Profile Update Modal */}
+      {/* Enhanced Profile Update Modal */}
       {showProfileForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
@@ -472,6 +496,7 @@ const TrackingTab = () => {
               </button>
             </div>
             <form onSubmit={handleProfileSubmit} className="space-y-4">
+              {/* Basic Information */}
               <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Basic Information</h4>
                 <div className="grid grid-cols-2 gap-4">
@@ -496,25 +521,43 @@ const TrackingTab = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <span className="flex items-center space-x-1">
-                        <span>Diabetes Type</span>
+                        <span>Gender</span>
                         <span className="text-red-500">*</span>
                       </span>
                     </label>
                     <select
-                      value={profileData.diabetesType}
-                      onChange={(e) => setProfileData({...profileData, diabetesType: e.target.value})}
+                      value={profileData.gender}
+                      onChange={(e) => setProfileData({...profileData, gender: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                     >
-                      <option value="Type 1">Type 1</option>
-                      <option value="Type 2">Type 2</option>
-                      <option value="Gestational">Gestational</option>
-                      <option value="MODY">MODY</option>
-                      <option value="Other">Other</option>
+                      <option value="female">Female</option>
+                      <option value="male">Male</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
                 </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <span className="flex items-center space-x-1">
+                      <span>Diabetes Type</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                  </label>
+                  <select
+                    value={profileData.diabetesType}
+                    onChange={(e) => setProfileData({...profileData, diabetesType: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  >
+                    <option value="Type 1">Type 1</option>
+                    <option value="Type 2">Type 2</option>
+                    <option value="Gestational">Gestational</option>
+                    <option value="MODY">MODY</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
 
+              {/* Diabetes History */}
               <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Diabetes History</h4>
                 <div>
@@ -537,6 +580,7 @@ const TrackingTab = () => {
                 </div>
               </div>
 
+              {/* Physical Measurements */}
               <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Physical Measurements</h4>
                 <div className="grid grid-cols-2 gap-4">
@@ -587,6 +631,109 @@ const TrackingTab = () => {
                 )}
               </div>
 
+              {/* Women's Health Parameters */}
+              {profileData.gender === 'female' && (
+                <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
+                  <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
+                    <Baby className="h-4 w-4 text-pink-600" />
+                    <span>Women's Health Parameters</span>
+                  </h4>
+                  
+                  {/* Pregnancy Status */}
+                  <div className="mb-4">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={profileData.isPregnant}
+                        onChange={(e) => setProfileData({...profileData, isPregnant: e.target.checked, pregnancyWeeks: e.target.checked ? profileData.pregnancyWeeks : ''})}
+                        className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Currently Pregnant</span>
+                    </label>
+                  </div>
+
+                  {/* Pregnancy Weeks */}
+                  {profileData.isPregnant && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Pregnancy Weeks</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
+                      <input
+                        type="number"
+                        value={profileData.pregnancyWeeks}
+                        onChange={(e) => setProfileData({...profileData, pregnancyWeeks: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        placeholder="12"
+                        min="1"
+                        max="42"
+                        required={profileData.isPregnant}
+                      />
+                      {profileData.pregnancyWeeks && (
+                        <p className="text-xs text-pink-600 mt-1">
+                          {getPregnancyTrimester(profileData.pregnancyWeeks)}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Menstrual Cycle (only if not pregnant) */}
+                  {!profileData.isPregnant && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <span className="flex items-center space-x-1">
+                              <Moon className="h-3 w-3" />
+                              <span>Cycle Day</span>
+                            </span>
+                          </label>
+                          <input
+                            type="number"
+                            value={profileData.menstrualCycleDay}
+                            onChange={(e) => setProfileData({...profileData, menstrualCycleDay: e.target.value})}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            placeholder="14"
+                            min="1"
+                            max="50"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Cycle Length</label>
+                          <input
+                            type="number"
+                            value={profileData.menstrualCycleLength}
+                            onChange={(e) => setProfileData({...profileData, menstrualCycleLength: e.target.value})}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                            placeholder="28"
+                            min="21"
+                            max="35"
+                          />
+                        </div>
+                      </div>
+                      {profileData.menstrualCycleDay && profileData.menstrualCycleLength && (
+                        <div className="p-2 bg-white rounded border">
+                          <p className="text-xs text-pink-600">
+                            Current phase: <span className="font-medium">
+                              {getMenstrualPhase(profileData.menstrualCycleDay, profileData.menstrualCycleLength)}
+                            </span>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="mt-3 p-2 bg-pink-100 rounded">
+                    <p className="text-xs text-pink-800">
+                      <strong>Hormonal Impact:</strong> Pregnancy and menstrual cycle phases significantly affect glucose levels and insulin sensitivity.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Stress Level */}
               <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Current Stress Level</h4>
                 <div>
@@ -612,7 +759,7 @@ const TrackingTab = () => {
 
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-xs text-blue-800">
-                  <strong>AI Integration:</strong> These parameters including years since diagnosis are essential for accurate glucose predictions and personalized recommendations.
+                  <strong>AI Integration:</strong> These parameters including hormonal factors are essential for accurate glucose predictions and personalized recommendations.
                 </p>
               </div>
 
@@ -642,7 +789,7 @@ const TrackingTab = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Data Logging</h3>
         <div className="bg-blue-50 p-3 rounded-lg mb-4">
           <p className="text-sm text-blue-800">
-            <strong>AI-Powered Insights:</strong> Log all parameters including diabetes experience for comprehensive glucose predictions and personalized recommendations.
+            <strong>AI-Powered Insights:</strong> Log all parameters including hormonal factors for comprehensive glucose predictions and personalized recommendations.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -663,7 +810,7 @@ const TrackingTab = () => {
       {/* Today's Summary */}
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Summary</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
               <Utensils className="h-5 w-5 text-gray-600 mx-auto" />
@@ -692,6 +839,13 @@ const TrackingTab = () => {
             <p className="text-sm font-medium text-gray-900">9 Years</p>
             <p className="text-xs text-gray-500">Diabetes experience</p>
           </div>
+          <div className="text-center">
+            <div className="bg-pink-100 p-3 rounded-lg mb-2">
+              <Moon className="h-5 w-5 text-pink-600 mx-auto" />
+            </div>
+            <p className="text-sm font-medium text-gray-900">Day 14</p>
+            <p className="text-xs text-pink-600">Ovulation phase</p>
+          </div>
         </div>
       </div>
 
@@ -705,12 +859,12 @@ const TrackingTab = () => {
                 <div className={`p-2 rounded-lg ${
                   log.type === 'meal' ? 'bg-blue-100' :
                   log.type === 'exercise' ? 'bg-green-100' : 
-                  log.type === 'glucose' ? 'bg-red-100' : 'bg-purple-100'
+                  log.type === 'glucose' ? 'bg-red-100' : 'bg-pink-100'
                 }`}>
                   {log.type === 'meal' && <Utensils className="h-4 w-4 text-blue-600" />}
                   {log.type === 'exercise' && <Activity className="h-4 w-4 text-green-600" />}
                   {log.type === 'glucose' && <Droplets className="h-4 w-4 text-red-600" />}
-                  {log.type === 'profile' && <Calendar className="h-4 w-4 text-purple-600" />}
+                  {log.type === 'profile' && <Moon className="h-4 w-4 text-pink-600" />}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{log.item}</p>
