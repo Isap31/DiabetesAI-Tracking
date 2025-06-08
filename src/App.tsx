@@ -9,13 +9,18 @@ import AchievementsTab from './components/AchievementsTab';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [allLogs, setAllLogs] = useState([]);
+
+  const handleDataLogged = (newLog: any) => {
+    setAllLogs(prev => [newLog, ...prev]);
+  };
 
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'home':
         return <HomeTab />;
       case 'tracking':
-        return <TrackingTab />;
+        return <TrackingTab onDataLogged={handleDataLogged} />;
       case 'community':
         return <CommunityTab />;
       case 'pet':

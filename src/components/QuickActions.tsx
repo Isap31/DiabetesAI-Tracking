@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Plus, Camera, MessageCircle, TrendingUp, X, Save, Bot, BarChart3 } from 'lucide-react';
 
-const QuickActions = () => {
+interface QuickActionsProps {
+  onDataLogged?: (data: any) => void;
+}
+
+const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
   const [showMealForm, setShowMealForm] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
   const [showTrends, setShowTrends] = useState(false);
@@ -50,7 +54,26 @@ const QuickActions = () => {
 
   const handleMealSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Meal logged from Quick Actions:', mealData);
+    const newMealLog = {
+      id: Date.now(),
+      type: 'meal',
+      data: {
+        mealName: mealData.name,
+        carbs: mealData.carbs,
+        calories: mealData.calories,
+        time: mealData.time
+      },
+      time: mealData.time,
+      date: new Date().toISOString().split('T')[0]
+    };
+    
+    console.log('Meal logged from Quick Actions:', newMealLog);
+    
+    // Notify parent component about new data
+    if (onDataLogged) {
+      onDataLogged(newMealLog);
+    }
+    
     setMealData({ name: '', carbs: '', calories: '', time: new Date().toTimeString().slice(0, 5) });
     setShowMealForm(false);
   };
