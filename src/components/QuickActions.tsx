@@ -12,6 +12,14 @@ const QuickActions = () => {
     time: new Date().toTimeString().slice(0, 5)
   });
   const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([
+    {
+      type: 'ai',
+      message: "Hello! I'm FlowSense AI, your diabetes management assistant. I can help you with glucose patterns, meal suggestions, exercise recommendations, and answer any health questions you have.",
+      timestamp: new Date().toLocaleTimeString()
+    }
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
 
   const actions = [
     { 
@@ -47,12 +55,77 @@ const QuickActions = () => {
     setShowMealForm(false);
   };
 
+  const generateAIResponse = (userMessage: string) => {
+    const responses = {
+      glucose: [
+        "Based on your recent patterns, your glucose levels have been stable. The reading of 94 mg/dL is excellent and within your target range.",
+        "Your glucose trends show good control. Consider maintaining your current meal timing and portion sizes.",
+        "I notice your glucose has been consistently in range. This suggests your current management strategy is working well."
+      ],
+      meal: [
+        "For stable glucose levels, I recommend focusing on lean proteins, non-starchy vegetables, and complex carbohydrates. A grilled chicken salad with quinoa would be ideal.",
+        "Based on your current glucose reading, a balanced meal with 15-20g of carbs would be appropriate. Consider adding fiber-rich vegetables.",
+        "Your meal timing looks good. For your next meal, try pairing carbohydrates with protein to help maintain stable glucose levels."
+      ],
+      exercise: [
+        "Light to moderate exercise like a 20-30 minute walk would be perfect right now. Your current glucose level is ideal for physical activity.",
+        "Based on your glucose patterns, post-meal walks have been very effective for you. I'd recommend continuing this routine.",
+        "Your glucose is stable, making this a great time for exercise. Consider resistance training or yoga for variety."
+      ],
+      general: [
+        "Your overall diabetes management has been excellent. Keep up the consistent logging and monitoring.",
+        "I'm analyzing your data patterns. Your time in range has improved by 5% this week - great progress!",
+        "Remember to stay hydrated and maintain regular meal times. Your current routine is showing positive results."
+      ]
+    };
+
+    const lowerMessage = userMessage.toLowerCase();
+    
+    if (lowerMessage.includes('glucose') || lowerMessage.includes('blood sugar') || lowerMessage.includes('reading')) {
+      return responses.glucose[Math.floor(Math.random() * responses.glucose.length)];
+    } else if (lowerMessage.includes('meal') || lowerMessage.includes('eat') || lowerMessage.includes('food') || lowerMessage.includes('lunch') || lowerMessage.includes('dinner') || lowerMessage.includes('breakfast')) {
+      return responses.meal[Math.floor(Math.random() * responses.meal.length)];
+    } else if (lowerMessage.includes('exercise') || lowerMessage.includes('workout') || lowerMessage.includes('walk') || lowerMessage.includes('activity')) {
+      return responses.exercise[Math.floor(Math.random() * responses.exercise.length)];
+    } else {
+      return responses.general[Math.floor(Math.random() * responses.general.length)];
+    }
+  };
+
   const handleChatSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('AI Chat message:', chatMessage);
+    if (!chatMessage.trim()) return;
+
+    // Add user message
+    const userMsg = {
+      type: 'user',
+      message: chatMessage,
+      timestamp: new Date().toLocaleTimeString()
+    };
+    
+    setChatHistory(prev => [...prev, userMsg]);
     setChatMessage('');
-    // Here you would typically send the message to your AI service
+    setIsTyping(true);
+
+    // Simulate AI thinking time
+    setTimeout(() => {
+      const aiResponse = {
+        type: 'ai',
+        message: generateAIResponse(chatMessage),
+        timestamp: new Date().toLocaleTimeString()
+      };
+      
+      setChatHistory(prev => [...prev, aiResponse]);
+      setIsTyping(false);
+    }, 1500);
   };
+
+  const quickQuestions = [
+    "What should I eat for lunch?",
+    "Why did my glucose spike?",
+    "Best exercise for my current level?",
+    "How are my trends looking?"
+  ];
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -140,7 +213,7 @@ const QuickActions = () => {
       {/* AI Chat Modal */}
       {showAIChat && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className="bg-slate-900 p-2 rounded-lg">
@@ -148,7 +221,7 @@ const QuickActions = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">FlowSense AI</h3>
-                  <p className="text-sm text-gray-500">Your health assistant</p>
+                  <p className="text-sm text-gray-500">Your intelligent health assistant</p>
                 </div>
               </div>
               <button 
@@ -159,27 +232,58 @@ const QuickActions = () => {
               </button>
             </div>
             
-            <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4 min-h-[200px]">
-              <div className="space-y-3">
-                <div className="bg-white p-3 rounded-lg shadow-sm">
-                  <p className="text-sm text-gray-700">
-                    <strong>AI:</strong> Hello! I'm here to help with your diabetes management. 
-                    You can ask me about glucose patterns, meal suggestions, exercise recommendations, or any health questions.
-                  </p>
-                </div>
-                <div className="bg-slate-100 p-3 rounded-lg">
-                  <p className="text-sm text-gray-600">
-                    <strong>Suggested questions:</strong>
-                  </p>
-                  <ul className="text-xs text-gray-500 mt-1 space-y-1">
-                    <li>• "What should I eat for lunch to keep my glucose stable?"</li>
-                    <li>• "Why did my glucose spike after breakfast?"</li>
-                    <li>• "What exercise is best for my current glucose level?"</li>
-                  </ul>
-                </div>
+            {/* Chat History */}
+            <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+              <div className="space-y-4">
+                {chatHistory.map((msg, index) => (
+                  <div key={index} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] p-3 rounded-lg ${
+                      msg.type === 'user' 
+                        ? 'bg-slate-600 text-white' 
+                        : 'bg-white border border-gray-200'
+                    }`}>
+                      <p className="text-sm">{msg.message}</p>
+                      <p className={`text-xs mt-1 ${
+                        msg.type === 'user' ? 'text-slate-200' : 'text-gray-500'
+                      }`}>
+                        {msg.timestamp}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Typing Indicator */}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-white border border-gray-200 p-3 rounded-lg">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             
+            {/* Quick Questions */}
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Quick questions:</p>
+              <div className="flex flex-wrap gap-2">
+                {quickQuestions.map((question, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setChatMessage(question)}
+                    className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                  >
+                    {question}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Chat Input */}
             <form onSubmit={handleChatSubmit} className="flex space-x-3">
               <input
                 type="text"
@@ -187,11 +291,12 @@ const QuickActions = () => {
                 onChange={(e) => setChatMessage(e.target.value)}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                 placeholder="Ask me anything about your health..."
-                required
+                disabled={isTyping}
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                disabled={isTyping || !chatMessage.trim()}
+                className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Send
               </button>
