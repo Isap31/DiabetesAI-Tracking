@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, Users, Heart, ThumbsUp, Send, Bot, X } from 'lucide-react';
+import { MessageCircle, Users, Heart, ThumbsUp, Send, Bot, X, Mic, Paperclip } from 'lucide-react';
 
 const CommunityTab = () => {
   const [showAIChat, setShowAIChat] = useState(false);
@@ -163,7 +163,7 @@ const CommunityTab = () => {
                     <div className={`max-w-[80%] p-3 rounded-lg ${
                       msg.type === 'user' 
                         ? 'bg-slate-600 text-white' 
-                        : 'bg-white border border-gray-200'
+                        : 'bg-white border border-gray-200 shadow-sm'
                     }`}>
                       <p className="text-sm">{msg.message}</p>
                       <p className={`text-xs mt-1 ${
@@ -178,7 +178,7 @@ const CommunityTab = () => {
                 {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-gray-200 p-3 rounded-lg">
+                    <div className="bg-white border border-gray-200 p-3 rounded-lg shadow-sm">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
@@ -192,13 +192,13 @@ const CommunityTab = () => {
             
             {/* Quick Questions */}
             <div className="mb-4">
-              <p className="text-sm text-gray-600 mb-2">Quick questions:</p>
+              <p className="text-sm font-medium text-gray-700 mb-2">Quick questions:</p>
               <div className="flex flex-wrap gap-2">
                 {quickQuestions.map((question, index) => (
                   <button
                     key={index}
                     onClick={() => setChatMessage(question)}
-                    className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition-colors"
+                    className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full transition-colors border border-gray-200 hover:border-gray-300"
                   >
                     {question}
                   </button>
@@ -206,24 +206,67 @@ const CommunityTab = () => {
               </div>
             </div>
             
-            {/* Chat Input */}
-            <form onSubmit={handleChatSubmit} className="flex space-x-3">
-              <input
-                type="text"
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                placeholder="Ask me anything about your health..."
-                disabled={isTyping}
-              />
-              <button
-                type="submit"
-                disabled={isTyping || !chatMessage.trim()}
-                className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Send
-              </button>
-            </form>
+            {/* Enhanced Chat Input */}
+            <div className="border-t border-gray-200 pt-4">
+              <form onSubmit={handleChatSubmit} className="space-y-3">
+                {/* Main Input Area */}
+                <div className="relative">
+                  <div className="flex items-end space-x-3 bg-gray-50 rounded-lg p-3 border border-gray-200 focus-within:border-slate-500 focus-within:ring-2 focus-within:ring-slate-200">
+                    {/* Text Input */}
+                    <div className="flex-1">
+                      <textarea
+                        value={chatMessage}
+                        onChange={(e) => setChatMessage(e.target.value)}
+                        className="w-full bg-transparent resize-none focus:outline-none text-sm placeholder-gray-500 min-h-[40px] max-h-[120px]"
+                        placeholder="Type your message here... Ask about glucose patterns, meal suggestions, exercise tips, or community advice."
+                        disabled={isTyping}
+                        rows={1}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleChatSubmit(e);
+                          }
+                        }}
+                      />
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                        title="Attach file"
+                      >
+                        <Paperclip className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                        title="Voice message"
+                      >
+                        <Mic className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isTyping || !chatMessage.trim()}
+                        className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Send message"
+                      >
+                        <Send className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Input Helper Text */}
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>Press Enter to send, Shift+Enter for new line</span>
+                  <span className={`${chatMessage.length > 500 ? 'text-orange-500' : ''}`}>
+                    {chatMessage.length}/1000
+                  </span>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
