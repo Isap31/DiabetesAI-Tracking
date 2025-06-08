@@ -15,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
 
-  // Profile form state
+  // Profile form state - now properly managed
   const [profileData, setProfileData] = useState({
     firstName: 'Sarah',
     lastName: 'Johnson',
@@ -28,6 +28,13 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
     diagnosisDate: '2015-03-20',
     targetGlucoseMin: '70',
     targetGlucoseMax: '140'
+  });
+
+  // Current user display data - this will be updated when profile is saved
+  const [currentUserData, setCurrentUserData] = useState({
+    displayName: 'Sarah',
+    fullName: 'Sarah Johnson',
+    email: 'sarah.johnson@email.com'
   });
 
   // Privacy settings state
@@ -92,17 +99,37 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
   };
 
   const handleProfileSave = () => {
-    console.log('Profile saved:', profileData);
+    // Update the current user display data with the new profile information
+    setCurrentUserData({
+      displayName: profileData.firstName,
+      fullName: `${profileData.firstName} ${profileData.lastName}`,
+      email: profileData.email
+    });
+
+    console.log('Profile saved and updated:', {
+      profileData,
+      updatedUserData: {
+        displayName: profileData.firstName,
+        fullName: `${profileData.firstName} ${profileData.lastName}`,
+        email: profileData.email
+      }
+    });
+
+    // Show success feedback
+    alert('Profile updated successfully!');
+    
     setShowProfileModal(false);
   };
 
   const handlePrivacySave = () => {
     console.log('Privacy settings saved:', privacySettings);
+    alert('Privacy settings updated successfully!');
     setShowPrivacyModal(false);
   };
 
   const handleAccountSave = () => {
     console.log('Account settings saved:', accountSettings);
+    alert('Account settings updated successfully!');
     setShowAccountModal(false);
   };
 
@@ -111,7 +138,12 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
       alert('New passwords do not match');
       return;
     }
-    console.log('Password changed');
+    if (passwordData.newPassword.length < 8) {
+      alert('Password must be at least 8 characters long');
+      return;
+    }
+    console.log('Password changed successfully');
+    alert('Password updated successfully!');
     setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     setShowPasswordForm(false);
   };
@@ -199,22 +231,22 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
                 <Settings className="h-5 w-5" />
               </button>
               
-              {/* User Menu */}
+              {/* User Menu - Now uses dynamic user data */}
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center space-x-3 bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   <User className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-900">{userName}</span>
+                  <span className="text-sm font-medium text-gray-900">{currentUserData.displayName}</span>
                   <ChevronDown className="h-4 w-4 text-gray-600" />
                 </button>
 
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                     <div className="p-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-900">{userName}</p>
-                      <p className="text-xs text-gray-500">sarah.johnson@email.com</p>
+                      <p className="text-sm font-semibold text-gray-900">{currentUserData.fullName}</p>
+                      <p className="text-xs text-gray-500">{currentUserData.email}</p>
                     </div>
                     <div className="p-2">
                       <button 
@@ -418,6 +450,16 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
                   />
                 </div>
               </div>
+
+              {/* Preview of changes */}
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h4 className="font-medium text-blue-900 mb-2">Preview Changes</h4>
+                <div className="text-sm text-blue-800">
+                  <p><strong>Display Name:</strong> {profileData.firstName}</p>
+                  <p><strong>Full Name:</strong> {profileData.firstName} {profileData.lastName}</p>
+                  <p><strong>Email:</strong> {profileData.email}</p>
+                </div>
+              </div>
             </div>
 
             <div className="flex space-x-3 pt-6 mt-6 border-t border-gray-200">
@@ -495,6 +537,7 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        placeholder="Minimum 8 characters"
                       />
                     </div>
                     <div>
