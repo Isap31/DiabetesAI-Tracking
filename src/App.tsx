@@ -3,8 +3,8 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import HomeTab from './components/HomeTab';
 import TrackingTab from './components/TrackingTab';
-import PetTab from './components/PetTab';
 import CommunityTab from './components/CommunityTab';
+import PetTab from './components/PetTab';
 import AchievementsTab from './components/AchievementsTab';
 
 function App() {
@@ -16,10 +16,10 @@ function App() {
         return <HomeTab />;
       case 'tracking':
         return <TrackingTab />;
-      case 'pet':
-        return <PetTab />;
       case 'community':
         return <CommunityTab />;
+      case 'pet':
+        return <PetTab />;
       case 'achievements':
         return <AchievementsTab />;
       default:

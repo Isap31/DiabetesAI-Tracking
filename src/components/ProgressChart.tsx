@@ -1,67 +1,145 @@
-import React from 'react';
-import { TrendingUp, Target, Clock, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, Target, Clock, Activity, Calendar, ChevronDown } from 'lucide-react';
 
 const ProgressChart = () => {
-  // Generate realistic glucose data points for scatterplot
-  const glucoseData = [
-    // Monday
-    { time: 6, glucose: 95, predicted: 98, day: 'Mon', label: '6:00 AM' },
-    { time: 8, glucose: 110, predicted: 105, day: 'Mon', label: '8:00 AM' },
-    { time: 12, glucose: 88, predicted: 92, day: 'Mon', label: '12:00 PM' },
-    { time: 18, glucose: 102, predicted: 99, day: 'Mon', label: '6:00 PM' },
-    { time: 22, glucose: 94, predicted: 96, day: 'Mon', label: '10:00 PM' },
-    
-    // Tuesday
-    { time: 30, glucose: 87, predicted: 89, day: 'Tue', label: '6:00 AM' },
-    { time: 32, glucose: 115, predicted: 108, day: 'Tue', label: '8:00 AM' },
-    { time: 36, glucose: 91, predicted: 93, day: 'Tue', label: '12:00 PM' },
-    { time: 42, glucose: 98, predicted: 101, day: 'Tue', label: '6:00 PM' },
-    { time: 46, glucose: 89, predicted: 91, day: 'Tue', label: '10:00 PM' },
-    
-    // Wednesday
-    { time: 54, glucose: 92, predicted: 95, day: 'Wed', label: '6:00 AM' },
-    { time: 56, glucose: 108, predicted: 103, day: 'Wed', label: '8:00 AM' },
-    { time: 60, glucose: 85, predicted: 88, day: 'Wed', label: '12:00 PM' },
-    { time: 66, glucose: 96, predicted: 98, day: 'Wed', label: '6:00 PM' },
-    { time: 70, glucose: 91, predicted: 93, day: 'Wed', label: '10:00 PM' },
-    
-    // Thursday
-    { time: 78, glucose: 99, predicted: 102, day: 'Thu', label: '6:00 AM' },
-    { time: 80, glucose: 112, predicted: 107, day: 'Thu', label: '8:00 AM' },
-    { time: 84, glucose: 88, predicted: 91, day: 'Thu', label: '12:00 PM' },
-    { time: 90, glucose: 94, predicted: 97, day: 'Thu', label: '6:00 PM' },
-    { time: 94, glucose: 87, predicted: 89, day: 'Thu', label: '10:00 PM' },
-    
-    // Friday (current day with predictions)
-    { time: 102, glucose: 93, predicted: 95, day: 'Fri', label: '6:00 AM' },
-    { time: 104, glucose: 109, predicted: 104, day: 'Fri', label: '8:00 AM' },
-    { time: 108, glucose: null, predicted: 89, day: 'Fri', label: '12:00 PM' },
-    { time: 114, glucose: null, predicted: 95, day: 'Fri', label: '6:00 PM' },
-    { time: 118, glucose: null, predicted: 91, day: 'Fri', label: '10:00 PM' },
+  const [selectedPeriod, setSelectedPeriod] = useState('days');
+  const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
+
+  const periods = [
+    { id: 'days', label: 'Days', range: '7 days' },
+    { id: 'weeks', label: 'Weeks', range: '4 weeks' },
+    { id: 'months', label: 'Months', range: '6 months' }
   ];
 
+  // Generate different data sets based on selected period
+  const getGlucoseData = () => {
+    if (selectedPeriod === 'days') {
+      return [
+        // Monday
+        { time: 6, glucose: 95, predicted: 98, day: 'Mon', label: '6:00 AM' },
+        { time: 8, glucose: 110, predicted: 105, day: 'Mon', label: '8:00 AM' },
+        { time: 12, glucose: 88, predicted: 92, day: 'Mon', label: '12:00 PM' },
+        { time: 18, glucose: 102, predicted: 99, day: 'Mon', label: '6:00 PM' },
+        { time: 22, glucose: 94, predicted: 96, day: 'Mon', label: '10:00 PM' },
+        
+        // Tuesday
+        { time: 30, glucose: 87, predicted: 89, day: 'Tue', label: '6:00 AM' },
+        { time: 32, glucose: 115, predicted: 108, day: 'Tue', label: '8:00 AM' },
+        { time: 36, glucose: 91, predicted: 93, day: 'Tue', label: '12:00 PM' },
+        { time: 42, glucose: 98, predicted: 101, day: 'Tue', label: '6:00 PM' },
+        { time: 46, glucose: 89, predicted: 91, day: 'Tue', label: '10:00 PM' },
+        
+        // Wednesday
+        { time: 54, glucose: 92, predicted: 95, day: 'Wed', label: '6:00 AM' },
+        { time: 56, glucose: 108, predicted: 103, day: 'Wed', label: '8:00 AM' },
+        { time: 60, glucose: 85, predicted: 88, day: 'Wed', label: '12:00 PM' },
+        { time: 66, glucose: 96, predicted: 98, day: 'Wed', label: '6:00 PM' },
+        { time: 70, glucose: 91, predicted: 93, day: 'Wed', label: '10:00 PM' },
+        
+        // Thursday
+        { time: 78, glucose: 99, predicted: 102, day: 'Thu', label: '6:00 AM' },
+        { time: 80, glucose: 112, predicted: 107, day: 'Thu', label: '8:00 AM' },
+        { time: 84, glucose: 88, predicted: 91, day: 'Thu', label: '12:00 PM' },
+        { time: 90, glucose: 94, predicted: 97, day: 'Thu', label: '6:00 PM' },
+        { time: 94, glucose: 87, predicted: 89, day: 'Thu', label: '10:00 PM' },
+        
+        // Friday (current day with predictions)
+        { time: 102, glucose: 93, predicted: 95, day: 'Fri', label: '6:00 AM' },
+        { time: 104, glucose: 109, predicted: 104, day: 'Fri', label: '8:00 AM' },
+        { time: 108, glucose: null, predicted: 89, day: 'Fri', label: '12:00 PM' },
+        { time: 114, glucose: null, predicted: 95, day: 'Fri', label: '6:00 PM' },
+        { time: 118, glucose: null, predicted: 91, day: 'Fri', label: '10:00 PM' },
+      ];
+    } else if (selectedPeriod === 'weeks') {
+      return [
+        { time: 20, glucose: 92, predicted: 94, day: 'W1', label: 'Week 1' },
+        { time: 40, glucose: 89, predicted: 91, day: 'W2', label: 'Week 2' },
+        { time: 60, glucose: 95, predicted: 97, day: 'W3', label: 'Week 3' },
+        { time: 80, glucose: 88, predicted: 90, day: 'W4', label: 'Week 4' },
+        { time: 100, glucose: null, predicted: 93, day: 'W5', label: 'Week 5' },
+      ];
+    } else {
+      return [
+        { time: 30, glucose: 98, predicted: 100, day: 'Jan', label: 'January' },
+        { time: 50, glucose: 94, predicted: 96, day: 'Feb', label: 'February' },
+        { time: 70, glucose: 91, predicted: 93, day: 'Mar', label: 'March' },
+        { time: 90, glucose: 87, predicted: 89, day: 'Apr', label: 'April' },
+        { time: 110, glucose: 89, predicted: 91, day: 'May', label: 'May' },
+        { time: 130, glucose: null, predicted: 85, day: 'Jun', label: 'June' },
+      ];
+    }
+  };
+
+  const glucoseData = getGlucoseData();
   const targetRange = { min: 70, max: 140 };
   const optimalRange = { min: 80, max: 120 };
+
+  const getXAxisLabels = () => {
+    if (selectedPeriod === 'days') {
+      return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    } else if (selectedPeriod === 'weeks') {
+      return ['W1', 'W2', 'W3', 'W4'];
+    } else {
+      return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Glucose Trends & Predictions</h3>
-          <p className="text-sm text-gray-500">7-day analysis with AI forecasting</p>
+          <p className="text-sm text-gray-500">Analysis with AI forecasting</p>
         </div>
-        <div className="flex items-center space-x-4 text-sm">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-slate-600 rounded-full"></div>
-            <span className="text-gray-600">Actual</span>
+        <div className="flex items-center space-x-4">
+          {/* Period Selector */}
+          <div className="relative">
+            <button
+              onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              <Calendar className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-medium text-gray-700">
+                {periods.find(p => p.id === selectedPeriod)?.label}
+              </span>
+              <ChevronDown className="h-4 w-4 text-gray-600" />
+            </button>
+            
+            {showPeriodDropdown && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                {periods.map((period) => (
+                  <button
+                    key={period.id}
+                    onClick={() => {
+                      setSelectedPeriod(period.id);
+                      setShowPeriodDropdown(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
+                      selectedPeriod === period.id ? 'bg-slate-50 text-slate-900 font-medium' : 'text-gray-700'
+                    }`}
+                  >
+                    <div>{period.label}</div>
+                    <div className="text-xs text-gray-500">{period.range}</div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span className="text-gray-600">Predicted</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-gray-300 border border-gray-400 rounded-full"></div>
-            <span className="text-gray-600">Target Range</span>
+          
+          {/* Legend */}
+          <div className="flex items-center space-x-4 text-sm">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-slate-600 rounded-full"></div>
+              <span className="text-gray-600">Actual</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-gray-600">Predicted</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-gray-300 border border-gray-400 rounded-full"></div>
+              <span className="text-gray-600">Target Range</span>
+            </div>
           </div>
         </div>
       </div>
@@ -121,16 +199,16 @@ const ProgressChart = () => {
           ))}
 
           {/* X-axis labels */}
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, index) => (
+          {getXAxisLabels().map((label, index) => (
             <text 
               key={index}
-              x={60 + (index * 144) + 72} 
+              x={60 + (index * (720 / (getXAxisLabels().length - 1)))} 
               y="290" 
               fontSize="12" 
               fill="#6b7280" 
               textAnchor="middle"
             >
-              {day}
+              {label}
             </text>
           ))}
 
@@ -191,7 +269,7 @@ const ProgressChart = () => {
             <TrendingUp className="h-5 w-5 text-slate-600" />
           </div>
           <p className="text-sm font-medium text-gray-900">Stable Trend</p>
-          <p className="text-xs text-gray-500">7-day analysis</p>
+          <p className="text-xs text-gray-500">{periods.find(p => p.id === selectedPeriod)?.range} analysis</p>
         </div>
         <div className="text-center">
           <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg mx-auto mb-2">
@@ -212,7 +290,7 @@ const ProgressChart = () => {
             <Activity className="h-5 w-5 text-green-600" />
           </div>
           <p className="text-sm font-medium text-gray-900">82% TIR</p>
-          <p className="text-xs text-gray-500">This week</p>
+          <p className="text-xs text-gray-500">This {selectedPeriod.slice(0, -1)}</p>
         </div>
       </div>
     </div>

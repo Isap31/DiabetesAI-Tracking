@@ -10,8 +10,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'home', label: 'Dashboard', icon: Home },
     { id: 'tracking', label: 'Tracking', icon: Activity },
-    { id: 'pet', label: 'Pet Companion', icon: Heart },
     { id: 'community', label: 'Community', icon: Users },
+    { id: 'pet', label: 'Pet Companion', icon: Heart },
     { id: 'achievements', label: 'Achievements', icon: Trophy }
   ];
 
