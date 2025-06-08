@@ -4,6 +4,7 @@ import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save } from 'luci
 const TrackingTab = () => {
   const [showMealForm, setShowMealForm] = useState(false);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
+  const [showGlucoseForm, setShowGlucoseForm] = useState(false);
   const [mealData, setMealData] = useState({
     name: '',
     carbs: '',
@@ -14,6 +15,12 @@ const TrackingTab = () => {
     type: '',
     duration: '',
     intensity: 'moderate',
+    time: new Date().toTimeString().slice(0, 5)
+  });
+  const [glucoseData, setGlucoseData] = useState({
+    reading: '',
+    context: 'fasting',
+    notes: '',
     time: new Date().toTimeString().slice(0, 5)
   });
 
@@ -34,7 +41,7 @@ const TrackingTab = () => {
       icon: Droplets, 
       label: 'Glucose', 
       color: 'bg-slate-600 hover:bg-slate-700',
-      action: () => console.log('Glucose logging')
+      action: () => setShowGlucoseForm(true)
     },
     { 
       icon: Camera, 
@@ -62,6 +69,13 @@ const TrackingTab = () => {
     console.log('Exercise logged:', exerciseData);
     setExerciseData({ type: '', duration: '', intensity: 'moderate', time: new Date().toTimeString().slice(0, 5) });
     setShowExerciseForm(false);
+  };
+
+  const handleGlucoseSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Glucose logged:', glucoseData);
+    setGlucoseData({ reading: '', context: 'fasting', notes: '', time: new Date().toTimeString().slice(0, 5) });
+    setShowGlucoseForm(false);
   };
 
   return (
@@ -219,6 +233,91 @@ const TrackingTab = () => {
                 >
                   <Save className="h-4 w-4" />
                   <span>Save Exercise</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Glucose Logging Modal */}
+      {showGlucoseForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Log Glucose Reading</h3>
+              <button 
+                onClick={() => setShowGlucoseForm(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleGlucoseSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Glucose Reading (mg/dL)</label>
+                <input
+                  type="number"
+                  value={glucoseData.reading}
+                  onChange={(e) => setGlucoseData({...glucoseData, reading: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  placeholder="94"
+                  min="40"
+                  max="400"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Context</label>
+                  <select
+                    value={glucoseData.context}
+                    onChange={(e) => setGlucoseData({...glucoseData, context: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  >
+                    <option value="fasting">Fasting</option>
+                    <option value="before-meal">Before Meal</option>
+                    <option value="after-meal">After Meal</option>
+                    <option value="bedtime">Bedtime</option>
+                    <option value="random">Random</option>
+                    <option value="exercise">During Exercise</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                  <input
+                    type="time"
+                    value={glucoseData.time}
+                    onChange={(e) => setGlucoseData({...glucoseData, time: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                <textarea
+                  value={glucoseData.notes}
+                  onChange={(e) => setGlucoseData({...glucoseData, notes: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  placeholder="Any additional notes about this reading..."
+                  rows={3}
+                />
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowGlucoseForm(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>Save Reading</span>
                 </button>
               </div>
             </form>
