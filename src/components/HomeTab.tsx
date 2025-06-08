@@ -27,6 +27,7 @@ const HomeTab = () => {
     height: '',
     weight: '',
     stressLevel: '3',
+    diagnosisDate: '',
     // Common fields
     time: new Date().toTimeString().slice(0, 5),
     date: new Date().toISOString().split('T')[0]
@@ -38,7 +39,8 @@ const HomeTab = () => {
     height: 165, // cm
     weight: 68, // kg
     bmi: 25.0,
-    diagnosisDate: '2015-03-20'
+    diagnosisDate: '2015-03-20',
+    yearsSinceDiagnosis: 9
   });
 
   const [allLogs, setAllLogs] = useState([
@@ -104,6 +106,15 @@ const HomeTab = () => {
     }
   ]);
 
+  const calculateYearsSinceDiagnosis = (diagnosisDate: string) => {
+    if (!diagnosisDate) return 0;
+    const diagnosis = new Date(diagnosisDate);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - diagnosis.getTime());
+    const diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
+    return diffYears;
+  };
+
   const handleLogSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -111,13 +122,18 @@ const HomeTab = () => {
     
     if (logType === 'profile') {
       // Update user profile instead of creating a log
+      const yearsSinceDiagnosis = logData.diagnosisDate 
+        ? calculateYearsSinceDiagnosis(logData.diagnosisDate)
+        : userProfile.yearsSinceDiagnosis;
+
       const updatedProfile = {
         age: parseInt(logData.age) || userProfile.age,
         diabetesType: logData.diabetesType,
         height: parseInt(logData.height) || userProfile.height,
         weight: parseInt(logData.weight) || userProfile.weight,
         bmi: calculateBMI(parseInt(logData.height) || userProfile.height, parseInt(logData.weight) || userProfile.weight),
-        diagnosisDate: userProfile.diagnosisDate
+        diagnosisDate: logData.diagnosisDate || userProfile.diagnosisDate,
+        yearsSinceDiagnosis: yearsSinceDiagnosis
       };
       setUserProfile(updatedProfile);
       console.log('Profile updated:', updatedProfile);
@@ -158,7 +174,7 @@ const HomeTab = () => {
       mealName: '', carbs: '', calories: '',
       exerciseType: '', duration: '', intensity: 'moderate',
       glucose: '', context: 'fasting', notes: '',
-      age: '', diabetesType: 'Type 1', height: '', weight: '', stressLevel: '3',
+      age: '', diabetesType: 'Type 1', height: '', weight: '', stressLevel: '3', diagnosisDate: '',
       time: new Date().toTimeString().slice(0, 5),
       date: new Date().toISOString().split('T')[0]
     });
@@ -181,7 +197,8 @@ const HomeTab = () => {
         age: userProfile.age.toString(),
         diabetesType: userProfile.diabetesType,
         height: userProfile.height.toString(),
-        weight: userProfile.weight.toString()
+        weight: userProfile.weight.toString(),
+        diagnosisDate: userProfile.diagnosisDate
       });
     }
     setShowLogForm(true);
@@ -469,6 +486,30 @@ const HomeTab = () => {
                   </div>
 
                   <div className="bg-slate-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-900 mb-3">Diabetes History</h4>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Diagnosis Date</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
+                      <input
+                        type="date"
+                        value={logData.diagnosisDate}
+                        onChange={(e) => setLogData({...logData, diagnosisDate: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        required
+                      />
+                      {logData.diagnosisDate && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Years since diagnosis: <span className="font-medium">{calculateYearsSinceDiagnosis(logData.diagnosisDate)}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-lg">
                     <h4 className="font-medium text-gray-900 mb-3">Physical Measurements</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -543,7 +584,7 @@ const HomeTab = () => {
 
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <p className="text-xs text-blue-800">
-                      <strong>AI Integration:</strong> These parameters are essential for accurate glucose predictions and personalized recommendations.
+                      <strong>AI Integration:</strong> These parameters including years since diagnosis are essential for accurate glucose predictions and personalized recommendations.
                     </p>
                   </div>
                 </>
@@ -613,7 +654,7 @@ const HomeTab = () => {
           </div>
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <Calendar className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-            <p className="text-sm font-medium text-gray-900">9 years</p>
+            <p className="text-sm font-medium text-gray-900">{userProfile.yearsSinceDiagnosis} years</p>
             <p className="text-xs text-gray-500">Since diagnosis</p>
           </div>
           <div className="text-center p-3 bg-gray-50 rounded-lg">

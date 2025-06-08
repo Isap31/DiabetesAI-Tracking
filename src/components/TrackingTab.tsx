@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer } from 'lucide-react';
+import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Calendar } from 'lucide-react';
 
 const TrackingTab = () => {
   const [showMealForm, setShowMealForm] = useState(false);
@@ -29,7 +29,8 @@ const TrackingTab = () => {
     diabetesType: 'Type 1',
     height: '165',
     weight: '68',
-    stressLevel: '3'
+    stressLevel: '3',
+    diagnosisDate: '2015-03-20'
   });
 
   const quickLog = [
@@ -57,7 +58,7 @@ const TrackingTab = () => {
     { 
       icon: User, 
       label: 'Profile', 
-      sublabel: 'Age, BMI, Stress',
+      sublabel: 'Age, BMI, Experience',
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowProfileForm(true)
     }
@@ -90,11 +91,11 @@ const TrackingTab = () => {
     },
     { 
       type: 'profile', 
-      item: 'Stress Level Updated', 
+      item: 'Experience Updated', 
       time: '9:00 AM', 
-      details: 'Level 3/5 (Moderate)', 
+      details: '9 years since diagnosis', 
       impact: 'neutral',
-      aiNote: 'May affect glucose variability'
+      aiNote: 'Enhanced AI prediction accuracy'
     }
   ];
 
@@ -132,6 +133,15 @@ const TrackingTab = () => {
       return (w / (h * h)).toFixed(1);
     }
     return '0.0';
+  };
+
+  const calculateYearsSinceDiagnosis = (diagnosisDate: string) => {
+    if (!diagnosisDate) return 0;
+    const diagnosis = new Date(diagnosisDate);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - diagnosis.getTime());
+    const diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
+    return diffYears;
   };
 
   const getStressLevelText = (level: string) => {
@@ -506,6 +516,28 @@ const TrackingTab = () => {
               </div>
 
               <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3">Diabetes History</h4>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <span className="flex items-center space-x-1">
+                      <span>Diagnosis Date</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="date"
+                    value={profileData.diagnosisDate}
+                    onChange={(e) => setProfileData({...profileData, diagnosisDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Years since diagnosis: <span className="font-medium">{calculateYearsSinceDiagnosis(profileData.diagnosisDate)}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Physical Measurements</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -580,7 +612,7 @@ const TrackingTab = () => {
 
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-xs text-blue-800">
-                  <strong>AI Integration:</strong> These parameters are essential for accurate glucose predictions and personalized recommendations.
+                  <strong>AI Integration:</strong> These parameters including years since diagnosis are essential for accurate glucose predictions and personalized recommendations.
                 </p>
               </div>
 
@@ -610,7 +642,7 @@ const TrackingTab = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Data Logging</h3>
         <div className="bg-blue-50 p-3 rounded-lg mb-4">
           <p className="text-sm text-blue-800">
-            <strong>AI-Powered Insights:</strong> Log all parameters for comprehensive glucose predictions and personalized recommendations.
+            <strong>AI-Powered Insights:</strong> Log all parameters including diabetes experience for comprehensive glucose predictions and personalized recommendations.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-4">
@@ -655,10 +687,10 @@ const TrackingTab = () => {
           </div>
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
-              <Brain className="h-5 w-5 text-gray-600 mx-auto" />
+              <Calendar className="h-5 w-5 text-gray-600 mx-auto" />
             </div>
-            <p className="text-sm font-medium text-gray-900">Stress Level</p>
-            <p className="text-xs text-gray-500">Moderate (3/5)</p>
+            <p className="text-sm font-medium text-gray-900">9 Years</p>
+            <p className="text-xs text-gray-500">Diabetes experience</p>
           </div>
         </div>
       </div>
@@ -678,7 +710,7 @@ const TrackingTab = () => {
                   {log.type === 'meal' && <Utensils className="h-4 w-4 text-blue-600" />}
                   {log.type === 'exercise' && <Activity className="h-4 w-4 text-green-600" />}
                   {log.type === 'glucose' && <Droplets className="h-4 w-4 text-red-600" />}
-                  {log.type === 'profile' && <User className="h-4 w-4 text-purple-600" />}
+                  {log.type === 'profile' && <Calendar className="h-4 w-4 text-purple-600" />}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{log.item}</p>

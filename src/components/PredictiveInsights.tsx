@@ -1,5 +1,5 @@
 import React from 'react';
-import { Brain, TrendingUp, AlertTriangle, CheckCircle, Target, Clock, User, Scale, Activity, Utensils } from 'lucide-react';
+import { Brain, TrendingUp, AlertTriangle, CheckCircle, Target, Clock, User, Scale, Activity, Utensils, Calendar } from 'lucide-react';
 
 const PredictiveInsights = () => {
   const userProfile = {
@@ -8,14 +8,15 @@ const PredictiveInsights = () => {
     height: 165,
     weight: 68,
     bmi: 25.0,
-    currentStress: 3
+    currentStress: 3,
+    yearsSinceDiagnosis: 9
   };
 
   const predictions = [
     {
       type: 'warning',
       title: 'Post-Meal Glucose Spike Risk',
-      message: 'Based on 25g carbs from breakfast and Type 1 diabetes profile, 18% chance of glucose exceeding 140 mg/dL',
+      message: 'Based on 25g carbs from breakfast, Type 1 diabetes, and 9 years experience, 18% chance of glucose exceeding 140 mg/dL',
       confidence: 87,
       action: 'Consider 15-minute walk or adjust insulin timing',
       icon: AlertTriangle,
@@ -23,12 +24,12 @@ const PredictiveInsights = () => {
       borderColor: 'border-orange-200',
       textColor: 'text-orange-700',
       timeframe: '1-2 hours',
-      factors: ['Carb content: 25g', 'Meal timing: 8:00 AM', 'Age: 34', 'Type 1 diabetes']
+      factors: ['Carb content: 25g', 'Meal timing: 8:00 AM', 'Age: 34', 'Type 1 diabetes', '9 years experience']
     },
     {
       type: 'positive',
       title: 'Optimal Exercise Window',
-      message: 'Current glucose (94 mg/dL) and moderate stress level ideal for physical activity',
+      message: 'Current glucose (94 mg/dL), moderate stress, and diabetes experience suggest ideal conditions for physical activity',
       confidence: 92,
       action: 'Perfect time for 30-45 minutes moderate exercise',
       icon: CheckCircle,
@@ -36,12 +37,12 @@ const PredictiveInsights = () => {
       borderColor: 'border-green-200',
       textColor: 'text-green-700',
       timeframe: 'Next 2 hours',
-      factors: ['Current glucose: 94 mg/dL', 'BMI: 25.0', 'Stress level: Moderate', 'Time since meal: 2 hrs']
+      factors: ['Current glucose: 94 mg/dL', 'BMI: 25.0', 'Stress level: Moderate', 'Time since meal: 2 hrs', 'Diabetes experience: 9 years']
     },
     {
       type: 'info',
       title: 'Personalized Meal Recommendation',
-      message: 'Based on your profile and current glucose trends, optimal next meal should contain 15-20g carbs',
+      message: 'Based on your 9-year diabetes management experience and current glucose trends, optimal next meal should contain 15-20g carbs',
       confidence: 78,
       action: 'Lean protein + vegetables + small portion complex carbs',
       icon: Target,
@@ -49,21 +50,22 @@ const PredictiveInsights = () => {
       borderColor: 'border-blue-200',
       textColor: 'text-blue-700',
       timeframe: 'Lunch (12:00 PM)',
-      factors: ['Height/Weight ratio', 'Morning glucose pattern', 'Exercise history', 'Diabetes type']
+      factors: ['Height/Weight ratio', 'Morning glucose pattern', 'Exercise history', 'Diabetes type', 'Years since diagnosis: 9']
     }
   ];
 
   const modelMetrics = [
-    { label: 'Prediction Accuracy', value: '89.2%', trend: '+3.1%', description: 'Based on your personal data' },
-    { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise logs' },
-    { label: 'Model Confidence', value: '87.4%', trend: '+2.3%', description: 'Personalization level' },
-    { label: 'Profile Completeness', value: '95%', trend: 'Complete', description: 'All key parameters logged' }
+    { label: 'Prediction Accuracy', value: '91.4%', trend: '+4.2%', description: 'Improved with diabetes experience data' },
+    { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, experience logs' },
+    { label: 'Model Confidence', value: '89.7%', trend: '+3.8%', description: 'Enhanced personalization level' },
+    { label: 'Profile Completeness', value: '98%', trend: 'Complete', description: 'All key parameters including diagnosis date' }
   ];
 
   const parameterInfluence = [
     { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-red-500' },
     { parameter: 'Exercise Intensity', influence: 72, icon: Activity, color: 'bg-blue-500' },
     { parameter: 'Time of Day', influence: 68, icon: Clock, color: 'bg-purple-500' },
+    { parameter: 'Years Since Diagnosis', influence: 58, icon: Calendar, color: 'bg-indigo-500' },
     { parameter: 'Stress Level', influence: 45, icon: Brain, color: 'bg-orange-500' },
     { parameter: 'BMI/Weight', influence: 38, icon: Scale, color: 'bg-green-500' },
     { parameter: 'Age/Diabetes Type', influence: 35, icon: User, color: 'bg-gray-500' }
@@ -82,15 +84,15 @@ const PredictiveInsights = () => {
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm font-medium text-gray-900">Model: FlowSense v2.1</p>
-          <p className="text-xs text-gray-500">Neural network ensemble</p>
+          <p className="text-sm font-medium text-gray-900">Model: FlowSense v2.2</p>
+          <p className="text-xs text-gray-500">Enhanced with experience data</p>
         </div>
       </div>
 
       {/* User Profile Integration */}
       <div className="bg-slate-50 p-4 rounded-lg mb-6">
         <h4 className="font-medium text-gray-900 mb-3">Current Profile Parameters</h4>
-        <div className="grid grid-cols-3 gap-4 text-sm">
+        <div className="grid grid-cols-4 gap-4 text-sm">
           <div>
             <span className="text-gray-600">Age/Type:</span>
             <span className="ml-2 font-medium">{userProfile.age}y, {userProfile.diabetesType}</span>
@@ -98,6 +100,10 @@ const PredictiveInsights = () => {
           <div>
             <span className="text-gray-600">BMI:</span>
             <span className="ml-2 font-medium">{userProfile.bmi}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Experience:</span>
+            <span className="ml-2 font-medium">{userProfile.yearsSinceDiagnosis} years</span>
           </div>
           <div>
             <span className="text-gray-600">Stress:</span>
@@ -198,7 +204,7 @@ const PredictiveInsights = () => {
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="flex items-center justify-between text-sm text-gray-500">
           <span>Next prediction update in 8 minutes</span>
-          <span>Data sources: CGM, meal logs, exercise tracker, profile data</span>
+          <span>Data sources: CGM, meal logs, exercise tracker, profile data, diagnosis history</span>
         </div>
       </div>
     </div>
