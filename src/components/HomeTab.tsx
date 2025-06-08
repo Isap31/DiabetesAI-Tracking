@@ -3,11 +3,11 @@ import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
 import ProgressChart from './ProgressChart';
 import PredictiveInsights from './PredictiveInsights';
-import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity } from 'lucide-react';
+import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain } from 'lucide-react';
 
 const HomeTab = () => {
   const [showLogForm, setShowLogForm] = useState(false);
-  const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose'>('meal');
+  const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
   const [logData, setLogData] = useState({
     // Meal fields
     mealName: '',
@@ -21,50 +21,169 @@ const HomeTab = () => {
     glucose: '',
     context: 'fasting',
     notes: '',
+    // Profile fields
+    age: '',
+    diabetesType: 'Type 1',
+    height: '',
+    weight: '',
+    stressLevel: '3',
     // Common fields
     time: new Date().toTimeString().slice(0, 5),
     date: new Date().toISOString().split('T')[0]
   });
 
+  const [userProfile, setUserProfile] = useState({
+    age: 34,
+    diabetesType: 'Type 1',
+    height: 165, // cm
+    weight: 68, // kg
+    bmi: 25.0,
+    diagnosisDate: '2015-03-20'
+  });
+
   const [allLogs, setAllLogs] = useState([
-    { id: 1, type: 'meal', data: { mealName: 'Grilled Chicken Salad', carbs: '15', calories: '350' }, time: '12:30 PM', date: '2024-01-15' },
-    { id: 2, type: 'exercise', data: { exerciseType: 'Walking', duration: '30', intensity: 'moderate' }, time: '11:00 AM', date: '2024-01-15' },
-    { id: 3, type: 'glucose', data: { glucose: '94', context: 'before-meal', notes: 'Feeling good' }, time: '10:30 AM', date: '2024-01-15' },
-    { id: 4, type: 'meal', data: { mealName: 'Oatmeal with Berries', carbs: '25', calories: '280' }, time: '8:00 AM', date: '2024-01-15' },
-    { id: 5, type: 'glucose', data: { glucose: '89', context: 'fasting', notes: '' }, time: '7:00 AM', date: '2024-01-15' }
+    { 
+      id: 1, 
+      type: 'meal', 
+      data: { 
+        mealName: 'Grilled Chicken Salad', 
+        carbs: '15', 
+        calories: '350',
+        time: '12:30 PM'
+      }, 
+      time: '12:30 PM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 2, 
+      type: 'exercise', 
+      data: { 
+        exerciseType: 'Walking', 
+        duration: '30', 
+        intensity: 'moderate',
+        time: '11:00 AM'
+      }, 
+      time: '11:00 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 3, 
+      type: 'glucose', 
+      data: { 
+        glucose: '94', 
+        context: 'before-meal', 
+        notes: 'Feeling good',
+        time: '10:30 AM'
+      }, 
+      time: '10:30 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 4, 
+      type: 'meal', 
+      data: { 
+        mealName: 'Oatmeal with Berries', 
+        carbs: '25', 
+        calories: '280',
+        time: '8:00 AM'
+      }, 
+      time: '8:00 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 5, 
+      type: 'glucose', 
+      data: { 
+        glucose: '89', 
+        context: 'fasting', 
+        notes: '',
+        time: '7:00 AM'
+      }, 
+      time: '7:00 AM', 
+      date: '2024-01-15' 
+    }
   ]);
 
   const handleLogSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newLog = {
-      id: allLogs.length + 1,
-      type: logType,
-      data: logType === 'meal' 
-        ? { mealName: logData.mealName, carbs: logData.carbs, calories: logData.calories }
-        : logType === 'exercise'
-        ? { exerciseType: logData.exerciseType, duration: logData.duration, intensity: logData.intensity }
-        : { glucose: logData.glucose, context: logData.context, notes: logData.notes },
-      time: logData.time,
-      date: logData.date
-    };
+    let newLog;
+    
+    if (logType === 'profile') {
+      // Update user profile instead of creating a log
+      const updatedProfile = {
+        age: parseInt(logData.age) || userProfile.age,
+        diabetesType: logData.diabetesType,
+        height: parseInt(logData.height) || userProfile.height,
+        weight: parseInt(logData.weight) || userProfile.weight,
+        bmi: calculateBMI(parseInt(logData.height) || userProfile.height, parseInt(logData.weight) || userProfile.weight),
+        diagnosisDate: userProfile.diagnosisDate
+      };
+      setUserProfile(updatedProfile);
+      console.log('Profile updated:', updatedProfile);
+    } else {
+      newLog = {
+        id: allLogs.length + 1,
+        type: logType,
+        data: logType === 'meal' 
+          ? { 
+              mealName: logData.mealName, 
+              carbs: logData.carbs, 
+              calories: logData.calories,
+              time: logData.time
+            }
+          : logType === 'exercise'
+          ? { 
+              exerciseType: logData.exerciseType, 
+              duration: logData.duration, 
+              intensity: logData.intensity,
+              time: logData.time
+            }
+          : { 
+              glucose: logData.glucose, 
+              context: logData.context, 
+              notes: logData.notes,
+              time: logData.time
+            },
+        time: logData.time,
+        date: logData.date
+      };
 
-    setAllLogs([newLog, ...allLogs]);
-    console.log('New log entry:', newLog);
+      setAllLogs([newLog, ...allLogs]);
+      console.log('New log entry:', newLog);
+    }
     
     // Reset form
     setLogData({
       mealName: '', carbs: '', calories: '',
       exerciseType: '', duration: '', intensity: 'moderate',
       glucose: '', context: 'fasting', notes: '',
+      age: '', diabetesType: 'Type 1', height: '', weight: '', stressLevel: '3',
       time: new Date().toTimeString().slice(0, 5),
       date: new Date().toISOString().split('T')[0]
     });
     setShowLogForm(false);
   };
 
-  const openLogForm = (type: 'meal' | 'exercise' | 'glucose') => {
+  const calculateBMI = (height: number, weight: number) => {
+    if (height && weight) {
+      const heightInMeters = height / 100;
+      return parseFloat((weight / (heightInMeters * heightInMeters)).toFixed(1));
+    }
+    return 0;
+  };
+
+  const openLogForm = (type: 'meal' | 'exercise' | 'glucose' | 'profile') => {
     setLogType(type);
+    if (type === 'profile') {
+      setLogData({
+        ...logData,
+        age: userProfile.age.toString(),
+        diabetesType: userProfile.diabetesType,
+        height: userProfile.height.toString(),
+        weight: userProfile.weight.toString()
+      });
+    }
     setShowLogForm(true);
   };
 
@@ -73,7 +192,7 @@ const HomeTab = () => {
       case 'meal':
         return `${log.data.mealName} (${log.data.carbs}g carbs)`;
       case 'exercise':
-        return `${log.data.exerciseType} (${log.data.duration} min)`;
+        return `${log.data.exerciseType} (${log.data.duration} min, ${log.data.intensity})`;
       case 'glucose':
         return `${log.data.glucose} mg/dL (${log.data.context})`;
       default:
@@ -81,15 +200,26 @@ const HomeTab = () => {
     }
   };
 
+  const getStressLevelText = (level: string) => {
+    const levels = {
+      '1': 'Very Low',
+      '2': 'Low', 
+      '3': 'Moderate',
+      '4': 'High',
+      '5': 'Very High'
+    };
+    return levels[level as keyof typeof levels] || 'Moderate';
+  };
+
   return (
     <div className="space-y-8">
       {/* Universal Log Form Modal */}
       {showLogForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Log {logType.charAt(0).toUpperCase() + logType.slice(1)}
+                {logType === 'profile' ? 'Update Profile' : `Log ${logType.charAt(0).toUpperCase() + logType.slice(1)}`}
               </h3>
               <button 
                 onClick={() => setShowLogForm(false)}
@@ -100,29 +230,31 @@ const HomeTab = () => {
             </div>
             
             <form onSubmit={handleLogSubmit} className="space-y-4">
-              {/* Common fields */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                  <input
-                    type="date"
-                    value={logData.date}
-                    onChange={(e) => setLogData({...logData, date: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                    required
-                  />
+              {/* Common fields for non-profile logs */}
+              {logType !== 'profile' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input
+                      type="date"
+                      value={logData.date}
+                      onChange={(e) => setLogData({...logData, date: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                    <input
+                      type="time"
+                      value={logData.time}
+                      onChange={(e) => setLogData({...logData, time: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      required
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                  <input
-                    type="time"
-                    value={logData.time}
-                    onChange={(e) => setLogData({...logData, time: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                    required
-                  />
-                </div>
-              </div>
+              )}
 
               {/* Meal-specific fields */}
               {logType === 'meal' && (
@@ -140,15 +272,23 @@ const HomeTab = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Carbs (g)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Carbohydrates (g)</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
                       <input
                         type="number"
                         value={logData.carbs}
                         onChange={(e) => setLogData({...logData, carbs: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                         placeholder="15"
+                        min="0"
+                        step="0.1"
                         required
                       />
+                      <p className="text-xs text-gray-500 mt-1">Critical for glucose prediction</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Calories</label>
@@ -158,6 +298,7 @@ const HomeTab = () => {
                         onChange={(e) => setLogData({...logData, calories: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                         placeholder="350"
+                        min="0"
                       />
                     </div>
                   </div>
@@ -169,29 +310,49 @@ const HomeTab = () => {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Exercise Type</label>
-                    <input
-                      type="text"
+                    <select
                       value={logData.exerciseType}
                       onChange={(e) => setLogData({...logData, exerciseType: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                      placeholder="e.g., Walking, Running, Cycling"
                       required
-                    />
+                    >
+                      <option value="">Select exercise type</option>
+                      <option value="Walking">Walking</option>
+                      <option value="Running">Running</option>
+                      <option value="Cycling">Cycling</option>
+                      <option value="Swimming">Swimming</option>
+                      <option value="Weight Training">Weight Training</option>
+                      <option value="Yoga">Yoga</option>
+                      <option value="Dancing">Dancing</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Duration (min)</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Duration (min)</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
                       <input
                         type="number"
                         value={logData.duration}
                         onChange={(e) => setLogData({...logData, duration: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                         placeholder="30"
+                        min="1"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Intensity</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Intensity</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
                       <select
                         value={logData.intensity}
                         onChange={(e) => setLogData({...logData, intensity: e.target.value})}
@@ -203,6 +364,11 @@ const HomeTab = () => {
                       </select>
                     </div>
                   </div>
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-xs text-blue-800">
+                      <strong>Exercise Impact:</strong> Duration and intensity affect glucose response and are used for AI predictions.
+                    </p>
+                  </div>
                 </>
               )}
 
@@ -210,7 +376,12 @@ const HomeTab = () => {
               {logType === 'glucose' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Glucose Reading (mg/dL)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="flex items-center space-x-1">
+                        <span>Current Glucose Level (mg/dL)</span>
+                        <span className="text-red-500">*</span>
+                      </span>
+                    </label>
                     <input
                       type="number"
                       value={logData.glucose}
@@ -221,6 +392,7 @@ const HomeTab = () => {
                       max="400"
                       required
                     />
+                    <p className="text-xs text-gray-500 mt-1">From CGM or manual testing</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Context</label>
@@ -231,10 +403,10 @@ const HomeTab = () => {
                     >
                       <option value="fasting">Fasting</option>
                       <option value="before-meal">Before Meal</option>
-                      <option value="after-meal">After Meal</option>
+                      <option value="after-meal">After Meal (1-2 hrs)</option>
                       <option value="bedtime">Bedtime</option>
                       <option value="random">Random</option>
-                      <option value="exercise">During Exercise</option>
+                      <option value="exercise">During/After Exercise</option>
                     </select>
                   </div>
                   <div>
@@ -243,9 +415,136 @@ const HomeTab = () => {
                       value={logData.notes}
                       onChange={(e) => setLogData({...logData, notes: e.target.value})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                      placeholder="Any additional notes..."
+                      placeholder="How are you feeling? Any symptoms?"
                       rows={2}
                     />
+                  </div>
+                </>
+              )}
+
+              {/* Profile-specific fields */}
+              {logType === 'profile' && (
+                <>
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-900 mb-3">Personal Information</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <span className="flex items-center space-x-1">
+                            <span>Age</span>
+                            <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+                        <input
+                          type="number"
+                          value={logData.age}
+                          onChange={(e) => setLogData({...logData, age: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          placeholder="34"
+                          min="1"
+                          max="120"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <span className="flex items-center space-x-1">
+                            <span>Diabetes Type</span>
+                            <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+                        <select
+                          value={logData.diabetesType}
+                          onChange={(e) => setLogData({...logData, diabetesType: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        >
+                          <option value="Type 1">Type 1</option>
+                          <option value="Type 2">Type 2</option>
+                          <option value="Gestational">Gestational</option>
+                          <option value="MODY">MODY</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-900 mb-3">Physical Measurements</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <span className="flex items-center space-x-1">
+                            <span>Height (cm)</span>
+                            <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+                        <input
+                          type="number"
+                          value={logData.height}
+                          onChange={(e) => setLogData({...logData, height: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          placeholder="165"
+                          min="100"
+                          max="250"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <span className="flex items-center space-x-1">
+                            <span>Weight (kg)</span>
+                            <span className="text-red-500">*</span>
+                          </span>
+                        </label>
+                        <input
+                          type="number"
+                          value={logData.weight}
+                          onChange={(e) => setLogData({...logData, weight: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          placeholder="68"
+                          min="30"
+                          max="300"
+                          step="0.1"
+                          required
+                        />
+                      </div>
+                    </div>
+                    {logData.height && logData.weight && (
+                      <div className="mt-3 p-2 bg-white rounded border">
+                        <p className="text-sm text-gray-600">
+                          BMI: <span className="font-medium">{calculateBMI(parseInt(logData.height), parseFloat(logData.weight))}</span>
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-900 mb-3">Current Stress Level</h4>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Stress Level (1-5 scale)
+                      </label>
+                      <select
+                        value={logData.stressLevel}
+                        onChange={(e) => setLogData({...logData, stressLevel: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      >
+                        <option value="1">1 - Very Low</option>
+                        <option value="2">2 - Low</option>
+                        <option value="3">3 - Moderate</option>
+                        <option value="4">4 - High</option>
+                        <option value="5">5 - Very High</option>
+                      </select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Stress affects glucose levels and is used for AI predictions
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-xs text-blue-800">
+                      <strong>AI Integration:</strong> These parameters are essential for accurate glucose predictions and personalized recommendations.
+                    </p>
                   </div>
                 </>
               )}
@@ -263,7 +562,7 @@ const HomeTab = () => {
                   className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center justify-center space-x-2"
                 >
                   <Save className="h-4 w-4" />
-                  <span>Save</span>
+                  <span>{logType === 'profile' ? 'Update' : 'Save'}</span>
                 </button>
               </div>
             </form>
@@ -290,10 +589,45 @@ const HomeTab = () => {
         </div>
       </div>
 
+      {/* User Profile Summary */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900">Health Profile</h3>
+          <button
+            onClick={() => openLogForm('profile')}
+            className="text-sm text-slate-600 hover:text-slate-700 font-medium"
+          >
+            Update Profile
+          </button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <User className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <p className="text-sm font-medium text-gray-900">{userProfile.age} years</p>
+            <p className="text-xs text-gray-500">{userProfile.diabetesType}</p>
+          </div>
+          <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <Scale className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <p className="text-sm font-medium text-gray-900">BMI {userProfile.bmi}</p>
+            <p className="text-xs text-gray-500">{userProfile.height}cm, {userProfile.weight}kg</p>
+          </div>
+          <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <Calendar className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <p className="text-sm font-medium text-gray-900">9 years</p>
+            <p className="text-xs text-gray-500">Since diagnosis</p>
+          </div>
+          <div className="text-center p-3 bg-gray-50 rounded-lg">
+            <Brain className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <p className="text-sm font-medium text-gray-900">Moderate</p>
+            <p className="text-xs text-gray-500">Current stress</p>
+          </div>
+        </div>
+      </div>
+
       {/* Key Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Recent Glucose Reading"
+          title="Current Glucose"
           value="94"
           unit="mg/dL"
           trend="stable"
@@ -338,15 +672,15 @@ const HomeTab = () => {
         <div className="space-y-6">
           <QuickActions />
           
-          {/* All Logged Data */}
+          {/* Enhanced Logging Section */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">All Logged Data</h3>
+              <h3 className="font-semibold text-gray-900">Data Logging</h3>
               <div className="flex space-x-2">
                 <button
                   onClick={() => openLogForm('meal')}
                   className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
-                  title="Log Meal"
+                  title="Log Meal & Carbs"
                 >
                   <Utensils className="h-4 w-4" />
                 </button>
@@ -360,12 +694,20 @@ const HomeTab = () => {
                 <button
                   onClick={() => openLogForm('glucose')}
                   className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
-                  title="Log Glucose"
+                  title="Log Glucose Reading"
                 >
                   <Droplets className="h-4 w-4" />
                 </button>
               </div>
             </div>
+            
+            {/* Parameter Importance Notice */}
+            <div className="bg-blue-50 p-3 rounded-lg mb-4">
+              <p className="text-xs text-blue-800">
+                <strong>AI-Powered Insights:</strong> Log meals (carbs), exercise (type/duration/intensity), and glucose readings for accurate predictions.
+              </p>
+            </div>
+            
             <div className="space-y-3 max-h-80 overflow-y-auto">
               {allLogs.map((log) => (
                 <div key={log.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">

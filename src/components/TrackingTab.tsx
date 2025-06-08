@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save } from 'lucide-react';
+import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer } from 'lucide-react';
 
 const TrackingTab = () => {
   const [showMealForm, setShowMealForm] = useState(false);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [showGlucoseForm, setShowGlucoseForm] = useState(false);
+  const [showProfileForm, setShowProfileForm] = useState(false);
   const [mealData, setMealData] = useState({
     name: '',
     carbs: '',
@@ -23,38 +24,78 @@ const TrackingTab = () => {
     notes: '',
     time: new Date().toTimeString().slice(0, 5)
   });
+  const [profileData, setProfileData] = useState({
+    age: '34',
+    diabetesType: 'Type 1',
+    height: '165',
+    weight: '68',
+    stressLevel: '3'
+  });
 
   const quickLog = [
     { 
       icon: Utensils, 
       label: 'Log Meal', 
+      sublabel: 'Carbs & Calories',
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowMealForm(true)
     },
     { 
       icon: Activity, 
       label: 'Exercise', 
+      sublabel: 'Type & Duration',
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowExerciseForm(true)
     },
     { 
       icon: Droplets, 
       label: 'Glucose', 
+      sublabel: 'Current Level',
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowGlucoseForm(true)
     },
     { 
-      icon: Camera, 
-      label: 'Scan Food', 
+      icon: User, 
+      label: 'Profile', 
+      sublabel: 'Age, BMI, Stress',
       color: 'bg-slate-600 hover:bg-slate-700',
-      action: () => console.log('Food scanning')
+      action: () => setShowProfileForm(true)
     }
   ];
 
   const recentLogs = [
-    { type: 'meal', item: 'Grilled Chicken Salad', time: '12:30 PM', carbs: '15g', impact: 'low' },
-    { type: 'exercise', item: '30min Walk', time: '11:00 AM', calories: '120', impact: 'positive' },
-    { type: 'glucose', item: '94 mg/dL', time: '10:30 AM', status: 'normal', impact: 'stable' }
+    { 
+      type: 'meal', 
+      item: 'Grilled Chicken Salad', 
+      time: '12:30 PM', 
+      details: '15g carbs, 350 cal', 
+      impact: 'low',
+      aiNote: 'Good carb choice for stable glucose'
+    },
+    { 
+      type: 'exercise', 
+      item: '30min Walk', 
+      time: '11:00 AM', 
+      details: 'Moderate intensity', 
+      impact: 'positive',
+      aiNote: 'Optimal timing post-breakfast'
+    },
+    { 
+      type: 'glucose', 
+      item: '94 mg/dL', 
+      time: '10:30 AM', 
+      details: 'Before meal', 
+      impact: 'stable',
+      aiNote: 'Perfect target range'
+    },
+    { 
+      type: 'profile', 
+      item: 'Stress Level Updated', 
+      time: '9:00 AM', 
+      details: 'Level 3/5 (Moderate)', 
+      impact: 'neutral',
+      aiNote: 'May affect glucose variability'
+    }
   ];
 
   const handleMealSubmit = (e: React.FormEvent) => {
@@ -76,6 +117,32 @@ const TrackingTab = () => {
     console.log('Glucose logged:', glucoseData);
     setGlucoseData({ reading: '', context: 'fasting', notes: '', time: new Date().toTimeString().slice(0, 5) });
     setShowGlucoseForm(false);
+  };
+
+  const handleProfileSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Profile updated:', profileData);
+    setShowProfileForm(false);
+  };
+
+  const calculateBMI = (height: string, weight: string) => {
+    const h = parseFloat(height) / 100;
+    const w = parseFloat(weight);
+    if (h && w) {
+      return (w / (h * h)).toFixed(1);
+    }
+    return '0.0';
+  };
+
+  const getStressLevelText = (level: string) => {
+    const levels = {
+      '1': 'Very Low',
+      '2': 'Low', 
+      '3': 'Moderate',
+      '4': 'High',
+      '5': 'Very High'
+    };
+    return levels[level as keyof typeof levels] || 'Moderate';
   };
 
   return (
@@ -107,15 +174,23 @@ const TrackingTab = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Carbs (g)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <span className="flex items-center space-x-1">
+                      <span>Carbohydrates (g)</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                  </label>
                   <input
                     type="number"
                     value={mealData.carbs}
                     onChange={(e) => setMealData({...mealData, carbs: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="15"
+                    min="0"
+                    step="0.1"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">Critical for glucose prediction</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Calories</label>
@@ -125,11 +200,12 @@ const TrackingTab = () => {
                     onChange={(e) => setMealData({...mealData, calories: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="350"
+                    min="0"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Time of Meal</label>
                 <input
                   type="time"
                   value={mealData.time}
@@ -137,6 +213,12 @@ const TrackingTab = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                   required
                 />
+                <p className="text-xs text-gray-500 mt-1">Meal timing affects glucose response</p>
+              </div>
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-xs text-blue-800">
+                  <strong>AI Integration:</strong> Carb content and meal timing are key factors for glucose predictions.
+                </p>
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
@@ -174,30 +256,55 @@ const TrackingTab = () => {
             </div>
             <form onSubmit={handleExerciseSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Exercise Type</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <span className="flex items-center space-x-1">
+                    <span>Exercise Type</span>
+                    <span className="text-red-500">*</span>
+                  </span>
+                </label>
+                <select
                   value={exerciseData.type}
                   onChange={(e) => setExerciseData({...exerciseData, type: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                  placeholder="e.g., Walking, Running, Cycling"
                   required
-                />
+                >
+                  <option value="">Select exercise type</option>
+                  <option value="Walking">Walking</option>
+                  <option value="Running">Running</option>
+                  <option value="Cycling">Cycling</option>
+                  <option value="Swimming">Swimming</option>
+                  <option value="Weight Training">Weight Training</option>
+                  <option value="Yoga">Yoga</option>
+                  <option value="Dancing">Dancing</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Duration (min)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <span className="flex items-center space-x-1">
+                      <span>Duration (min)</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                  </label>
                   <input
                     type="number"
                     value={exerciseData.duration}
                     onChange={(e) => setExerciseData({...exerciseData, duration: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                     placeholder="30"
+                    min="1"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Intensity</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <span className="flex items-center space-x-1">
+                      <span>Intensity</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                  </label>
                   <select
                     value={exerciseData.intensity}
                     onChange={(e) => setExerciseData({...exerciseData, intensity: e.target.value})}
@@ -218,6 +325,11 @@ const TrackingTab = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                   required
                 />
+              </div>
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-xs text-blue-800">
+                  <strong>Exercise Impact:</strong> Type, duration, and intensity all affect glucose response patterns.
+                </p>
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
@@ -255,7 +367,12 @@ const TrackingTab = () => {
             </div>
             <form onSubmit={handleGlucoseSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Glucose Reading (mg/dL)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <span className="flex items-center space-x-1">
+                    <span>Current Glucose Level (mg/dL)</span>
+                    <span className="text-red-500">*</span>
+                  </span>
+                </label>
                 <input
                   type="number"
                   value={glucoseData.reading}
@@ -266,6 +383,7 @@ const TrackingTab = () => {
                   max="400"
                   required
                 />
+                <p className="text-xs text-gray-500 mt-1">From CGM or manual testing</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -277,10 +395,10 @@ const TrackingTab = () => {
                   >
                     <option value="fasting">Fasting</option>
                     <option value="before-meal">Before Meal</option>
-                    <option value="after-meal">After Meal</option>
+                    <option value="after-meal">After Meal (1-2 hrs)</option>
                     <option value="bedtime">Bedtime</option>
                     <option value="random">Random</option>
-                    <option value="exercise">During Exercise</option>
+                    <option value="exercise">During/After Exercise</option>
                   </select>
                 </div>
                 <div>
@@ -300,9 +418,14 @@ const TrackingTab = () => {
                   value={glucoseData.notes}
                   onChange={(e) => setGlucoseData({...glucoseData, notes: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                  placeholder="Any additional notes about this reading..."
+                  placeholder="How are you feeling? Any symptoms?"
                   rows={3}
                 />
+              </div>
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-xs text-blue-800">
+                  <strong>Glucose Tracking:</strong> Regular readings help AI learn your patterns and improve predictions.
+                </p>
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
@@ -325,9 +448,171 @@ const TrackingTab = () => {
         </div>
       )}
 
+      {/* Profile Update Modal */}
+      {showProfileForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Update Health Profile</h3>
+              <button 
+                onClick={() => setShowProfileForm(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleProfileSubmit} className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3">Basic Information</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="flex items-center space-x-1">
+                        <span>Age</span>
+                        <span className="text-red-500">*</span>
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      value={profileData.age}
+                      onChange={(e) => setProfileData({...profileData, age: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      placeholder="34"
+                      min="1"
+                      max="120"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="flex items-center space-x-1">
+                        <span>Diabetes Type</span>
+                        <span className="text-red-500">*</span>
+                      </span>
+                    </label>
+                    <select
+                      value={profileData.diabetesType}
+                      onChange={(e) => setProfileData({...profileData, diabetesType: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    >
+                      <option value="Type 1">Type 1</option>
+                      <option value="Type 2">Type 2</option>
+                      <option value="Gestational">Gestational</option>
+                      <option value="MODY">MODY</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3">Physical Measurements</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="flex items-center space-x-1">
+                        <span>Height (cm)</span>
+                        <span className="text-red-500">*</span>
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      value={profileData.height}
+                      onChange={(e) => setProfileData({...profileData, height: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      placeholder="165"
+                      min="100"
+                      max="250"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <span className="flex items-center space-x-1">
+                        <span>Weight (kg)</span>
+                        <span className="text-red-500">*</span>
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      value={profileData.weight}
+                      onChange={(e) => setProfileData({...profileData, weight: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      placeholder="68"
+                      min="30"
+                      max="300"
+                      step="0.1"
+                      required
+                    />
+                  </div>
+                </div>
+                {profileData.height && profileData.weight && (
+                  <div className="mt-3 p-2 bg-white rounded border">
+                    <p className="text-sm text-gray-600">
+                      BMI: <span className="font-medium">{calculateBMI(profileData.height, profileData.weight)}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3">Current Stress Level</h4>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Stress Level (1-5 scale)
+                  </label>
+                  <select
+                    value={profileData.stressLevel}
+                    onChange={(e) => setProfileData({...profileData, stressLevel: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  >
+                    <option value="1">1 - Very Low</option>
+                    <option value="2">2 - Low</option>
+                    <option value="3">3 - Moderate</option>
+                    <option value="4">4 - High</option>
+                    <option value="5">5 - Very High</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Current: {getStressLevelText(profileData.stressLevel)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-xs text-blue-800">
+                  <strong>AI Integration:</strong> These parameters are essential for accurate glucose predictions and personalized recommendations.
+                </p>
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowProfileForm(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>Update Profile</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Quick Log Actions */}
       <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Log</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Data Logging</h3>
+        <div className="bg-blue-50 p-3 rounded-lg mb-4">
+          <p className="text-sm text-blue-800">
+            <strong>AI-Powered Insights:</strong> Log all parameters for comprehensive glucose predictions and personalized recommendations.
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           {quickLog.map((action, index) => (
             <button
@@ -337,6 +622,7 @@ const TrackingTab = () => {
             >
               <action.icon className="h-6 w-6" />
               <span className="text-sm font-medium">{action.label}</span>
+              <span className="text-xs text-slate-200">{action.sublabel}</span>
             </button>
           ))}
         </div>
@@ -345,58 +631,65 @@ const TrackingTab = () => {
       {/* Today's Summary */}
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Summary</h3>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
               <Utensils className="h-5 w-5 text-gray-600 mx-auto" />
             </div>
             <p className="text-sm font-medium text-gray-900">3 Meals</p>
-            <p className="text-xs text-gray-500">45g carbs</p>
+            <p className="text-xs text-gray-500">45g total carbs</p>
           </div>
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
               <Activity className="h-5 w-5 text-gray-600 mx-auto" />
             </div>
             <p className="text-sm font-medium text-gray-900">2 Activities</p>
-            <p className="text-xs text-gray-500">250 calories</p>
+            <p className="text-xs text-gray-500">60 min total</p>
           </div>
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
               <Droplets className="h-5 w-5 text-gray-600 mx-auto" />
             </div>
             <p className="text-sm font-medium text-gray-900">6 Readings</p>
-            <p className="text-xs text-gray-500">Avg: 96</p>
+            <p className="text-xs text-gray-500">Avg: 96 mg/dL</p>
+          </div>
+          <div className="text-center">
+            <div className="bg-gray-100 p-3 rounded-lg mb-2">
+              <Brain className="h-5 w-5 text-gray-600 mx-auto" />
+            </div>
+            <p className="text-sm font-medium text-gray-900">Stress Level</p>
+            <p className="text-xs text-gray-500">Moderate (3/5)</p>
           </div>
         </div>
       </div>
 
-      {/* Recent Logs */}
+      {/* Recent Logs with AI Insights */}
       <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Logs</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Logs & AI Insights</h3>
         <div className="space-y-3">
           {recentLogs.map((log, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-3">
+            <div key={index} className="flex items-start justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-start space-x-3">
                 <div className={`p-2 rounded-lg ${
-                  log.type === 'meal' ? 'bg-gray-200' :
-                  log.type === 'exercise' ? 'bg-gray-200' : 'bg-gray-200'
+                  log.type === 'meal' ? 'bg-blue-100' :
+                  log.type === 'exercise' ? 'bg-green-100' : 
+                  log.type === 'glucose' ? 'bg-red-100' : 'bg-purple-100'
                 }`}>
-                  {log.type === 'meal' && <Utensils className="h-4 w-4 text-gray-600" />}
-                  {log.type === 'exercise' && <Activity className="h-4 w-4 text-gray-600" />}
-                  {log.type === 'glucose' && <Droplets className="h-4 w-4 text-gray-600" />}
+                  {log.type === 'meal' && <Utensils className="h-4 w-4 text-blue-600" />}
+                  {log.type === 'exercise' && <Activity className="h-4 w-4 text-green-600" />}
+                  {log.type === 'glucose' && <Droplets className="h-4 w-4 text-red-600" />}
+                  {log.type === 'profile' && <User className="h-4 w-4 text-purple-600" />}
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{log.item}</p>
-                  <p className="text-xs text-gray-500">{log.time}</p>
+                  <p className="text-xs text-gray-500">{log.time} • {log.details}</p>
+                  <p className="text-xs text-blue-600 mt-1 italic">{log.aiNote}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs font-medium text-gray-600">
-                  {log.carbs || log.calories || log.status}
-                </p>
                 <div className={`w-2 h-2 rounded-full ${
                   log.impact === 'positive' || log.impact === 'stable' ? 'bg-green-500' :
-                  log.impact === 'low' ? 'bg-yellow-500' : 'bg-red-500'
+                  log.impact === 'low' || log.impact === 'neutral' ? 'bg-yellow-500' : 'bg-red-500'
                 }`}></div>
               </div>
             </div>
