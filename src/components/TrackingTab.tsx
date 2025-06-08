@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Calendar, Baby, Moon } from 'lucide-react';
+import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Calendar, Baby, Moon, Bed } from 'lucide-react';
 
 const TrackingTab = () => {
   const [showMealForm, setShowMealForm] = useState(false);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [showGlucoseForm, setShowGlucoseForm] = useState(false);
   const [showProfileForm, setShowProfileForm] = useState(false);
+  const [showSleepForm, setShowSleepForm] = useState(false);
   const [mealData, setMealData] = useState({
     name: '',
     carbs: '',
@@ -35,7 +36,19 @@ const TrackingTab = () => {
     isPregnant: false,
     pregnancyWeeks: '',
     menstrualCycleDay: '14',
-    menstrualCycleLength: '28'
+    menstrualCycleLength: '28',
+    sleepQuality: '7',
+    sleepDuration: '7.5',
+    bedtime: '22:30',
+    wakeTime: '06:00'
+  });
+  const [sleepData, setSleepData] = useState({
+    duration: '',
+    quality: '7',
+    bedtime: '',
+    wakeTime: '',
+    notes: '',
+    time: new Date().toTimeString().slice(0, 5)
   });
 
   const quickLog = [
@@ -61,6 +74,13 @@ const TrackingTab = () => {
       action: () => setShowGlucoseForm(true)
     },
     { 
+      icon: Bed, 
+      label: 'Sleep', 
+      sublabel: 'Quality & Duration',
+      color: 'bg-slate-600 hover:bg-slate-700',
+      action: () => setShowSleepForm(true)
+    },
+    { 
       icon: User, 
       label: 'Profile', 
       sublabel: 'Health & Hormones',
@@ -70,6 +90,14 @@ const TrackingTab = () => {
   ];
 
   const recentLogs = [
+    { 
+      type: 'sleep', 
+      item: '7.5h Sleep (Quality: 8/10)', 
+      time: '6:00 AM', 
+      details: 'Excellent rest, 22:30-06:00', 
+      impact: 'positive',
+      aiNote: 'Great sleep quality supports glucose stability'
+    },
     { 
       type: 'meal', 
       item: 'Grilled Chicken Salad', 
@@ -131,6 +159,13 @@ const TrackingTab = () => {
     setShowProfileForm(false);
   };
 
+  const handleSleepSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Sleep logged:', sleepData);
+    setSleepData({ duration: '', quality: '7', bedtime: '', wakeTime: '', notes: '', time: new Date().toTimeString().slice(0, 5) });
+    setShowSleepForm(false);
+  };
+
   const calculateBMI = (height: string, weight: string) => {
     const h = parseFloat(height) / 100;
     const w = parseFloat(weight);
@@ -179,8 +214,128 @@ const TrackingTab = () => {
     return 'Third Trimester';
   };
 
+  const getSleepQualityDescription = (quality: string) => {
+    const q = parseInt(quality);
+    if (q >= 8) return 'Excellent';
+    if (q >= 6) return 'Good';
+    if (q >= 4) return 'Fair';
+    return 'Poor';
+  };
+
   return (
     <div className="space-y-6">
+      {/* Sleep Logging Modal */}
+      {showSleepForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Log Sleep</h3>
+              <button 
+                onClick={() => setShowSleepForm(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSleepSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <span className="flex items-center space-x-1">
+                      <span>Sleep Duration (hours)</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                  </label>
+                  <input
+                    type="number"
+                    value={sleepData.duration}
+                    onChange={(e) => setSleepData({...sleepData, duration: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    placeholder="7.5"
+                    min="1"
+                    max="12"
+                    step="0.5"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <span className="flex items-center space-x-1">
+                      <span>Sleep Quality (1-10)</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                  </label>
+                  <select
+                    value={sleepData.quality}
+                    onChange={(e) => setSleepData({...sleepData, quality: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  >
+                    {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                      <option key={num} value={num}>{num} - {
+                        num >= 8 ? 'Excellent' : 
+                        num >= 6 ? 'Good' : 
+                        num >= 4 ? 'Fair' : 'Poor'
+                      }</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Bedtime</label>
+                  <input
+                    type="time"
+                    value={sleepData.bedtime}
+                    onChange={(e) => setSleepData({...sleepData, bedtime: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Wake Time</label>
+                  <input
+                    type="time"
+                    value={sleepData.wakeTime}
+                    onChange={(e) => setSleepData({...sleepData, wakeTime: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sleep Notes (Optional)</label>
+                <textarea
+                  value={sleepData.notes}
+                  onChange={(e) => setSleepData({...sleepData, notes: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  placeholder="How did you sleep? Any disturbances?"
+                  rows={3}
+                />
+              </div>
+              <div className="bg-purple-50 p-3 rounded-lg">
+                <p className="text-xs text-purple-800">
+                  <strong>Sleep Impact:</strong> Sleep quality and duration significantly affect glucose control and insulin sensitivity.
+                </p>
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowSleepForm(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center justify-center space-x-2"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>Save Sleep</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Meal Logging Modal */}
       {showMealForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -631,6 +786,61 @@ const TrackingTab = () => {
                 )}
               </div>
 
+              {/* Sleep Parameters */}
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
+                  <Bed className="h-4 w-4 text-purple-600" />
+                  <span>Sleep Parameters</span>
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sleep Quality (1-10)</label>
+                    <select
+                      value={profileData.sleepQuality}
+                      onChange={(e) => setProfileData({...profileData, sleepQuality: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    >
+                      {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                        <option key={num} value={num}>{num} - {getSleepQualityDescription(num.toString())}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sleep Duration (hours)</label>
+                    <input
+                      type="number"
+                      value={profileData.sleepDuration}
+                      onChange={(e) => setProfileData({...profileData, sleepDuration: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      placeholder="7.5"
+                      min="1"
+                      max="12"
+                      step="0.5"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Typical Bedtime</label>
+                    <input
+                      type="time"
+                      value={profileData.bedtime}
+                      onChange={(e) => setProfileData({...profileData, bedtime: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Typical Wake Time</label>
+                    <input
+                      type="time"
+                      value={profileData.wakeTime}
+                      onChange={(e) => setProfileData({...profileData, wakeTime: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Women's Health Parameters */}
               {profileData.gender === 'female' && (
                 <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
@@ -759,7 +969,7 @@ const TrackingTab = () => {
 
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-xs text-blue-800">
-                  <strong>AI Integration:</strong> These parameters including hormonal factors are essential for accurate glucose predictions and personalized recommendations.
+                  <strong>AI Integration:</strong> These parameters including hormonal factors and sleep are essential for accurate glucose predictions and personalized recommendations.
                 </p>
               </div>
 
@@ -789,10 +999,10 @@ const TrackingTab = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Data Logging</h3>
         <div className="bg-blue-50 p-3 rounded-lg mb-4">
           <p className="text-sm text-blue-800">
-            <strong>AI-Powered Insights:</strong> Log all parameters including hormonal factors for comprehensive glucose predictions and personalized recommendations.
+            <strong>AI-Powered Insights:</strong> Log all parameters including sleep and hormonal factors for comprehensive glucose predictions and personalized recommendations.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {quickLog.map((action, index) => (
             <button
               key={index}
@@ -810,7 +1020,7 @@ const TrackingTab = () => {
       {/* Today's Summary */}
       <div className="bg-white rounded-xl p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Summary</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
               <Utensils className="h-5 w-5 text-gray-600 mx-auto" />
@@ -831,6 +1041,13 @@ const TrackingTab = () => {
             </div>
             <p className="text-sm font-medium text-gray-900">6 Readings</p>
             <p className="text-xs text-gray-500">Avg: 96 mg/dL</p>
+          </div>
+          <div className="text-center">
+            <div className="bg-purple-100 p-3 rounded-lg mb-2">
+              <Bed className="h-5 w-5 text-purple-600 mx-auto" />
+            </div>
+            <p className="text-sm font-medium text-gray-900">7.5h Sleep</p>
+            <p className="text-xs text-purple-600">Quality: 8/10</p>
           </div>
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
@@ -859,11 +1076,13 @@ const TrackingTab = () => {
                 <div className={`p-2 rounded-lg ${
                   log.type === 'meal' ? 'bg-blue-100' :
                   log.type === 'exercise' ? 'bg-green-100' : 
-                  log.type === 'glucose' ? 'bg-red-100' : 'bg-pink-100'
+                  log.type === 'glucose' ? 'bg-red-100' : 
+                  log.type === 'sleep' ? 'bg-purple-100' : 'bg-pink-100'
                 }`}>
                   {log.type === 'meal' && <Utensils className="h-4 w-4 text-blue-600" />}
                   {log.type === 'exercise' && <Activity className="h-4 w-4 text-green-600" />}
                   {log.type === 'glucose' && <Droplets className="h-4 w-4 text-red-600" />}
+                  {log.type === 'sleep' && <Bed className="h-4 w-4 text-purple-600" />}
                   {log.type === 'profile' && <Moon className="h-4 w-4 text-pink-600" />}
                 </div>
                 <div className="flex-1">

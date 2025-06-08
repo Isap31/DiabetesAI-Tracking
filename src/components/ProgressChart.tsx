@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TrendingUp, Target, Clock, Activity, Calendar, ChevronDown, Moon, Baby, Brain, Scale, User, Utensils } from 'lucide-react';
+import { TrendingUp, Target, Clock, Activity, Calendar, ChevronDown, Moon, Baby, Brain, Scale, User, Utensils, Bed } from 'lucide-react';
 
 const ProgressChart = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('days');
@@ -17,7 +17,11 @@ const ProgressChart = () => {
     gender: 'female',
     isPregnant: false,
     menstrualCycleDay: 14,
-    menstrualCycleLength: 28
+    menstrualCycleLength: 28,
+    sleepQuality: 7, // 1-10 scale
+    sleepDuration: 7.5, // hours
+    bedtime: '22:30',
+    wakeTime: '06:00'
   };
 
   // Recent logged data affecting predictions
@@ -25,7 +29,8 @@ const ProgressChart = () => {
     lastMeal: { carbs: 25, time: '8:00 AM', type: 'Oatmeal with Berries' },
     lastExercise: { type: 'Walking', duration: 30, intensity: 'moderate', time: '11:00 AM' },
     currentGlucose: 94,
-    timeOfDay: new Date().getHours()
+    timeOfDay: new Date().getHours(),
+    lastSleep: { quality: 7, duration: 7.5, bedtime: '22:30', wakeTime: '06:00' }
   };
 
   const periods = [
@@ -34,7 +39,7 @@ const ProgressChart = () => {
     { id: 'months', label: 'Months', range: '6 months' }
   ];
 
-  // Calculate hormonal influence on glucose
+  // Calculate hormonal influence on glucose (only for females)
   const getHormonalInfluence = (cycleDay: number) => {
     if (userProfile.gender !== 'female' || userProfile.isPregnant) return 0;
     
@@ -46,6 +51,13 @@ const ProgressChart = () => {
     if (cycleDay <= 5) return 8;
     // Follicular phase (days 6-11): -5% glucose variability (improved sensitivity)
     return -5;
+  };
+
+  // Calculate sleep influence on glucose
+  const getSleepInfluence = (quality: number, duration: number) => {
+    const qualityImpact = (10 - quality) * 2; // Poor sleep increases glucose variability
+    const durationImpact = Math.abs(duration - 7.5) * 3; // Deviation from optimal 7.5 hours
+    return qualityImpact + durationImpact;
   };
 
   // Calculate stress influence on glucose
@@ -83,63 +95,64 @@ const ProgressChart = () => {
   // Generate dynamic glucose data based on all parameters
   const getGlucoseData = () => {
     const baseGlucose = 90;
-    const hormonalInfluence = getHormonalInfluence(userProfile.menstrualCycleDay);
+    const hormonalInfluence = userProfile.gender === 'female' ? getHormonalInfluence(userProfile.menstrualCycleDay) : 0;
+    const sleepInfluence = getSleepInfluence(userProfile.sleepQuality, userProfile.sleepDuration);
     const stressInfluence = getStressInfluence(userProfile.currentStress);
     const experienceInfluence = getExperienceInfluence(userProfile.yearsSinceDiagnosis);
     
     if (selectedPeriod === 'days') {
       return [
         // Monday
-        { time: 6, glucose: 95, predicted: 98 + hormonalInfluence * 0.3, day: 'Mon', label: '6:00 AM', factors: ['Fasting', 'Hormonal: +' + hormonalInfluence + '%'] },
-        { time: 8, glucose: 110, predicted: 105 + hormonalInfluence * 0.5 + 15, day: 'Mon', label: '8:00 AM', factors: ['Post-meal', 'Carbs: 25g', 'Hormonal impact'] },
-        { time: 12, glucose: 88, predicted: 92 - 5, day: 'Mon', label: '12:00 PM', factors: ['Pre-meal', 'Exercise effect'] },
-        { time: 18, glucose: 102, predicted: 99 + hormonalInfluence * 0.4, day: 'Mon', label: '6:00 PM', factors: ['Post-dinner', 'Stress: Level ' + userProfile.currentStress] },
-        { time: 22, glucose: 94, predicted: 96 + stressInfluence * 0.2, day: 'Mon', label: '10:00 PM', factors: ['Bedtime', 'Daily stress impact'] },
+        { time: 6, glucose: 95, predicted: 98 + hormonalInfluence * 0.3 + sleepInfluence * 0.2, day: 'Mon', label: '6:00 AM', factors: ['Fasting', 'Sleep: 7.5h', userProfile.gender === 'female' ? 'Hormonal: +' + hormonalInfluence + '%' : 'Male profile'] },
+        { time: 8, glucose: 110, predicted: 105 + hormonalInfluence * 0.5 + 15, day: 'Mon', label: '8:00 AM', factors: ['Post-meal', 'Carbs: 25g', userProfile.gender === 'female' ? 'Hormonal impact' : 'No hormonal factors'] },
+        { time: 12, glucose: 88, predicted: 92 - 5, day: 'Mon', label: '12:00 PM', factors: ['Pre-meal', 'Exercise effect', 'Good sleep recovery'] },
+        { time: 18, glucose: 102, predicted: 99 + hormonalInfluence * 0.4, day: 'Mon', label: '6:00 PM', factors: ['Post-dinner', 'Stress: Level ' + userProfile.currentStress, 'Sleep quality: ' + userProfile.sleepQuality + '/10'] },
+        { time: 22, glucose: 94, predicted: 96 + stressInfluence * 0.2 + sleepInfluence * 0.1, day: 'Mon', label: '10:00 PM', factors: ['Bedtime', 'Daily stress impact', 'Pre-sleep'] },
         
         // Tuesday
-        { time: 30, glucose: 87, predicted: 89 + hormonalInfluence * 0.2, day: 'Tue', label: '6:00 AM', factors: ['Fasting', 'Cycle day: ' + userProfile.menstrualCycleDay] },
-        { time: 32, glucose: 115, predicted: 108 + hormonalInfluence * 0.6, day: 'Tue', label: '8:00 AM', factors: ['Post-meal', 'Hormonal resistance'] },
-        { time: 36, glucose: 91, predicted: 93 - experienceInfluence, day: 'Tue', label: '12:00 PM', factors: ['Pre-meal', 'Experience: ' + userProfile.yearsSinceDiagnosis + ' years'] },
-        { time: 42, glucose: 98, predicted: 101 + hormonalInfluence * 0.3, day: 'Tue', label: '6:00 PM', factors: ['Post-dinner', 'BMI: ' + userProfile.bmi] },
-        { time: 46, glucose: 89, predicted: 91 + stressInfluence * 0.3, day: 'Tue', label: '10:00 PM', factors: ['Bedtime', 'Stress level impact'] },
+        { time: 30, glucose: 87, predicted: 89 + hormonalInfluence * 0.2 + sleepInfluence * 0.15, day: 'Tue', label: '6:00 AM', factors: ['Fasting', userProfile.gender === 'female' ? 'Cycle day: ' + userProfile.menstrualCycleDay : 'Male baseline', 'Sleep recovery'] },
+        { time: 32, glucose: 115, predicted: 108 + hormonalInfluence * 0.6, day: 'Tue', label: '8:00 AM', factors: ['Post-meal', userProfile.gender === 'female' ? 'Hormonal resistance' : 'Standard response'] },
+        { time: 36, glucose: 91, predicted: 93 - experienceInfluence, day: 'Tue', label: '12:00 PM', factors: ['Pre-meal', 'Experience: ' + userProfile.yearsSinceDiagnosis + ' years', 'Sleep quality impact'] },
+        { time: 42, glucose: 98, predicted: 101 + hormonalInfluence * 0.3, day: 'Tue', label: '6:00 PM', factors: ['Post-dinner', 'BMI: ' + userProfile.bmi, 'Sleep duration: ' + userProfile.sleepDuration + 'h'] },
+        { time: 46, glucose: 89, predicted: 91 + stressInfluence * 0.3 + sleepInfluence * 0.1, day: 'Tue', label: '10:00 PM', factors: ['Bedtime', 'Stress level impact', 'Sleep preparation'] },
         
         // Wednesday
-        { time: 54, glucose: 92, predicted: 95 + hormonalInfluence * 0.4, day: 'Wed', label: '6:00 AM', factors: ['Fasting', 'Mid-cycle effects'] },
-        { time: 56, glucose: 108, predicted: 103 + hormonalInfluence * 0.7, day: 'Wed', label: '8:00 AM', factors: ['Post-meal', 'Peak hormonal impact'] },
-        { time: 60, glucose: 85, predicted: 88 - 8, day: 'Wed', label: '12:00 PM', factors: ['Pre-meal', 'Exercise: 30min moderate'] },
-        { time: 66, glucose: 96, predicted: 98 + hormonalInfluence * 0.2, day: 'Wed', label: '6:00 PM', factors: ['Post-dinner', 'Age: ' + userProfile.age] },
-        { time: 70, glucose: 91, predicted: 93 + stressInfluence * 0.1, day: 'Wed', label: '10:00 PM', factors: ['Bedtime', 'Low stress day'] },
+        { time: 54, glucose: 92, predicted: 95 + hormonalInfluence * 0.4 + sleepInfluence * 0.2, day: 'Wed', label: '6:00 AM', factors: ['Fasting', userProfile.gender === 'female' ? 'Mid-cycle effects' : 'Stable male pattern', 'Sleep quality'] },
+        { time: 56, glucose: 108, predicted: 103 + hormonalInfluence * 0.7, day: 'Wed', label: '8:00 AM', factors: ['Post-meal', userProfile.gender === 'female' ? 'Peak hormonal impact' : 'Standard meal response'] },
+        { time: 60, glucose: 85, predicted: 88 - 8, day: 'Wed', label: '12:00 PM', factors: ['Pre-meal', 'Exercise: 30min moderate', 'Good sleep recovery'] },
+        { time: 66, glucose: 96, predicted: 98 + hormonalInfluence * 0.2, day: 'Wed', label: '6:00 PM', factors: ['Post-dinner', 'Age: ' + userProfile.age, 'Sleep pattern stable'] },
+        { time: 70, glucose: 91, predicted: 93 + stressInfluence * 0.1 + sleepInfluence * 0.05, day: 'Wed', label: '10:00 PM', factors: ['Bedtime', 'Low stress day', 'Optimal sleep timing'] },
         
         // Thursday
-        { time: 78, glucose: 99, predicted: 102 + hormonalInfluence * 0.5, day: 'Thu', label: '6:00 AM', factors: ['Fasting', 'Ovulation phase'] },
-        { time: 80, glucose: 112, predicted: 107 + hormonalInfluence * 0.8, day: 'Thu', label: '8:00 AM', factors: ['Post-meal', 'High insulin resistance'] },
-        { time: 84, glucose: 88, predicted: 91 - 6, day: 'Thu', label: '12:00 PM', factors: ['Pre-meal', 'Walking effect'] },
-        { time: 90, glucose: 94, predicted: 97 + hormonalInfluence * 0.3, day: 'Thu', label: '6:00 PM', factors: ['Post-dinner', 'Type 1 diabetes'] },
-        { time: 94, glucose: 87, predicted: 89 + stressInfluence * 0.2, day: 'Thu', label: '10:00 PM', factors: ['Bedtime', 'Moderate stress'] },
+        { time: 78, glucose: 99, predicted: 102 + hormonalInfluence * 0.5 + sleepInfluence * 0.3, day: 'Thu', label: '6:00 AM', factors: ['Fasting', userProfile.gender === 'female' ? 'Ovulation phase' : 'Male baseline', 'Sleep impact'] },
+        { time: 80, glucose: 112, predicted: 107 + hormonalInfluence * 0.8, day: 'Thu', label: '8:00 AM', factors: ['Post-meal', userProfile.gender === 'female' ? 'High insulin resistance' : 'Normal response'] },
+        { time: 84, glucose: 88, predicted: 91 - 6, day: 'Thu', label: '12:00 PM', factors: ['Pre-meal', 'Walking effect', 'Sleep quality benefit'] },
+        { time: 90, glucose: 94, predicted: 97 + hormonalInfluence * 0.3, day: 'Thu', label: '6:00 PM', factors: ['Post-dinner', 'Type 1 diabetes', 'Sleep duration optimal'] },
+        { time: 94, glucose: 87, predicted: 89 + stressInfluence * 0.2 + sleepInfluence * 0.1, day: 'Thu', label: '10:00 PM', factors: ['Bedtime', 'Moderate stress', 'Pre-sleep glucose'] },
         
         // Friday (current day with enhanced predictions)
-        { time: 102, glucose: 93, predicted: 95 + hormonalInfluence * 0.3, day: 'Fri', label: '6:00 AM', factors: ['Fasting', 'Current cycle day'] },
-        { time: 104, glucose: 109, predicted: 104 + hormonalInfluence * 0.6 + 12, day: 'Fri', label: '8:00 AM', factors: ['Post-meal', 'Oatmeal 25g carbs', 'Hormonal peak'] },
-        { time: 108, glucose: null, predicted: 89 - 8, day: 'Fri', label: '12:00 PM', factors: ['Predicted', 'Exercise benefit', 'Experience factor'] },
-        { time: 114, glucose: null, predicted: 95 + hormonalInfluence * 0.4, day: 'Fri', label: '6:00 PM', factors: ['Predicted', 'Dinner impact', 'Cycle phase'] },
-        { time: 118, glucose: null, predicted: 91 + stressInfluence * 0.2, day: 'Fri', label: '10:00 PM', factors: ['Predicted', 'End of day', 'Stress level'] },
+        { time: 102, glucose: 93, predicted: 95 + hormonalInfluence * 0.3 + sleepInfluence * 0.2, day: 'Fri', label: '6:00 AM', factors: ['Fasting', userProfile.gender === 'female' ? 'Current cycle day' : 'Male pattern', 'Last night sleep: ' + userProfile.sleepQuality + '/10'] },
+        { time: 104, glucose: 109, predicted: 104 + hormonalInfluence * 0.6 + 12, day: 'Fri', label: '8:00 AM', factors: ['Post-meal', 'Oatmeal 25g carbs', userProfile.gender === 'female' ? 'Hormonal peak' : 'Standard response'] },
+        { time: 108, glucose: null, predicted: 89 - 8 + sleepInfluence * 0.1, day: 'Fri', label: '12:00 PM', factors: ['Predicted', 'Exercise benefit', 'Sleep recovery factor'] },
+        { time: 114, glucose: null, predicted: 95 + hormonalInfluence * 0.4, day: 'Fri', label: '6:00 PM', factors: ['Predicted', 'Dinner impact', userProfile.gender === 'female' ? 'Cycle phase' : 'Male baseline'] },
+        { time: 118, glucose: null, predicted: 91 + stressInfluence * 0.2 + sleepInfluence * 0.1, day: 'Fri', label: '10:00 PM', factors: ['Predicted', 'End of day', 'Sleep preparation'] },
       ];
     } else if (selectedPeriod === 'weeks') {
       return [
-        { time: 20, glucose: 92, predicted: 94 + hormonalInfluence * 0.2, day: 'W1', label: 'Week 1', factors: ['Weekly avg', 'Follicular phase'] },
-        { time: 40, glucose: 89, predicted: 91 + hormonalInfluence * 0.4, day: 'W2', label: 'Week 2', factors: ['Weekly avg', 'Ovulation week'] },
-        { time: 60, glucose: 95, predicted: 97 + hormonalInfluence * 0.3, day: 'W3', label: 'Week 3', factors: ['Weekly avg', 'Luteal phase'] },
-        { time: 80, glucose: 88, predicted: 90 + hormonalInfluence * 0.1, day: 'W4', label: 'Week 4', factors: ['Weekly avg', 'Pre-menstrual'] },
-        { time: 100, glucose: null, predicted: 93 + hormonalInfluence * 0.3, day: 'W5', label: 'Week 5', factors: ['Predicted', 'New cycle start'] },
+        { time: 20, glucose: 92, predicted: 94 + hormonalInfluence * 0.2, day: 'W1', label: 'Week 1', factors: ['Weekly avg', userProfile.gender === 'female' ? 'Follicular phase' : 'Stable week'] },
+        { time: 40, glucose: 89, predicted: 91 + hormonalInfluence * 0.4, day: 'W2', label: 'Week 2', factors: ['Weekly avg', userProfile.gender === 'female' ? 'Ovulation week' : 'Normal patterns'] },
+        { time: 60, glucose: 95, predicted: 97 + hormonalInfluence * 0.3, day: 'W3', label: 'Week 3', factors: ['Weekly avg', userProfile.gender === 'female' ? 'Luteal phase' : 'Consistent control'] },
+        { time: 80, glucose: 88, predicted: 90 + hormonalInfluence * 0.1, day: 'W4', label: 'Week 4', factors: ['Weekly avg', userProfile.gender === 'female' ? 'Pre-menstrual' : 'Stable patterns'] },
+        { time: 100, glucose: null, predicted: 93 + hormonalInfluence * 0.3, day: 'W5', label: 'Week 5', factors: ['Predicted', userProfile.gender === 'female' ? 'New cycle start' : 'Continued stability'] },
       ];
     } else {
       return [
-        { time: 30, glucose: 98, predicted: 100 + hormonalInfluence * 0.1, day: 'Jan', label: 'January', factors: ['Monthly avg', 'Winter patterns'] },
-        { time: 50, glucose: 94, predicted: 96 + hormonalInfluence * 0.2, day: 'Feb', label: 'February', factors: ['Monthly avg', 'Cycle variations'] },
-        { time: 70, glucose: 91, predicted: 93 + hormonalInfluence * 0.3, day: 'Mar', label: 'March', factors: ['Monthly avg', 'Spring activity'] },
-        { time: 90, glucose: 87, predicted: 89 + hormonalInfluence * 0.2, day: 'Apr', label: 'April', factors: ['Monthly avg', 'Improved control'] },
-        { time: 110, glucose: 89, predicted: 91 + hormonalInfluence * 0.1, day: 'May', label: 'May', factors: ['Monthly avg', 'Stable patterns'] },
-        { time: 130, glucose: null, predicted: 85 + hormonalInfluence * 0.2, day: 'Jun', label: 'June', factors: ['Predicted', 'Summer trends'] },
+        { time: 30, glucose: 98, predicted: 100 + hormonalInfluence * 0.1, day: 'Jan', label: 'January', factors: ['Monthly avg', 'Winter patterns', 'Sleep schedule'] },
+        { time: 50, glucose: 94, predicted: 96 + hormonalInfluence * 0.2, day: 'Feb', label: 'February', factors: ['Monthly avg', userProfile.gender === 'female' ? 'Cycle variations' : 'Stable control'] },
+        { time: 70, glucose: 91, predicted: 93 + hormonalInfluence * 0.3, day: 'Mar', label: 'March', factors: ['Monthly avg', 'Spring activity', 'Sleep improvement'] },
+        { time: 90, glucose: 87, predicted: 89 + hormonalInfluence * 0.2, day: 'Apr', label: 'April', factors: ['Monthly avg', 'Improved control', 'Better sleep'] },
+        { time: 110, glucose: 89, predicted: 91 + hormonalInfluence * 0.1, day: 'May', label: 'May', factors: ['Monthly avg', 'Stable patterns', 'Optimal sleep'] },
+        { time: 130, glucose: null, predicted: 85 + hormonalInfluence * 0.2, day: 'Jun', label: 'June', factors: ['Predicted', 'Summer trends', 'Sleep consistency'] },
       ];
     }
   };
@@ -160,21 +173,22 @@ const ProgressChart = () => {
 
   // Calculate dynamic statistics based on parameters
   const getParameterInfluencedStats = () => {
-    const hormonalInfluence = getHormonalInfluence(userProfile.menstrualCycleDay);
+    const hormonalInfluence = userProfile.gender === 'female' ? getHormonalInfluence(userProfile.menstrualCycleDay) : 0;
+    const sleepInfluence = getSleepInfluence(userProfile.sleepQuality, userProfile.sleepDuration);
     const stressInfluence = getStressInfluence(userProfile.currentStress);
     const experienceBonus = Math.max(0, userProfile.yearsSinceDiagnosis - 5) * 2;
     
     return {
-      accuracy: Math.min(95, 87 + experienceBonus + (hormonalInfluence > 0 ? 3 : 0)),
-      timeInRange: Math.max(75, 82 - Math.abs(hormonalInfluence) * 0.5 - stressInfluence * 0.3 + experienceBonus),
-      avgTime: 4.2 + (experienceBonus * 0.1),
-      tir: Math.max(70, 82 - Math.abs(hormonalInfluence) * 0.4 - stressInfluence * 0.2)
+      accuracy: Math.min(96, 87 + experienceBonus + (hormonalInfluence > 0 ? 3 : 0) + (sleepInfluence < 5 ? 2 : 0)),
+      timeInRange: Math.max(75, 82 - Math.abs(hormonalInfluence) * 0.5 - stressInfluence * 0.3 - sleepInfluence * 0.4 + experienceBonus),
+      avgTime: 4.2 + (experienceBonus * 0.1) + (sleepInfluence < 5 ? 0.3 : -0.2),
+      tir: Math.max(70, 82 - Math.abs(hormonalInfluence) * 0.4 - stressInfluence * 0.2 - sleepInfluence * 0.3)
     };
   };
 
   const stats = getParameterInfluencedStats();
 
-  // Get current menstrual phase
+  // Get current menstrual phase (only for females)
   const getMenstrualPhase = () => {
     if (userProfile.gender !== 'female' || userProfile.isPregnant) return null;
     const day = userProfile.menstrualCycleDay;
@@ -182,6 +196,14 @@ const ProgressChart = () => {
     if (day <= 13) return 'Follicular';
     if (day <= 15) return 'Ovulation';
     return 'Luteal';
+  };
+
+  // Get sleep quality description
+  const getSleepQualityDescription = (quality: number) => {
+    if (quality >= 8) return 'Excellent';
+    if (quality >= 6) return 'Good';
+    if (quality >= 4) return 'Fair';
+    return 'Poor';
   };
 
   return (
@@ -196,13 +218,13 @@ const ProgressChart = () => {
           <div className="relative">
             <button
               onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
             >
-              <Calendar className="h-4 w-4 text-gray-600" />
-              <span className="text-sm font-medium text-gray-700">
+              <Calendar className="h-4 w-4 text-slate-600" />
+              <span className="text-sm font-medium text-slate-700">
                 {periods.find(p => p.id === selectedPeriod)?.label}
               </span>
-              <ChevronDown className="h-4 w-4 text-gray-600" />
+              <ChevronDown className="h-4 w-4 text-slate-600" />
             </button>
             
             {showPeriodDropdown && (
@@ -229,11 +251,11 @@ const ProgressChart = () => {
           {/* Enhanced Legend */}
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-slate-600 rounded-full"></div>
+              <div className="w-3 h-3 bg-slate-700 rounded-full"></div>
               <span className="text-gray-600">Actual</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
               <span className="text-gray-600">AI Predicted</span>
             </div>
             <div className="flex items-center space-x-2">
@@ -244,45 +266,55 @@ const ProgressChart = () => {
         </div>
       </div>
 
-      {/* Parameter Influence Summary */}
-      <div className="bg-slate-50 p-4 rounded-lg mb-6">
-        <h4 className="font-medium text-gray-900 mb-3">Current Parameter Influences on Predictions</h4>
+      {/* Enhanced Parameter Influence Summary */}
+      <div className="bg-slate-900 p-4 rounded-lg mb-6 text-white">
+        <h4 className="font-medium text-white mb-3">Current Parameter Influences on Predictions</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div className="flex items-center space-x-2">
-            <Utensils className="h-4 w-4 text-red-500" />
-            <span className="text-gray-600">Last Meal:</span>
-            <span className="font-medium text-red-600">+15% (25g carbs)</span>
+            <Utensils className="h-4 w-4 text-red-400" />
+            <span className="text-gray-300">Last Meal:</span>
+            <span className="font-medium text-red-400">+15% (25g carbs)</span>
           </div>
           <div className="flex items-center space-x-2">
-            <Activity className="h-4 w-4 text-blue-500" />
-            <span className="text-gray-600">Exercise:</span>
-            <span className="font-medium text-blue-600">-8% (30min walk)</span>
+            <Activity className="h-4 w-4 text-blue-400" />
+            <span className="text-gray-300">Exercise:</span>
+            <span className="font-medium text-blue-400">-8% (30min walk)</span>
           </div>
-          {userProfile.gender === 'female' && (
+          <div className="flex items-center space-x-2">
+            <Bed className="h-4 w-4 text-purple-400" />
+            <span className="text-gray-300">Sleep:</span>
+            <span className="font-medium text-purple-400">
+              {getSleepInfluence(userProfile.sleepQuality, userProfile.sleepDuration) < 5 ? '-' : '+'}
+              {Math.abs(getSleepInfluence(userProfile.sleepQuality, userProfile.sleepDuration)).toFixed(0)}% 
+              ({getSleepQualityDescription(userProfile.sleepQuality)})
+            </span>
+          </div>
+          {userProfile.gender === 'female' ? (
             <div className="flex items-center space-x-2">
-              <Moon className="h-4 w-4 text-pink-500" />
-              <span className="text-gray-600">Cycle:</span>
-              <span className="font-medium text-pink-600">
+              <Moon className="h-4 w-4 text-pink-400" />
+              <span className="text-gray-300">Cycle:</span>
+              <span className="font-medium text-pink-400">
                 {getHormonalInfluence(userProfile.menstrualCycleDay) > 0 ? '+' : ''}
                 {getHormonalInfluence(userProfile.menstrualCycleDay)}% ({getMenstrualPhase()})
               </span>
             </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Brain className="h-4 w-4 text-orange-400" />
+              <span className="text-gray-300">Stress:</span>
+              <span className="font-medium text-orange-400">+{getStressInfluence(userProfile.currentStress)}% (Level {userProfile.currentStress})</span>
+            </div>
           )}
-          <div className="flex items-center space-x-2">
-            <Brain className="h-4 w-4 text-orange-500" />
-            <span className="text-gray-600">Stress:</span>
-            <span className="font-medium text-orange-600">+{getStressInfluence(userProfile.currentStress)}% (Level {userProfile.currentStress})</span>
-          </div>
         </div>
       </div>
 
-      {/* Enhanced Chart */}
-      <div className="relative h-80 bg-gray-50 rounded-lg p-4">
+      {/* Enhanced Chart with darker theme */}
+      <div className="relative h-80 bg-slate-900 rounded-lg p-4">
         <svg className="w-full h-full" viewBox="0 0 800 300">
           {/* Grid lines */}
           <defs>
             <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#e5e7eb" strokeWidth="1"/>
+              <path d="M 40 0 L 0 0 0 30" fill="none" stroke="#374151" strokeWidth="1"/>
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)" />
@@ -293,8 +325,8 @@ const ProgressChart = () => {
             y={300 - ((targetRange.max - 50) * 2)} 
             width="720" 
             height={(targetRange.max - targetRange.min) * 2} 
-            fill="#f3f4f6" 
-            opacity="0.5"
+            fill="#1f2937" 
+            opacity="0.6"
           />
           
           {/* Optimal range background */}
@@ -303,8 +335,8 @@ const ProgressChart = () => {
             y={300 - ((optimalRange.max - 50) * 2)} 
             width="720" 
             height={(optimalRange.max - optimalRange.min) * 2} 
-            fill="#e5e7eb" 
-            opacity="0.7"
+            fill="#374151" 
+            opacity="0.8"
           />
 
           {/* Y-axis labels */}
@@ -314,7 +346,7 @@ const ProgressChart = () => {
                 x="45" 
                 y={300 - ((value - 50) * 2) + 5} 
                 fontSize="12" 
-                fill="#6b7280" 
+                fill="#d1d5db" 
                 textAnchor="end"
               >
                 {value}
@@ -324,7 +356,7 @@ const ProgressChart = () => {
                 y1={300 - ((value - 50) * 2)} 
                 x2="780" 
                 y2={300 - ((value - 50) * 2)} 
-                stroke="#d1d5db" 
+                stroke="#4b5563" 
                 strokeWidth="1"
               />
             </g>
@@ -337,7 +369,7 @@ const ProgressChart = () => {
               x={60 + (index * (720 / (getXAxisLabels().length - 1)))} 
               y="290" 
               fontSize="12" 
-              fill="#6b7280" 
+              fill="#d1d5db" 
               textAnchor="middle"
             >
               {label}
@@ -351,8 +383,8 @@ const ProgressChart = () => {
                 cx={60 + (point.time * 6)}
                 cy={300 - ((point.glucose - 50) * 2)}
                 r="4"
-                fill="#475569"
-                stroke="#1e293b"
+                fill="#1e293b"
+                stroke="#0f172a"
                 strokeWidth="2"
               />
               {/* Tooltip on hover */}
@@ -367,9 +399,9 @@ const ProgressChart = () => {
                 cx={60 + (point.time * 6)}
                 cy={300 - ((point.predicted - 50) * 2)}
                 r="3"
-                fill={point.glucose === null ? "#3b82f6" : "#60a5fa"}
-                opacity={point.glucose === null ? "1" : "0.7"}
-                stroke={point.glucose === null ? "#1d4ed8" : "#3b82f6"}
+                fill={point.glucose === null ? "#2563eb" : "#3b82f6"}
+                opacity={point.glucose === null ? "1" : "0.8"}
+                stroke={point.glucose === null ? "#1d4ed8" : "#2563eb"}
                 strokeWidth="1"
               />
               {/* Enhanced tooltip */}
@@ -383,9 +415,9 @@ const ProgressChart = () => {
               `${index === 0 ? 'M' : 'L'} ${60 + (point.time * 6)} ${300 - ((point.glucose - 50) * 2)}`
             ).join(' ')}`}
             fill="none"
-            stroke="#475569"
-            strokeWidth="2"
-            opacity="0.6"
+            stroke="#1e293b"
+            strokeWidth="3"
+            opacity="0.8"
           />
 
           {/* Enhanced trend line for predictions */}
@@ -394,10 +426,10 @@ const ProgressChart = () => {
               `${index === 0 ? 'M' : 'L'} ${60 + (point.time * 6)} ${300 - ((point.predicted - 50) * 2)}`
             ).join(' ')}`}
             fill="none"
-            stroke="#3b82f6"
-            strokeWidth="2"
-            strokeDasharray="5,5"
-            opacity="0.8"
+            stroke="#2563eb"
+            strokeWidth="3"
+            strokeDasharray="6,6"
+            opacity="0.9"
           />
 
           {/* Confidence bands for predictions */}
@@ -406,10 +438,10 @@ const ProgressChart = () => {
               <ellipse
                 cx={60 + (point.time * 6)}
                 cy={300 - ((point.predicted - 50) * 2)}
-                rx="8"
-                ry="6"
-                fill="#3b82f6"
-                opacity="0.1"
+                rx="10"
+                ry="8"
+                fill="#2563eb"
+                opacity="0.15"
               />
             </g>
           ))}
@@ -419,38 +451,38 @@ const ProgressChart = () => {
       {/* Enhanced Statistics with Parameter Integration */}
       <div className="mt-6 grid grid-cols-4 gap-4 pt-4 border-t border-gray-200">
         <div className="text-center">
-          <div className="flex items-center justify-center w-10 h-10 bg-slate-100 rounded-lg mx-auto mb-2">
-            <TrendingUp className="h-5 w-5 text-slate-600" />
+          <div className="flex items-center justify-center w-10 h-10 bg-slate-800 rounded-lg mx-auto mb-2">
+            <TrendingUp className="h-5 w-5 text-white" />
           </div>
           <p className="text-sm font-medium text-gray-900">
-            {getHormonalInfluence(userProfile.menstrualCycleDay) > 10 ? 'Variable' : 'Stable'} Trend
+            {(userProfile.gender === 'female' && getHormonalInfluence(userProfile.menstrualCycleDay) > 10) || getSleepInfluence(userProfile.sleepQuality, userProfile.sleepDuration) > 8 ? 'Variable' : 'Stable'} Trend
           </p>
           <p className="text-xs text-gray-500">{periods.find(p => p.id === selectedPeriod)?.range} analysis</p>
         </div>
         <div className="text-center">
-          <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg mx-auto mb-2">
-            <Target className="h-5 w-5 text-blue-600" />
+          <div className="flex items-center justify-center w-10 h-10 bg-blue-800 rounded-lg mx-auto mb-2">
+            <Target className="h-5 w-5 text-white" />
           </div>
           <p className="text-sm font-medium text-gray-900">{Math.round(stats.accuracy)}% Accuracy</p>
           <p className="text-xs text-gray-500">AI predictions with all parameters</p>
         </div>
         <div className="text-center">
-          <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-lg mx-auto mb-2">
-            <Clock className="h-5 w-5 text-gray-600" />
+          <div className="flex items-center justify-center w-10 h-10 bg-slate-700 rounded-lg mx-auto mb-2">
+            <Clock className="h-5 w-5 text-white" />
           </div>
           <p className="text-sm font-medium text-gray-900">{stats.avgTime.toFixed(1)} hrs</p>
           <p className="text-xs text-gray-500">Avg time in range</p>
         </div>
         <div className="text-center">
-          <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg mx-auto mb-2">
-            <Activity className="h-5 w-5 text-green-600" />
+          <div className="flex items-center justify-center w-10 h-10 bg-green-800 rounded-lg mx-auto mb-2">
+            <Activity className="h-5 w-5 text-white" />
           </div>
           <p className="text-sm font-medium text-gray-900">{Math.round(stats.tir)}% TIR</p>
           <p className="text-xs text-gray-500">This {selectedPeriod.slice(0, -1)}</p>
         </div>
       </div>
 
-      {/* Parameter Impact Summary */}
+      {/* Enhanced Parameter Impact Summary */}
       <div className="mt-6 pt-4 border-t border-gray-200">
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center space-x-4">
@@ -462,6 +494,10 @@ const ProgressChart = () => {
             <div className="flex items-center space-x-2">
               <Scale className="h-3 w-3 text-gray-500" />
               <span className="text-gray-500">BMI {userProfile.bmi}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Bed className="h-3 w-3 text-purple-500" />
+              <span className="text-purple-600">{userProfile.sleepDuration}h sleep ({getSleepQualityDescription(userProfile.sleepQuality)})</span>
             </div>
             {userProfile.gender === 'female' && (
               <div className="flex items-center space-x-2">

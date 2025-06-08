@@ -3,11 +3,11 @@ import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
 import ProgressChart from './ProgressChart';
 import PredictiveInsights from './PredictiveInsights';
-import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Baby, Moon } from 'lucide-react';
+import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Baby, Moon, Bed } from 'lucide-react';
 
 const HomeTab = () => {
   const [showLogForm, setShowLogForm] = useState(false);
-  const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
+  const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile' | 'sleep'>('meal');
   const [logData, setLogData] = useState({
     // Meal fields
     mealName: '',
@@ -33,6 +33,12 @@ const HomeTab = () => {
     pregnancyWeeks: '',
     menstrualCycleDay: '',
     menstrualCycleLength: '28',
+    // Sleep fields
+    sleepDuration: '',
+    sleepQuality: '7',
+    bedtime: '',
+    wakeTime: '',
+    sleepNotes: '',
     // Common fields
     time: new Date().toTimeString().slice(0, 5),
     date: new Date().toISOString().split('T')[0]
@@ -50,12 +56,29 @@ const HomeTab = () => {
     isPregnant: false,
     pregnancyWeeks: 0,
     menstrualCycleDay: 14,
-    menstrualCycleLength: 28
+    menstrualCycleLength: 28,
+    sleepQuality: 7,
+    sleepDuration: 7.5,
+    bedtime: '22:30',
+    wakeTime: '06:00'
   });
 
   const [allLogs, setAllLogs] = useState([
     { 
       id: 1, 
+      type: 'sleep', 
+      data: { 
+        sleepDuration: '7.5', 
+        sleepQuality: '8', 
+        bedtime: '22:30',
+        wakeTime: '06:00',
+        sleepNotes: 'Restful night'
+      }, 
+      time: '06:00 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 2, 
       type: 'meal', 
       data: { 
         mealName: 'Grilled Chicken Salad', 
@@ -67,7 +90,7 @@ const HomeTab = () => {
       date: '2024-01-15' 
     },
     { 
-      id: 2, 
+      id: 3, 
       type: 'exercise', 
       data: { 
         exerciseType: 'Walking', 
@@ -79,7 +102,7 @@ const HomeTab = () => {
       date: '2024-01-15' 
     },
     { 
-      id: 3, 
+      id: 4, 
       type: 'glucose', 
       data: { 
         glucose: '94', 
@@ -91,7 +114,7 @@ const HomeTab = () => {
       date: '2024-01-15' 
     },
     { 
-      id: 4, 
+      id: 5, 
       type: 'meal', 
       data: { 
         mealName: 'Oatmeal with Berries', 
@@ -100,18 +123,6 @@ const HomeTab = () => {
         time: '8:00 AM'
       }, 
       time: '8:00 AM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 5, 
-      type: 'glucose', 
-      data: { 
-        glucose: '89', 
-        context: 'fasting', 
-        notes: '',
-        time: '7:00 AM'
-      }, 
-      time: '7:00 AM', 
       date: '2024-01-15' 
     }
   ]);
@@ -148,7 +159,11 @@ const HomeTab = () => {
         isPregnant: logData.isPregnant,
         pregnancyWeeks: parseInt(logData.pregnancyWeeks) || 0,
         menstrualCycleDay: parseInt(logData.menstrualCycleDay) || userProfile.menstrualCycleDay,
-        menstrualCycleLength: parseInt(logData.menstrualCycleLength) || userProfile.menstrualCycleLength
+        menstrualCycleLength: parseInt(logData.menstrualCycleLength) || userProfile.menstrualCycleLength,
+        sleepQuality: parseInt(logData.sleepQuality) || userProfile.sleepQuality,
+        sleepDuration: parseFloat(logData.sleepDuration) || userProfile.sleepDuration,
+        bedtime: logData.bedtime || userProfile.bedtime,
+        wakeTime: logData.wakeTime || userProfile.wakeTime
       };
       setUserProfile(updatedProfile);
       console.log('Profile updated:', updatedProfile);
@@ -170,11 +185,19 @@ const HomeTab = () => {
               intensity: logData.intensity,
               time: logData.time
             }
-          : { 
+          : logType === 'glucose'
+          ? { 
               glucose: logData.glucose, 
               context: logData.context, 
               notes: logData.notes,
               time: logData.time
+            }
+          : { 
+              sleepDuration: logData.sleepDuration, 
+              sleepQuality: logData.sleepQuality, 
+              bedtime: logData.bedtime,
+              wakeTime: logData.wakeTime,
+              sleepNotes: logData.sleepNotes
             },
         time: logData.time,
         date: logData.date
@@ -191,6 +214,7 @@ const HomeTab = () => {
       glucose: '', context: 'fasting', notes: '',
       age: '', diabetesType: 'Type 1', height: '', weight: '', stressLevel: '3', diagnosisDate: '',
       gender: 'female', isPregnant: false, pregnancyWeeks: '', menstrualCycleDay: '', menstrualCycleLength: '28',
+      sleepDuration: '', sleepQuality: '7', bedtime: '', wakeTime: '', sleepNotes: '',
       time: new Date().toTimeString().slice(0, 5),
       date: new Date().toISOString().split('T')[0]
     });
@@ -205,7 +229,7 @@ const HomeTab = () => {
     return 0;
   };
 
-  const openLogForm = (type: 'meal' | 'exercise' | 'glucose' | 'profile') => {
+  const openLogForm = (type: 'meal' | 'exercise' | 'glucose' | 'profile' | 'sleep') => {
     setLogType(type);
     if (type === 'profile') {
       setLogData({
@@ -219,7 +243,11 @@ const HomeTab = () => {
         isPregnant: userProfile.isPregnant,
         pregnancyWeeks: userProfile.pregnancyWeeks.toString(),
         menstrualCycleDay: userProfile.menstrualCycleDay.toString(),
-        menstrualCycleLength: userProfile.menstrualCycleLength.toString()
+        menstrualCycleLength: userProfile.menstrualCycleLength.toString(),
+        sleepQuality: userProfile.sleepQuality.toString(),
+        sleepDuration: userProfile.sleepDuration.toString(),
+        bedtime: userProfile.bedtime,
+        wakeTime: userProfile.wakeTime
       });
     }
     setShowLogForm(true);
@@ -233,6 +261,8 @@ const HomeTab = () => {
         return `${log.data.exerciseType} (${log.data.duration} min, ${log.data.intensity})`;
       case 'glucose':
         return `${log.data.glucose} mg/dL (${log.data.context})`;
+      case 'sleep':
+        return `${log.data.sleepDuration}h sleep (Quality: ${log.data.sleepQuality}/10)`;
       default:
         return 'Unknown entry';
     }
@@ -260,6 +290,13 @@ const HomeTab = () => {
     if (weeks <= 12) return 'First Trimester';
     if (weeks <= 27) return 'Second Trimester';
     return 'Third Trimester';
+  };
+
+  const getSleepQualityDescription = (quality: number) => {
+    if (quality >= 8) return 'Excellent';
+    if (quality >= 6) return 'Good';
+    if (quality >= 4) return 'Fair';
+    return 'Poor';
   };
 
   return (
@@ -305,6 +342,89 @@ const HomeTab = () => {
                     />
                   </div>
                 </div>
+              )}
+
+              {/* Sleep-specific fields */}
+              {logType === 'sleep' && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Sleep Duration (hours)</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
+                      <input
+                        type="number"
+                        value={logData.sleepDuration}
+                        onChange={(e) => setLogData({...logData, sleepDuration: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        placeholder="7.5"
+                        min="1"
+                        max="12"
+                        step="0.5"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <span className="flex items-center space-x-1">
+                          <span>Sleep Quality (1-10)</span>
+                          <span className="text-red-500">*</span>
+                        </span>
+                      </label>
+                      <select
+                        value={logData.sleepQuality}
+                        onChange={(e) => setLogData({...logData, sleepQuality: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      >
+                        {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                          <option key={num} value={num}>{num} - {
+                            num >= 8 ? 'Excellent' : 
+                            num >= 6 ? 'Good' : 
+                            num >= 4 ? 'Fair' : 'Poor'
+                          }</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Bedtime</label>
+                      <input
+                        type="time"
+                        value={logData.bedtime}
+                        onChange={(e) => setLogData({...logData, bedtime: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Wake Time</label>
+                      <input
+                        type="time"
+                        value={logData.wakeTime}
+                        onChange={(e) => setLogData({...logData, wakeTime: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sleep Notes (Optional)</label>
+                    <textarea
+                      value={logData.sleepNotes}
+                      onChange={(e) => setLogData({...logData, sleepNotes: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      placeholder="How did you sleep? Any disturbances?"
+                      rows={2}
+                    />
+                  </div>
+                  <div className="bg-purple-50 p-3 rounded-lg">
+                    <p className="text-xs text-purple-800">
+                      <strong>Sleep Impact:</strong> Sleep quality and duration significantly affect glucose control and insulin sensitivity.
+                    </p>
+                  </div>
+                </>
               )}
 
               {/* Meal-specific fields */}
@@ -613,6 +733,65 @@ const HomeTab = () => {
                     )}
                   </div>
 
+                  {/* Sleep Parameters */}
+                  <div className="bg-slate-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
+                      <Bed className="h-4 w-4 text-purple-600" />
+                      <span>Sleep Parameters</span>
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Sleep Quality (1-10)</label>
+                        <select
+                          value={logData.sleepQuality}
+                          onChange={(e) => setLogData({...logData, sleepQuality: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        >
+                          {[1,2,3,4,5,6,7,8,9,10].map(num => (
+                            <option key={num} value={num}>{num} - {
+                              num >= 8 ? 'Excellent' : 
+                              num >= 6 ? 'Good' : 
+                              num >= 4 ? 'Fair' : 'Poor'
+                            }</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Sleep Duration (hours)</label>
+                        <input
+                          type="number"
+                          value={logData.sleepDuration}
+                          onChange={(e) => setLogData({...logData, sleepDuration: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          placeholder="7.5"
+                          min="1"
+                          max="12"
+                          step="0.5"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Typical Bedtime</label>
+                        <input
+                          type="time"
+                          value={logData.bedtime}
+                          onChange={(e) => setLogData({...logData, bedtime: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Typical Wake Time</label>
+                        <input
+                          type="time"
+                          value={logData.wakeTime}
+                          onChange={(e) => setLogData({...logData, wakeTime: e.target.value})}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Women's Health Parameters */}
                   {logData.gender === 'female' && (
                     <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
@@ -741,7 +920,7 @@ const HomeTab = () => {
 
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <p className="text-xs text-blue-800">
-                      <strong>AI Integration:</strong> These parameters including hormonal factors are essential for accurate glucose predictions and personalized recommendations.
+                      <strong>AI Integration:</strong> These parameters including hormonal factors and sleep are essential for accurate glucose predictions and personalized recommendations.
                     </p>
                   </div>
                 </>
@@ -798,7 +977,7 @@ const HomeTab = () => {
             Update Profile
           </button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <User className="h-5 w-5 text-gray-600 mx-auto mb-1" />
             <p className="text-sm font-medium text-gray-900">{userProfile.age} years</p>
@@ -818,6 +997,11 @@ const HomeTab = () => {
             <Brain className="h-5 w-5 text-gray-600 mx-auto mb-1" />
             <p className="text-sm font-medium text-gray-900">Moderate</p>
             <p className="text-xs text-gray-500">Current stress</p>
+          </div>
+          <div className="text-center p-3 bg-purple-50 rounded-lg">
+            <Bed className="h-5 w-5 text-purple-600 mx-auto mb-1" />
+            <p className="text-sm font-medium text-gray-900">{userProfile.sleepDuration}h sleep</p>
+            <p className="text-xs text-purple-600">{getSleepQualityDescription(userProfile.sleepQuality)}</p>
           </div>
           {userProfile.gender === 'female' && (
             <div className="text-center p-3 bg-pink-50 rounded-lg">
@@ -913,13 +1097,20 @@ const HomeTab = () => {
                 >
                   <Droplets className="h-4 w-4" />
                 </button>
+                <button
+                  onClick={() => openLogForm('sleep')}
+                  className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                  title="Log Sleep"
+                >
+                  <Bed className="h-4 w-4" />
+                </button>
               </div>
             </div>
             
             {/* Parameter Importance Notice */}
             <div className="bg-blue-50 p-3 rounded-lg mb-4">
               <p className="text-xs text-blue-800">
-                <strong>AI-Powered Insights:</strong> Log meals (carbs), exercise (type/duration/intensity), glucose readings, and hormonal factors for accurate predictions.
+                <strong>AI-Powered Insights:</strong> Log meals (carbs), exercise (type/duration/intensity), glucose readings, sleep quality, and hormonal factors for accurate predictions.
               </p>
             </div>
             
@@ -930,6 +1121,7 @@ const HomeTab = () => {
                     {log.type === 'meal' && <Utensils className="h-4 w-4 text-gray-600" />}
                     {log.type === 'exercise' && <Activity className="h-4 w-4 text-gray-600" />}
                     {log.type === 'glucose' && <Droplets className="h-4 w-4 text-gray-600" />}
+                    {log.type === 'sleep' && <Bed className="h-4 w-4 text-purple-600" />}
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900">{formatLogDisplay(log)}</p>
