@@ -39,10 +39,10 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected }
           </div>
           
           <div className="flex items-center space-x-6">
-            {/* Glucose Status */}
+            {/* Recent Glucose Reading */}
             <div className={`px-4 py-2 rounded-lg border ${getStatusColor()}`}>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">Current Glucose</span>
+                <span className="text-sm font-medium">Recent Glucose Reading</span>
                 <span className="text-lg font-bold">{currentGlucose} mg/dL</span>
               </div>
             </div>
