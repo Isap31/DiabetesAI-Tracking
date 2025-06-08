@@ -211,16 +211,17 @@ const CommunityTab = () => {
               <form onSubmit={handleChatSubmit} className="space-y-3">
                 {/* Main Input Area */}
                 <div className="relative">
-                  <div className="flex items-end space-x-3 bg-gray-50 rounded-lg p-3 border border-gray-200 focus-within:border-slate-500 focus-within:ring-2 focus-within:ring-slate-200">
+                  <div className="flex items-start space-x-3 bg-gray-50 rounded-lg p-3 border border-gray-200 focus-within:border-slate-500 focus-within:ring-2 focus-within:ring-slate-200">
                     {/* Text Input */}
                     <div className="flex-1">
                       <textarea
                         value={chatMessage}
                         onChange={(e) => setChatMessage(e.target.value)}
-                        className="w-full bg-transparent resize-none focus:outline-none text-sm placeholder-gray-500 min-h-[40px] max-h-[120px]"
+                        className="w-full bg-transparent resize-none focus:outline-none text-sm placeholder-gray-500 min-h-[20px] max-h-[120px]"
                         placeholder="Type your message here... Ask about glucose patterns, meal suggestions, exercise tips, or community advice."
                         disabled={isTyping}
                         rows={1}
+                        style={{ paddingTop: '8px' }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -231,7 +232,7 @@ const CommunityTab = () => {
                     </div>
                     
                     {/* Action Buttons */}
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-start space-x-2 pt-1">
                       <button
                         type="button"
                         className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
