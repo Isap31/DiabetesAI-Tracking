@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
 import ProgressChart from './ProgressChart';
 import PredictiveInsights from './PredictiveInsights';
 import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain } from 'lucide-react';
 
-const HomeTab = () => {
+interface HomeTabProps {
+  allLogs: any[];
+  onDataLogged: (data: any) => void;
+}
+
+const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
   const [showLogForm, setShowLogForm] = useState(false);
   const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
   const [logData, setLogData] = useState({
@@ -47,73 +52,6 @@ const HomeTab = () => {
     sleepDuration: 7.5
   });
 
-  const [allLogs, setAllLogs] = useState([
-    { 
-      id: 1, 
-      type: 'meal', 
-      data: { 
-        mealName: 'Grilled Chicken Salad', 
-        carbs: '15', 
-        calories: '350',
-        time: '12:30 PM'
-      }, 
-      time: '12:30 PM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 2, 
-      type: 'exercise', 
-      data: { 
-        exerciseType: 'Walking', 
-        duration: '30', 
-        intensity: 'moderate',
-        time: '11:00 AM'
-      }, 
-      time: '11:00 AM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 3, 
-      type: 'glucose', 
-      data: { 
-        glucose: '94', 
-        context: 'before-meal', 
-        notes: 'Feeling good',
-        time: '10:30 AM'
-      }, 
-      time: '10:30 AM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 4, 
-      type: 'meal', 
-      data: { 
-        mealName: 'Oatmeal with Berries', 
-        carbs: '25', 
-        calories: '280',
-        time: '8:00 AM'
-      }, 
-      time: '8:00 AM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 5, 
-      type: 'glucose', 
-      data: { 
-        glucose: '89', 
-        context: 'fasting', 
-        notes: '',
-        time: '7:00 AM'
-      }, 
-      time: '7:00 AM', 
-      date: '2024-01-15' 
-    }
-  ]);
-
-  const handleDataLogged = (newLog: any) => {
-    setAllLogs(prev => [newLog, ...prev]);
-  };
-
   const handleLogSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -136,7 +74,7 @@ const HomeTab = () => {
       console.log('Profile updated:', updatedProfile);
     } else {
       newLog = {
-        id: allLogs.length + 1,
+        id: Date.now(),
         type: logType,
         data: logType === 'meal' 
           ? { 
@@ -162,7 +100,7 @@ const HomeTab = () => {
         date: logData.date
       };
 
-      setAllLogs([newLog, ...allLogs]);
+      onDataLogged(newLog);
       console.log('New log entry:', newLog);
     }
     
@@ -742,12 +680,12 @@ const HomeTab = () => {
 
         {/* Right Column - Actions & Activity */}
         <div className="space-y-6">
-          <QuickActions onDataLogged={handleDataLogged} />
+          <QuickActions onDataLogged={onDataLogged} />
           
           {/* Enhanced Logging Section */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Data Logging</h3>
+              <h3 className="font-semibold text-gray-900">Recent Logs</h3>
               <div className="flex space-x-2">
                 <button
                   onClick={() => openLogForm('meal')}
@@ -781,7 +719,7 @@ const HomeTab = () => {
             </div>
             
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {allLogs.map((log) => (
+              {allLogs.slice(0, 10).map((log) => (
                 <div key={log.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                   <div className="p-2 rounded-lg bg-gray-200">
                     {log.type === 'meal' && <Utensils className="h-4 w-4 text-gray-600" />}

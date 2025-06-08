@@ -9,7 +9,68 @@ import AchievementsTab from './components/AchievementsTab';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [allLogs, setAllLogs] = useState([]);
+  const [allLogs, setAllLogs] = useState([
+    { 
+      id: 1, 
+      type: 'meal', 
+      data: { 
+        mealName: 'Grilled Chicken Salad', 
+        carbs: '15', 
+        calories: '350',
+        time: '12:30 PM'
+      }, 
+      time: '12:30 PM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 2, 
+      type: 'exercise', 
+      data: { 
+        exerciseType: 'Walking', 
+        duration: '30', 
+        intensity: 'moderate',
+        time: '11:00 AM'
+      }, 
+      time: '11:00 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 3, 
+      type: 'glucose', 
+      data: { 
+        glucose: '94', 
+        context: 'before-meal', 
+        notes: 'Feeling good',
+        time: '10:30 AM'
+      }, 
+      time: '10:30 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 4, 
+      type: 'meal', 
+      data: { 
+        mealName: 'Oatmeal with Berries', 
+        carbs: '25', 
+        calories: '280',
+        time: '8:00 AM'
+      }, 
+      time: '8:00 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: 5, 
+      type: 'glucose', 
+      data: { 
+        glucose: '89', 
+        context: 'fasting', 
+        notes: '',
+        time: '7:00 AM'
+      }, 
+      time: '7:00 AM', 
+      date: '2024-01-15' 
+    }
+  ]);
 
   const handleDataLogged = (newLog: any) => {
     setAllLogs(prev => [newLog, ...prev]);
@@ -18,7 +79,7 @@ function App() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeTab />;
+        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} />;
       case 'tracking':
         return <TrackingTab onDataLogged={handleDataLogged} />;
       case 'community':
@@ -28,7 +89,7 @@ function App() {
       case 'achievements':
         return <AchievementsTab />;
       default:
-        return <HomeTab />;
+        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} />;
     }
   };
 
