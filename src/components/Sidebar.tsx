@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users } from 'lucide-react';
+import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users, TrendingUp } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -10,6 +10,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'home', label: 'Dashboard', icon: Home },
     { id: 'tracking', label: 'Tracking', icon: Activity },
+    { id: 'predictions', label: 'Predictions', icon: TrendingUp },
     { id: 'community', label: 'Community', icon: Users },
     { id: 'pet', label: 'Pet Companion', icon: Heart },
     { id: 'achievements', label: 'Achievements', icon: Trophy }

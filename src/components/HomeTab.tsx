@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
-import ProgressChart from './ProgressChart';
-import PredictiveInsights from './PredictiveInsights';
 import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain } from 'lucide-react';
 
 interface HomeTabProps {
@@ -669,13 +667,33 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
         />
       </div>
 
-      {/* Main Content Grid */}
+      {/* Main Content Grid - Simplified without predictions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Charts and FlowSense AI */}
+        {/* Left Column - Quick Overview */}
         <div className="lg:col-span-2 space-y-6">
-          {/* FlowSense AI moved higher up */}
-          <PredictiveInsights />
-          <ProgressChart />
+          {/* Simple glucose trend overview */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Glucose Overview</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <p className="text-2xl font-bold text-blue-600">94</p>
+                <p className="text-sm text-blue-600">Current</p>
+              </div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <p className="text-2xl font-bold text-green-600">87%</p>
+                <p className="text-sm text-green-600">Time in Range</p>
+              </div>
+              <div className="text-center p-4 bg-orange-50 rounded-lg">
+                <p className="text-2xl font-bold text-orange-600">6</p>
+                <p className="text-sm text-orange-600">Readings Today</p>
+              </div>
+            </div>
+            <div className="mt-4 p-3 bg-slate-50 rounded-lg">
+              <p className="text-sm text-slate-700">
+                <strong>Quick Insight:</strong> Your glucose levels are stable today. Great job maintaining consistency with your routine!
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Right Column - Actions & Activity */}

@@ -6,6 +6,7 @@ import TrackingTab from './components/TrackingTab';
 import CommunityTab from './components/CommunityTab';
 import PetTab from './components/PetTab';
 import AchievementsTab from './components/AchievementsTab';
+import PredictionsTab from './components/PredictionsTab';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -82,6 +83,8 @@ function App() {
         return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} />;
       case 'tracking':
         return <TrackingTab onDataLogged={handleDataLogged} />;
+      case 'predictions':
+        return <PredictionsTab />;
       case 'community':
         return <CommunityTab />;
       case 'pet':
