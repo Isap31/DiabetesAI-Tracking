@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
+import DailyAffirmation from './DailyAffirmation';
 import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain } from 'lucide-react';
+import { useTranslation } from '../utils/translations';
 
 interface HomeTabProps {
   allLogs: any[];
   onDataLogged: (data: any) => void;
+  language: string;
 }
 
-const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
+const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) => {
+  const t = useTranslation(language);
   const [showLogForm, setShowLogForm] = useState(false);
   const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
   const [logData, setLogData] = useState({
@@ -165,10 +169,10 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
   };
 
   const getSleepQualityText = (quality: number) => {
-    if (quality >= 8) return 'Excellent';
-    if (quality >= 6) return 'Good';
-    if (quality >= 4) return 'Fair';
-    return 'Poor';
+    if (quality >= 8) return t.excellent;
+    if (quality >= 6) return t.good;
+    if (quality >= 4) return t.fair;
+    return t.poor;
   };
 
   return (
@@ -179,7 +183,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                {logType === 'profile' ? 'Update Profile' : `Log ${logType.charAt(0).toUpperCase() + logType.slice(1)}`}
+                {logType === 'profile' ? t.updateProfile : `Log ${logType.charAt(0).toUpperCase() + logType.slice(1)}`}
               </h3>
               <button 
                 onClick={() => setShowLogForm(false)}
@@ -204,7 +208,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.time}</label>
                     <input
                       type="time"
                       value={logData.time}
@@ -220,7 +224,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
               {logType === 'meal' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Meal Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.mealName}</label>
                     <input
                       type="text"
                       value={logData.mealName}
@@ -234,7 +238,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         <span className="flex items-center space-x-1">
-                          <span>Carbohydrates (g)</span>
+                          <span>{t.carbohydrates} ({t.grams})</span>
                           <span className="text-red-500">*</span>
                         </span>
                       </label>
@@ -251,7 +255,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                       <p className="text-xs text-gray-500 mt-1">Critical for glucose prediction</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Calories</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t.calories}</label>
                       <input
                         type="number"
                         value={logData.calories}
@@ -292,7 +296,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         <span className="flex items-center space-x-1">
-                          <span>Duration (min)</span>
+                          <span>Duration ({t.minutes})</span>
                           <span className="text-red-500">*</span>
                         </span>
                       </label>
@@ -338,7 +342,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <span className="flex items-center space-x-1">
-                        <span>Current Glucose Level (mg/dL)</span>
+                        <span>Current Glucose Level ({t.mgdl})</span>
                         <span className="text-red-500">*</span>
                       </span>
                     </label>
@@ -418,15 +422,15 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                           onChange={(e) => setLogData({...logData, gender: e.target.value})}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                         >
-                          <option value="female">Female</option>
-                          <option value="male">Male</option>
+                          <option value="female">{t.female}</option>
+                          <option value="male">{t.male}</option>
                         </select>
                       </div>
                     </div>
                     <div className="mt-4">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         <span className="flex items-center space-x-1">
-                          <span>Diabetes Type</span>
+                          <span>{t.diabetesType}</span>
                           <span className="text-red-500">*</span>
                         </span>
                       </label>
@@ -435,9 +439,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                         onChange={(e) => setLogData({...logData, diabetesType: e.target.value})}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                       >
-                        <option value="Type 1">Type 1</option>
-                        <option value="Type 2">Type 2</option>
-                        <option value="Gestational">Gestational</option>
+                        <option value="Type 1">{t.type1}</option>
+                        <option value="Type 2">{t.type2}</option>
+                        <option value="Gestational">{t.gestational}</option>
                         <option value="MODY">MODY</option>
                         <option value="Other">Other</option>
                       </select>
@@ -513,7 +517,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Sleep Duration (hours)
+                          Sleep Duration ({t.hours})
                         </label>
                         <input
                           type="number"
@@ -562,14 +566,14 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
                   onClick={() => setShowLogForm(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center justify-center space-x-2"
                 >
                   <Save className="h-4 w-4" />
-                  <span>{logType === 'profile' ? 'Update' : 'Save'}</span>
+                  <span>{logType === 'profile' ? 'Update' : t.save}</span>
                 </button>
               </div>
             </form>
@@ -579,9 +583,12 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
 
       {/* Page Header */}
       <div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h2>
-        <p className="text-gray-600">Welcome back, Sarah. Here's your health overview for today.</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">{t.dashboard}</h2>
+        <p className="text-gray-600">{t.welcomeBack}, Sarah. {t.healthOverview}</p>
       </div>
+
+      {/* Daily Affirmation */}
+      <DailyAffirmation language={language} />
 
       {/* Current Status Alert */}
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -590,8 +597,8 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
             <TrendingUp className="h-5 w-5 text-green-600" />
           </div>
           <div>
-            <h3 className="font-semibold text-green-900">System Status: Optimal</h3>
-            <p className="text-sm text-green-700">All monitoring systems active. Glucose levels stable.</p>
+            <h3 className="font-semibold text-green-900">{t.systemStatus}</h3>
+            <p className="text-sm text-green-700">{t.systemStatusOptimal}</p>
           </div>
         </div>
       </div>
@@ -599,18 +606,18 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
       {/* User Profile Summary */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Health Profile</h3>
+          <h3 className="font-semibold text-gray-900">{t.healthProfile}</h3>
           <button
             onClick={() => openLogForm('profile')}
             className="text-sm text-slate-600 hover:text-slate-700 font-medium"
           >
-            Update Profile
+            {t.updateProfile}
           </button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <User className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-            <p className="text-sm font-medium text-gray-900">{userProfile.age} years</p>
+            <p className="text-sm font-medium text-gray-900">{userProfile.age} {t.years}</p>
             <p className="text-xs text-gray-500">{userProfile.diabetesType} • {userProfile.gender}</p>
           </div>
           <div className="text-center p-3 bg-gray-50 rounded-lg">
@@ -620,8 +627,8 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
           </div>
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <Calendar className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-            <p className="text-sm font-medium text-gray-900">9 years</p>
-            <p className="text-xs text-gray-500">Since diagnosis</p>
+            <p className="text-sm font-medium text-gray-900">9 {t.years}</p>
+            <p className="text-xs text-gray-500">{t.sinceDiagnosis}</p>
           </div>
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <Brain className="h-5 w-5 text-gray-600 mx-auto mb-1" />
@@ -634,15 +641,15 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
       {/* Key Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Current Glucose"
+          title={t.currentGlucose}
           value="94"
-          unit="mg/dL"
+          unit={t.mgdl}
           trend="stable"
           icon={Droplets}
           color="blue"
         />
         <StatsCard
-          title="Time in Range"
+          title={t.timeInRange}
           value="87"
           unit="%"
           trend="up"
@@ -650,15 +657,15 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
           color="green"
         />
         <StatsCard
-          title="Logging Streak"
+          title={t.loggingStreak}
           value="12"
-          unit="days"
+          unit={t.days}
           trend="up"
           icon={Clock}
           color="orange"
         />
         <StatsCard
-          title="Health Score"
+          title={t.healthScore}
           value="8.4"
           unit="/10"
           trend="up"
@@ -681,7 +688,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">87%</p>
-                <p className="text-sm text-green-600">Time in Range</p>
+                <p className="text-sm text-green-600">{t.timeInRange}</p>
               </div>
               <div className="text-center p-4 bg-orange-50 rounded-lg">
                 <p className="text-2xl font-bold text-orange-600">6</p>
@@ -698,7 +705,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
 
         {/* Right Column - Actions & Activity */}
         <div className="space-y-6">
-          <QuickActions onDataLogged={onDataLogged} />
+          <QuickActions onDataLogged={onDataLogged} language={language} />
           
           {/* Enhanced Logging Section */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -732,7 +739,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged }) => {
             {/* Parameter Importance Notice */}
             <div className="bg-blue-50 p-3 rounded-lg mb-4">
               <p className="text-xs text-blue-800">
-                <strong>AI-Powered Insights:</strong> Log meals (carbs), exercise (type/duration/intensity), and glucose readings for accurate predictions.
+                <strong>{t.aiPoweredInsights}:</strong> Log meals (carbs), exercise (type/duration/intensity), and glucose readings for accurate predictions.
               </p>
             </div>
             

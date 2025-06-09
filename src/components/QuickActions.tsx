@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Plus, Camera, MessageCircle, TrendingUp, X, Save, Bot, BarChart3 } from 'lucide-react';
+import { useTranslation } from '../utils/translations';
 
 interface QuickActionsProps {
   onDataLogged?: (data: any) => void;
+  language: string;
 }
 
-const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged, language }) => {
+  const t = useTranslation(language);
   const [showMealForm, setShowMealForm] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
   const [showTrends, setShowTrends] = useState(false);
@@ -28,25 +31,25 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
   const actions = [
     { 
       icon: Plus, 
-      label: 'Log Meal', 
+      label: t.logMeal, 
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowMealForm(true)
     },
     { 
       icon: Camera, 
-      label: 'Scan Food', 
+      label: t.scanFood, 
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => console.log('Food scanning feature')
     },
     { 
       icon: MessageCircle, 
-      label: 'AI Chat', 
+      label: t.aiChat, 
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowAIChat(true)
     },
     { 
       icon: TrendingUp, 
-      label: 'View Trends', 
+      label: t.viewTrends, 
       color: 'bg-slate-600 hover:bg-slate-700',
       action: () => setShowTrends(true)
     }
@@ -152,7 +155,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
+      <h3 className="font-semibold text-gray-900 mb-4">{t.quickActions}</h3>
       
       {/* Meal Logging Modal */}
       {showMealForm && (
@@ -169,7 +172,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
             </div>
             <form onSubmit={handleMealSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Meal Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.mealName}</label>
                 <input
                   type="text"
                   value={mealData.name}
@@ -181,7 +184,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Carbs (g)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.carbohydrates} ({t.grams})</label>
                   <input
                     type="number"
                     value={mealData.carbs}
@@ -192,7 +195,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Calories</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t.calories}</label>
                   <input
                     type="number"
                     value={mealData.calories}
@@ -203,7 +206,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t.time}</label>
                 <input
                   type="time"
                   value={mealData.time}
@@ -218,14 +221,14 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
                   onClick={() => setShowMealForm(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center justify-center space-x-2"
                 >
                   <Save className="h-4 w-4" />
-                  <span>Save</span>
+                  <span>{t.save}</span>
                 </button>
               </div>
             </form>
@@ -243,8 +246,8 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">FlowSense AI</h3>
-                  <p className="text-sm text-gray-500">Your intelligent health assistant</p>
+                  <h3 className="text-lg font-semibold text-gray-900">{t.flowSenseAI}</h3>
+                  <p className="text-sm text-gray-500">{t.intelligentHealthAssistant}</p>
                 </div>
               </div>
               <button 
@@ -354,11 +357,11 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h4 className="font-medium text-gray-900 mb-2">7-Day Average</h4>
-                  <p className="text-2xl font-bold text-gray-900">94 mg/dL</p>
+                  <p className="text-2xl font-bold text-gray-900">94 {t.mgdl}</p>
                   <p className="text-sm text-green-600">↓ 3% from last week</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">Time in Range</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">{t.timeInRange}</h4>
                   <p className="text-2xl font-bold text-gray-900">87%</p>
                   <p className="text-sm text-green-600">↑ 5% from last week</p>
                 </div>
@@ -381,13 +384,13 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onDataLogged }) => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Avg daily carbs:</span>
-                    <span className="font-medium">145g</span>
+                    <span className="font-medium">145{t.grams}</span>
                   </div>
                 </div>
               </div>
               
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-medium text-blue-900 mb-2">AI Insights</h4>
+                <h4 className="font-medium text-blue-900 mb-2">{t.aiPoweredInsights}</h4>
                 <p className="text-sm text-blue-800">
                   Your glucose control has improved significantly this week. The combination of consistent meal logging 
                   and regular exercise is showing positive results. Consider maintaining your current routine.

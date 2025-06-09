@@ -10,6 +10,7 @@ import PredictionsTab from './components/PredictionsTab';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
+  const [language, setLanguage] = useState('en');
   const [allLogs, setAllLogs] = useState([
     { 
       id: 1, 
@@ -80,19 +81,19 @@ function App() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} />;
+        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} />;
       case 'tracking':
-        return <TrackingTab onDataLogged={handleDataLogged} />;
+        return <TrackingTab onDataLogged={handleDataLogged} language={language} />;
       case 'predictions':
-        return <PredictionsTab />;
+        return <PredictionsTab language={language} />;
       case 'community':
-        return <CommunityTab />;
+        return <CommunityTab language={language} />;
       case 'pet':
-        return <PetTab />;
+        return <PetTab language={language} />;
       case 'achievements':
-        return <AchievementsTab />;
+        return <AchievementsTab language={language} />;
       default:
-        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} />;
+        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} />;
     }
   };
 
@@ -103,6 +104,8 @@ function App() {
         userName="Sarah"
         currentGlucose={94}
         isConnected={true}
+        language={language}
+        onLanguageChange={setLanguage}
       />
       
       <div className="flex">
@@ -110,6 +113,7 @@ function App() {
         <Sidebar 
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          language={language}
         />
         
         {/* Main Content */}

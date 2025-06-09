@@ -1,19 +1,23 @@
 import React from 'react';
 import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users, TrendingUp } from 'lucide-react';
+import { useTranslation } from '../utils/translations';
 
 interface SidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  language: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) => {
+  const t = useTranslation(language);
+  
   const tabs = [
-    { id: 'home', label: 'Dashboard', icon: Home },
-    { id: 'tracking', label: 'Tracking', icon: Activity },
-    { id: 'predictions', label: 'Predictions', icon: TrendingUp },
-    { id: 'community', label: 'Community', icon: Users },
-    { id: 'pet', label: 'Pet Companion', icon: Heart },
-    { id: 'achievements', label: 'Achievements', icon: Trophy }
+    { id: 'home', label: t.dashboard, icon: Home },
+    { id: 'tracking', label: t.tracking, icon: Activity },
+    { id: 'predictions', label: t.predictions, icon: TrendingUp },
+    { id: 'community', label: t.community, icon: Users },
+    { id: 'pet', label: t.petCompanion, icon: Heart },
+    { id: 'achievements', label: t.achievements, icon: Trophy }
   ];
 
   return (
@@ -43,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
           <div className="flex items-center space-x-3 mb-3">
             <Brain className="h-5 w-5" />
             <div>
-              <h4 className="font-medium">FlowSense AI</h4>
+              <h4 className="font-medium">{t.flowSenseAI}</h4>
               <p className="text-xs text-gray-300">Always here to help</p>
             </div>
           </div>
