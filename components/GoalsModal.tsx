@@ -8,17 +8,7 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
-import {
-  Target,
-  Calendar,
-  Trophy,
-  Plus,
-  X,
-  Save,
-  Edit2,
-  Check,
-  Trash2,
-} from 'lucide-react-native';
+import { Target, Calendar, Trophy, Plus, X, Save, CreditCard as Edit2, Check, Trash2 } from 'lucide-react-native';
 
 interface Goal {
   id: number;
