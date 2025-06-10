@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import TabNavigation from './components/TabNavigation';
 import HomeTab from './components/HomeTab';
 import TrackingTab from './components/TrackingTab';
 import CommunityTab from './components/CommunityTab';
@@ -109,7 +110,7 @@ function App() {
       />
       
       <div className="flex">
-        {/* Sidebar Navigation */}
+        {/* Desktop Sidebar Navigation */}
         <Sidebar 
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -117,12 +118,18 @@ function App() {
         />
         
         {/* Main Content */}
-        <main className="flex-1 p-8 ml-64">
+        <main className="flex-1 lg:ml-64">
           <div className="max-w-6xl mx-auto">
             {renderActiveTab()}
           </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <TabNavigation 
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
     </div>
   );
 }

@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) =
   ];
 
   return (
-    <div className="fixed left-0 top-16 h-full w-64 bg-white border-r border-gray-200 z-40">
+    <div className="fixed left-0 top-16 h-full w-64 bg-white border-r border-gray-200 z-40 hidden lg:block">
       <div className="p-6">
         <nav className="space-y-1">
           {tabs.map((tab) => (

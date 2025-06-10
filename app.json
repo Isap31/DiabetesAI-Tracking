@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "AuroraFlow",
+    "slug": "auroraflow-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.auroraflow.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.auroraflow.mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "webpack"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}

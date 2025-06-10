@@ -142,28 +142,28 @@ const PredictiveInsights = () => {
 
   const modelMetrics = getModelMetrics();
 
-  // Gender-adaptive parameter influence
+  // Gender-adaptive parameter influence - Less colorful
   const getParameterInfluence = () => {
     if (userProfile.gender === 'female' && !userProfile.isPregnant) {
       return [
-        { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-red-500' },
-        { parameter: 'Menstrual Cycle Phase', influence: 72, icon: Moon, color: 'bg-pink-500' },
-        { parameter: 'Exercise Intensity', influence: 68, icon: Activity, color: 'bg-blue-500' },
-        { parameter: 'Sleep Quality & Duration', influence: 65, icon: Bed, color: 'bg-purple-500' },
-        { parameter: 'Time of Day', influence: 58, icon: Clock, color: 'bg-indigo-500' },
-        { parameter: 'Years Since Diagnosis', influence: 55, icon: Calendar, color: 'bg-teal-500' },
-        { parameter: 'Stress Level', influence: 45, icon: Brain, color: 'bg-orange-500' },
-        { parameter: 'BMI/Weight', influence: 38, icon: Scale, color: 'bg-green-500' }
+        { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-gray-600' },
+        { parameter: 'Menstrual Cycle Phase', influence: 72, icon: Moon, color: 'bg-gray-500' },
+        { parameter: 'Exercise Intensity', influence: 68, icon: Activity, color: 'bg-gray-600' },
+        { parameter: 'Sleep Quality & Duration', influence: 65, icon: Bed, color: 'bg-gray-500' },
+        { parameter: 'Time of Day', influence: 58, icon: Clock, color: 'bg-gray-600' },
+        { parameter: 'Years Since Diagnosis', influence: 55, icon: Calendar, color: 'bg-gray-500' },
+        { parameter: 'Stress Level', influence: 45, icon: Brain, color: 'bg-gray-600' },
+        { parameter: 'BMI/Weight', influence: 38, icon: Scale, color: 'bg-gray-500' }
       ];
     } else {
       return [
-        { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-red-500' },
-        { parameter: 'Exercise Intensity', influence: 75, icon: Activity, color: 'bg-blue-500' },
-        { parameter: 'Sleep Quality & Duration', influence: 68, icon: Bed, color: 'bg-purple-500' },
-        { parameter: 'Time of Day', influence: 65, icon: Clock, color: 'bg-indigo-500' },
-        { parameter: 'Years Since Diagnosis', influence: 58, icon: Calendar, color: 'bg-teal-500' },
-        { parameter: 'Stress Level', influence: 48, icon: Brain, color: 'bg-orange-500' },
-        { parameter: 'BMI/Weight', influence: 42, icon: Scale, color: 'bg-green-500' },
+        { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-gray-600' },
+        { parameter: 'Exercise Intensity', influence: 75, icon: Activity, color: 'bg-gray-500' },
+        { parameter: 'Sleep Quality & Duration', influence: 68, icon: Bed, color: 'bg-gray-600' },
+        { parameter: 'Time of Day', influence: 65, icon: Clock, color: 'bg-gray-500' },
+        { parameter: 'Years Since Diagnosis', influence: 58, icon: Calendar, color: 'bg-gray-600' },
+        { parameter: 'Stress Level', influence: 48, icon: Brain, color: 'bg-gray-500' },
+        { parameter: 'BMI/Weight', influence: 42, icon: Scale, color: 'bg-gray-600' },
         { parameter: 'Age', influence: 35, icon: User, color: 'bg-gray-500' }
       ];
     }
@@ -222,12 +222,12 @@ const PredictiveInsights = () => {
           {userProfile.gender === 'female' && !userProfile.isPregnant && (
             <>
               <div>
-                <span className="text-pink-600">Cycle:</span>
-                <span className="ml-2 font-medium text-pink-700">Day {userProfile.menstrualCycleDay}</span>
+                <span className="text-gray-600">Cycle:</span>
+                <span className="ml-2 font-medium text-gray-700">Day {userProfile.menstrualCycleDay}</span>
               </div>
               <div>
-                <span className="text-pink-600">Phase:</span>
-                <span className="ml-2 font-medium text-pink-700">{getMenstrualPhase()}</span>
+                <span className="text-gray-600">Phase:</span>
+                <span className="ml-2 font-medium text-gray-700">{getMenstrualPhase()}</span>
               </div>
             </>
           )}
@@ -242,12 +242,12 @@ const PredictiveInsights = () => {
 
       {/* Gender-Specific Impact Notice */}
       {userProfile.gender === 'female' && !userProfile.isPregnant && (
-        <div className="bg-pink-50 p-4 rounded-lg mb-6 border border-pink-200">
+        <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
           <div className="flex items-center space-x-2 mb-2">
-            <Moon className="h-4 w-4 text-pink-600" />
-            <h4 className="font-medium text-pink-900">Hormonal Cycle Impact</h4>
+            <Moon className="h-4 w-4 text-gray-600" />
+            <h4 className="font-medium text-gray-900">Hormonal Cycle Impact</h4>
           </div>
-          <p className="text-sm text-pink-800">
+          <p className="text-sm text-gray-700">
             <strong>{getMenstrualPhase()} Phase:</strong> {
               getMenstrualPhase() === 'Ovulation' ? 'Increased insulin resistance may cause higher glucose levels. Consider reducing carb intake by 20-30%.' :
               getMenstrualPhase() === 'Luteal' ? 'Progesterone may increase insulin resistance. Monitor glucose more closely.' :
@@ -259,12 +259,12 @@ const PredictiveInsights = () => {
       )}
 
       {userProfile.gender === 'male' && (
-        <div className="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+        <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
           <div className="flex items-center space-x-2 mb-2">
-            <User className="h-4 w-4 text-blue-600" />
-            <h4 className="font-medium text-blue-900">Male Profile Optimization</h4>
+            <User className="h-4 w-4 text-gray-600" />
+            <h4 className="font-medium text-gray-900">Male Profile Optimization</h4>
           </div>
-          <p className="text-sm text-blue-800">
+          <p className="text-sm text-gray-700">
             <strong>Stable Hormonal Profile:</strong> Your predictions focus on lifestyle factors like sleep quality ({userProfile.sleepQuality}/10), exercise patterns, and stress management. Consistent sleep and regular exercise are your key optimization factors.
           </p>
         </div>
@@ -282,12 +282,12 @@ const PredictiveInsights = () => {
         ))}
       </div>
 
-      {/* Enhanced Parameter Influence Chart */}
+      {/* Enhanced Parameter Influence Chart - Less Colorful */}
       <div className="mb-6">
         <h4 className="font-medium text-gray-900 mb-3">
           Parameter Influence on Predictions 
           {userProfile.gender === 'female' && !userProfile.isPregnant && (
-            <span className="text-sm text-pink-600 ml-2">(Female Cycle-Enhanced)</span>
+            <span className="text-sm text-gray-600 ml-2">(Female Cycle-Enhanced)</span>
           )}
         </h4>
         <div className="space-y-3">
@@ -318,7 +318,7 @@ const PredictiveInsights = () => {
         <h4 className="font-medium text-gray-900">
           AI Predictions & Recommendations
           {userProfile.gender === 'female' && !userProfile.isPregnant && (
-            <span className="text-sm text-pink-600 ml-2">(Cycle-Aware)</span>
+            <span className="text-sm text-gray-600 ml-2">(Cycle-Aware)</span>
           )}
         </h4>
         {predictions.map((prediction, index) => (

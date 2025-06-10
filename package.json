@@ -7,12 +7,20 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "expo:start": "expo start",
+    "expo:android": "expo start --android",
+    "expo:ios": "expo start --ios",
+    "expo:web": "expo start --web"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "expo": "~50.0.0",
+    "expo-status-bar": "~1.11.1",
+    "react-native": "0.73.6",
+    "react-native-web": "~0.19.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
@@ -28,6 +36,7 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
-    "vite": "^5.4.2"
+    "vite": "^5.4.2",
+    "@expo/webpack-config": "^19.0.0"
   }
 }

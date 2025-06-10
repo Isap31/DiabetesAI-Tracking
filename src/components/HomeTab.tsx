@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
 import DailyAffirmation from './DailyAffirmation';
-import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain } from 'lucide-react';
+import GoalsModal from './GoalsModal';
+import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Goal } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 
 interface HomeTabProps {
@@ -14,6 +15,7 @@ interface HomeTabProps {
 const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) => {
   const t = useTranslation(language);
   const [showLogForm, setShowLogForm] = useState(false);
+  const [showGoalsModal, setShowGoalsModal] = useState(false);
   const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
   const [logData, setLogData] = useState({
     // Meal fields
@@ -176,24 +178,33 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 pb-20">
+      {/* Goals Modal */}
+      <GoalsModal 
+        isOpen={showGoalsModal}
+        onClose={() => setShowGoalsModal(false)}
+        language={language}
+      />
+
       {/* Universal Log Form Modal */}
       {showLogForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {logType === 'profile' ? t.updateProfile : `Log ${logType.charAt(0).toUpperCase() + logType.slice(1)}`}
-              </h3>
-              <button 
-                onClick={() => setShowLogForm(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-5 w-5" />
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {logType === 'profile' ? t.updateProfile : `Log ${logType.charAt(0).toUpperCase() + logType.slice(1)}`}
+                </h3>
+                <button 
+                  onClick={() => setShowLogForm(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
             
-            <form onSubmit={handleLogSubmit} className="space-y-4">
+            <form onSubmit={handleLogSubmit} className="p-4 space-y-4">
               {/* Common fields for non-profile logs */}
               {logType !== 'profile' && (
                 <div className="grid grid-cols-2 gap-4">
@@ -582,184 +593,209 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
       )}
 
       {/* Page Header */}
-      <div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">{t.dashboard}</h2>
+      <div className="px-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.dashboard}</h2>
         <p className="text-gray-600">{t.welcomeBack}, Sarah. {t.healthOverview}</p>
       </div>
 
       {/* Daily Affirmation */}
-      <DailyAffirmation language={language} />
+      <div className="px-4">
+        <DailyAffirmation language={language} />
+      </div>
 
       {/* Current Status Alert */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <div className="flex items-center space-x-3">
-          <div className="bg-green-100 p-2 rounded-lg">
-            <TrendingUp className="h-5 w-5 text-green-600" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-green-900">{t.systemStatus}</h3>
-            <p className="text-sm text-green-700">{t.systemStatusOptimal}</p>
+      <div className="px-4">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-green-100 p-2 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-green-900">{t.systemStatus}</h3>
+              <p className="text-sm text-green-700">{t.systemStatusOptimal}</p>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Goals Quick Access */}
+      <div className="px-4">
+        <button
+          onClick={() => setShowGoalsModal(true)}
+          className="w-full bg-gradient-to-r from-slate-700 to-slate-900 text-white p-4 rounded-lg flex items-center justify-between hover:from-slate-800 hover:to-slate-900 transition-all duration-200"
+        >
+          <div className="flex items-center space-x-3">
+            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+              <Target className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <h3 className="font-semibold">Health Goals</h3>
+              <p className="text-sm text-slate-200">Set and track your objectives</p>
+            </div>
+          </div>
+          <Goal className="h-5 w-5 text-slate-300" />
+        </button>
+      </div>
+
       {/* User Profile Summary */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">{t.healthProfile}</h3>
-          <button
-            onClick={() => openLogForm('profile')}
-            className="text-sm text-slate-600 hover:text-slate-700 font-medium"
-          >
-            {t.updateProfile}
-          </button>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <User className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-            <p className="text-sm font-medium text-gray-900">{userProfile.age} {t.years}</p>
-            <p className="text-xs text-gray-500">{userProfile.diabetesType} • {userProfile.gender}</p>
+      <div className="px-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-900">{t.healthProfile}</h3>
+            <button
+              onClick={() => openLogForm('profile')}
+              className="text-sm text-slate-600 hover:text-slate-700 font-medium"
+            >
+              {t.updateProfile}
+            </button>
           </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <Scale className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-            <p className="text-sm font-medium text-gray-900">BMI {userProfile.bmi}</p>
-            <p className="text-xs text-gray-500">{userProfile.height}cm, {userProfile.weight}kg</p>
-          </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <Calendar className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-            <p className="text-sm font-medium text-gray-900">9 {t.years}</p>
-            <p className="text-xs text-gray-500">{t.sinceDiagnosis}</p>
-          </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <Brain className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-            <p className="text-sm font-medium text-gray-900">{getSleepQualityText(userProfile.sleepQuality)}</p>
-            <p className="text-xs text-gray-500">{userProfile.sleepDuration}h sleep</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <User className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <p className="text-sm font-medium text-gray-900">{userProfile.age} {t.years}</p>
+              <p className="text-xs text-gray-500">{userProfile.diabetesType} • {userProfile.gender}</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <Scale className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <p className="text-sm font-medium text-gray-900">BMI {userProfile.bmi}</p>
+              <p className="text-xs text-gray-500">{userProfile.height}cm, {userProfile.weight}kg</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <Calendar className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <p className="text-sm font-medium text-gray-900">9 {t.years}</p>
+              <p className="text-xs text-gray-500">{t.sinceDiagnosis}</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <Brain className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <p className="text-sm font-medium text-gray-900">{getSleepQualityText(userProfile.sleepQuality)}</p>
+              <p className="text-xs text-gray-500">{userProfile.sleepDuration}h sleep</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard
-          title={t.currentGlucose}
-          value="94"
-          unit={t.mgdl}
-          trend="stable"
-          icon={Droplets}
-          color="blue"
-        />
-        <StatsCard
-          title={t.timeInRange}
-          value="87"
-          unit="%"
-          trend="up"
-          icon={Target}
-          color="green"
-        />
-        <StatsCard
-          title={t.loggingStreak}
-          value="12"
-          unit={t.days}
-          trend="up"
-          icon={Clock}
-          color="orange"
-        />
-        <StatsCard
-          title={t.healthScore}
-          value="8.4"
-          unit="/10"
-          trend="up"
-          icon={Heart}
-          color="red"
-        />
+      <div className="px-4">
+        <div className="grid grid-cols-2 gap-4">
+          <StatsCard
+            title={t.currentGlucose}
+            value="94"
+            unit={t.mgdl}
+            trend="stable"
+            icon={Droplets}
+            color="blue"
+          />
+          <StatsCard
+            title={t.timeInRange}
+            value="87"
+            unit="%"
+            trend="up"
+            icon={Target}
+            color="green"
+          />
+          <StatsCard
+            title={t.loggingStreak}
+            value="12"
+            unit={t.days}
+            trend="up"
+            icon={Clock}
+            color="orange"
+          />
+          <StatsCard
+            title={t.healthScore}
+            value="8.4"
+            unit="/10"
+            trend="up"
+            icon={Heart}
+            color="red"
+          />
+        </div>
       </div>
 
-      {/* Main Content Grid - Simplified without predictions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Quick Overview */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Simple glucose trend overview */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Glucose Overview</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <p className="text-2xl font-bold text-blue-600">94</p>
-                <p className="text-sm text-blue-600">Current</p>
-              </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-2xl font-bold text-green-600">87%</p>
-                <p className="text-sm text-green-600">{t.timeInRange}</p>
-              </div>
-              <div className="text-center p-4 bg-orange-50 rounded-lg">
-                <p className="text-2xl font-bold text-orange-600">6</p>
-                <p className="text-sm text-orange-600">Readings Today</p>
-              </div>
+      {/* Today's Glucose Overview */}
+      <div className="px-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Glucose Overview</h3>
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="text-center p-3 bg-blue-50 rounded-lg">
+              <p className="text-xl font-bold text-blue-600">94</p>
+              <p className="text-sm text-blue-600">Current</p>
             </div>
-            <div className="mt-4 p-3 bg-slate-50 rounded-lg">
-              <p className="text-sm text-slate-700">
-                <strong>Quick Insight:</strong> Your glucose levels are stable today. Great job maintaining consistency with your routine!
-              </p>
+            <div className="text-center p-3 bg-green-50 rounded-lg">
+              <p className="text-xl font-bold text-green-600">87%</p>
+              <p className="text-sm text-green-600">{t.timeInRange}</p>
+            </div>
+            <div className="text-center p-3 bg-orange-50 rounded-lg">
+              <p className="text-xl font-bold text-orange-600">6</p>
+              <p className="text-sm text-orange-600">Readings Today</p>
             </div>
           </div>
+          <div className="p-3 bg-slate-50 rounded-lg">
+            <p className="text-sm text-slate-700">
+              <strong>Quick Insight:</strong> Your glucose levels are stable today. Great job maintaining consistency with your routine!
+            </p>
+          </div>
         </div>
+      </div>
 
-        {/* Right Column - Actions & Activity */}
-        <div className="space-y-6">
-          <QuickActions onDataLogged={onDataLogged} language={language} />
-          
-          {/* Enhanced Logging Section */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Recent Logs</h3>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => openLogForm('meal')}
-                  className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
-                  title="Log Meal & Carbs"
-                >
-                  <Utensils className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => openLogForm('exercise')}
-                  className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
-                  title="Log Exercise"
-                >
-                  <Activity className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => openLogForm('glucose')}
-                  className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
-                  title="Log Glucose Reading"
-                >
-                  <Droplets className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            
-            {/* Parameter Importance Notice */}
-            <div className="bg-blue-50 p-3 rounded-lg mb-4">
-              <p className="text-xs text-blue-800">
-                <strong>{t.aiPoweredInsights}:</strong> Log meals (carbs), exercise (type/duration/intensity), and glucose readings for accurate predictions.
-              </p>
-            </div>
-            
-            <div className="space-y-3 max-h-80 overflow-y-auto">
-              {allLogs.slice(0, 10).map((log) => (
-                <div key={log.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="p-2 rounded-lg bg-gray-200">
-                    {log.type === 'meal' && <Utensils className="h-4 w-4 text-gray-600" />}
-                    {log.type === 'exercise' && <Activity className="h-4 w-4 text-gray-600" />}
-                    {log.type === 'glucose' && <Droplets className="h-4 w-4 text-gray-600" />}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{formatLogDisplay(log)}</p>
-                    <p className="text-xs text-gray-500">{log.date} at {log.time}</p>
-                  </div>
-                </div>
-              ))}
+      {/* Recent Logs - Mobile Optimized */}
+      <div className="px-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-900">Recent Logs</h3>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => openLogForm('meal')}
+                className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                title="Log Meal & Carbs"
+              >
+                <Utensils className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => openLogForm('exercise')}
+                className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                title="Log Exercise"
+              >
+                <Activity className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => openLogForm('glucose')}
+                className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                title="Log Glucose Reading"
+              >
+                <Droplets className="h-4 w-4" />
+              </button>
             </div>
           </div>
+          
+          {/* Parameter Importance Notice */}
+          <div className="bg-blue-50 p-3 rounded-lg mb-4">
+            <p className="text-xs text-blue-800">
+              <strong>{t.aiPoweredInsights}:</strong> Log meals (carbs), exercise (type/duration/intensity), and glucose readings for accurate predictions.
+            </p>
+          </div>
+          
+          <div className="space-y-3 max-h-60 overflow-y-auto">
+            {allLogs.slice(0, 8).map((log) => (
+              <div key={log.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                <div className="p-2 rounded-lg bg-gray-200 flex-shrink-0">
+                  {log.type === 'meal' && <Utensils className="h-4 w-4 text-gray-600" />}
+                  {log.type === 'exercise' && <Activity className="h-4 w-4 text-gray-600" />}
+                  {log.type === 'glucose' && <Droplets className="h-4 w-4 text-gray-600" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{formatLogDisplay(log)}</p>
+                  <p className="text-xs text-gray-500">{log.date} at {log.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="px-4">
+        <QuickActions onDataLogged={onDataLogged} language={language} />
       </div>
     </div>
   );
