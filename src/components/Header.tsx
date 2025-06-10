@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Settings, User, Activity, Wifi, ChevronDown, LogOut, Shield, Monitor, Bluetooth, Globe, X, Save, Eye, EyeOff, Lock, Mail, Phone, Calendar, MapPin, Camera, Download, Trash2, Key, CreditCard, Smartphone, Languages } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 
@@ -19,6 +19,11 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+
+  // Refs for dropdown menus
+  const connectionMenuRef = useRef<HTMLDivElement>(null);
+  const languageMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Profile form state - now properly managed
   const [profileData, setProfileData] = useState({
@@ -85,8 +90,53 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
     { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' }
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' },
+    { code: 'ja', name: '日本語', flag: '🇯🇵' },
+    { code: 'ko', name: '한국어', flag: '🇰🇷' },
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+    { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+    { code: 'pt', name: 'Português', flag: '🇧🇷' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' }
   ];
+
+  // Auto-hide dropdowns when clicking outside or moving mouse away
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (connectionMenuRef.current && !connectionMenuRef.current.contains(event.target as Node)) {
+        setShowConnectionMenu(false);
+      }
+      if (languageMenuRef.current && !languageMenuRef.current.contains(event.target as Node)) {
+        setShowLanguageMenu(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    const handleMouseLeave = (event: MouseEvent) => {
+      // Check if mouse is leaving the dropdown area
+      const target = event.relatedTarget as Node;
+      
+      if (connectionMenuRef.current && !connectionMenuRef.current.contains(target)) {
+        setTimeout(() => setShowConnectionMenu(false), 100);
+      }
+      if (languageMenuRef.current && !languageMenuRef.current.contains(target)) {
+        setTimeout(() => setShowLanguageMenu(false), 100);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setTimeout(() => setShowUserMenu(false), 100);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   const getGlucoseStatus = () => {
     if (currentGlucose >= 70 && currentGlucose <= 140) return 'normal';
@@ -105,9 +155,9 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
   };
 
   const connectionStatus = {
-    cgm: { connected: true, label: 'CGM' },
-    bluetooth: { connected: true, label: 'Bluetooth' },
-    internet: { connected: true, label: 'Internet' }
+    bgm: { connected: true, label: t.bloodGlucoseMeter },
+    bluetooth: { connected: true, label: t.bluetooth },
+    internet: { connected: true, label: t.internet }
   };
 
   const handleProfileSave = () => {
@@ -208,9 +258,10 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
             </div>
             
             {/* Language Selector */}
-            <div className="relative">
+            <div className="relative" ref={languageMenuRef}>
               <button
                 onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+                onMouseEnter={() => setShowLanguageMenu(true)}
                 className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <Languages className="h-4 w-4 text-gray-600" />
@@ -221,8 +272,11 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
               </button>
 
               {showLanguageMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                  <div className="p-2">
+                <div 
+                  className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                  onMouseLeave={() => setShowLanguageMenu(false)}
+                >
+                  <div className="p-2 max-h-64 overflow-y-auto">
                     {languages.map((lang) => (
                       <button
                         key={lang.code}
@@ -243,9 +297,10 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
             </div>
             
             {/* Connection Status with Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={connectionMenuRef}>
               <button
                 onClick={() => setShowConnectionMenu(!showConnectionMenu)}
+                onMouseEnter={() => setShowConnectionMenu(true)}
                 className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <Wifi className={`h-4 w-4 ${isConnected ? 'text-green-600' : 'text-gray-400'}`} />
@@ -256,14 +311,17 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
               </button>
 
               {showConnectionMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                <div 
+                  className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                  onMouseLeave={() => setShowConnectionMenu(false)}
+                >
                   <div className="p-3">
                     <h4 className="text-sm font-semibold text-gray-900 mb-3">{t.connectionStatus}</h4>
                     <div className="space-y-2">
                       {Object.entries(connectionStatus).map(([key, status]) => (
                         <div key={key} className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            {key === 'cgm' && <Monitor className="h-4 w-4 text-gray-600" />}
+                            {key === 'bgm' && <Monitor className="h-4 w-4 text-gray-600" />}
                             {key === 'bluetooth' && <Bluetooth className="h-4 w-4 text-gray-600" />}
                             {key === 'internet' && <Globe className="h-4 w-4 text-gray-600" />}
                             <span className="text-sm text-gray-700">{status.label}</span>
@@ -288,7 +346,7 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
               </button>
               
               {/* User Menu - Now uses dynamic user data */}
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center space-x-3 bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
@@ -299,7 +357,10 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
                 </button>
 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  <div 
+                    className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+                    onMouseLeave={() => setShowUserMenu(false)}
+                  >
                     <div className="p-3 border-b border-gray-100">
                       <p className="text-sm font-semibold text-gray-900">{currentUserData.fullName}</p>
                       <p className="text-xs text-gray-500">{currentUserData.email}</p>
