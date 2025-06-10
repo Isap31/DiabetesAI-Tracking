@@ -24,9 +24,11 @@ import {
   MessageCircle,
 } from 'lucide-react-native';
 import VoiceChat from '../../components/VoiceChat';
+import GoalsModal from '../../components/GoalsModal';
 
 export default function HomeTab() {
   const [showVoiceChat, setShowVoiceChat] = useState(false);
+  const [showGoalsModal, setShowGoalsModal] = useState(false);
 
   const stats = [
     {
@@ -323,7 +325,10 @@ export default function HomeTab() {
         </View>
 
         {/* Goals Quick Access */}
-        <TouchableOpacity style={styles.goalsCard}>
+        <TouchableOpacity 
+          style={styles.goalsCard}
+          onPress={() => setShowGoalsModal(true)}
+        >
           <View style={styles.goalsHeader}>
             <View style={styles.goalsIcon}>
               <Target size={20} color="#ffffff" />
@@ -348,6 +353,12 @@ export default function HomeTab() {
           onClose={() => setShowVoiceChat(false)}
         />
       </Modal>
+
+      {/* Goals Modal */}
+      <GoalsModal
+        isVisible={showGoalsModal}
+        onClose={() => setShowGoalsModal(false)}
+      />
     </View>
   );
 }
