@@ -282,7 +282,7 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
                   disabled={message.isPlaying}
                 >
                   {message.isPlaying ? (
-                    <ActivityIndicator size="small" color="#1e293b" />
+                    <ActivityIndicator size="small\" color="#1e293b" />
                   ) : (
                     <Volume2 size={16} color="#1e293b" />
                   )}
