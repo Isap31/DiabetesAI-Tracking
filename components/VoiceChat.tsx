@@ -18,10 +18,9 @@ import {
   Bot,
   User,
   X,
+  Play,
+  Pause,
 } from 'lucide-react-native';
-import { elevenLabsService } from '../services/elevenLabsService';
-import { Audio } from 'expo-av';
-import { Platform } from 'react-native';
 
 interface Message {
   id: string;
@@ -29,6 +28,7 @@ interface Message {
   text: string;
   timestamp: string;
   isPlaying?: boolean;
+  audioUrl?: string;
 }
 
 interface VoiceChatProps {
@@ -49,66 +49,71 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  useEffect(() => {
-    if (Platform.OS !== 'web') {
-      setupAudio();
-    }
-  }, []);
-
-  const setupAudio = async () => {
-    try {
-      await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-    } catch (error) {
-      console.error('Audio setup error:', error);
-    }
+  // Mock user data for realistic responses
+  const mockUserData = {
+    currentGlucose: 94,
+    lastMeal: { name: 'Grilled Chicken Salad', carbs: 15, protein: 35, time: '12:30 PM' },
+    recentExercise: { type: 'Walking', duration: 30, time: '11:00 AM' },
+    timeInRange: 87,
+    avgGlucose: 96,
+    diabetesType: 'Type 1',
+    experience: 9
   };
 
-  const generateAIResponse = (userMessage: string): string => {
-    const responses = {
-      glucose: [
-        "Based on your recent patterns, your glucose levels have been stable. The reading of 94 mg/dL is excellent and within your target range.",
-        "Your glucose trends show good control. Consider maintaining your current meal timing and portion sizes.",
-        "I notice your glucose has been consistently in range. This suggests your current management strategy is working well.",
-        "Your glucose variability has decreased this week, which is a great sign of improved control."
-      ],
-      meal: [
-        "For stable glucose levels, I recommend focusing on lean proteins, non-starchy vegetables, and complex carbohydrates. A grilled chicken salad with quinoa would be ideal.",
-        "Based on your current glucose reading, a balanced meal with 15-20g of carbs would be appropriate. Consider adding fiber-rich vegetables.",
-        "Your meal timing looks good. For your next meal, try pairing carbohydrates with protein to help maintain stable glucose levels.",
-        "Consider the plate method: half non-starchy vegetables, quarter lean protein, quarter complex carbohydrates."
-      ],
-      exercise: [
-        "Light to moderate exercise like a 20-30 minute walk would be perfect right now. Your current glucose level is ideal for physical activity.",
-        "Based on your glucose patterns, post-meal walks have been very effective for you. I'd recommend continuing this routine.",
-        "Your glucose is stable, making this a great time for exercise. Consider resistance training or yoga for variety.",
-        "Exercise timing is important. Your data shows best results with activity 1-2 hours after meals."
-      ],
-      general: [
-        "Your overall diabetes management has been excellent. Keep up the consistent logging and monitoring.",
-        "I'm analyzing your data patterns. Your time in range has improved by 5% this week - great progress!",
-        "Remember to stay hydrated and maintain regular meal times. Your current routine is showing positive results.",
-        "Your consistency with logging is impressive. This data helps me provide better personalized recommendations."
-      ]
-    };
-
+  const generateContextualResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
     
-    if (lowerMessage.includes('glucose') || lowerMessage.includes('blood sugar') || lowerMessage.includes('reading') || lowerMessage.includes('level')) {
-      return responses.glucose[Math.floor(Math.random() * responses.glucose.length)];
-    } else if (lowerMessage.includes('meal') || lowerMessage.includes('eat') || lowerMessage.includes('food') || lowerMessage.includes('lunch') || lowerMessage.includes('dinner') || lowerMessage.includes('breakfast') || lowerMessage.includes('carb')) {
-      return responses.meal[Math.floor(Math.random() * responses.meal.length)];
-    } else if (lowerMessage.includes('exercise') || lowerMessage.includes('workout') || lowerMessage.includes('walk') || lowerMessage.includes('activity') || lowerMessage.includes('gym')) {
-      return responses.exercise[Math.floor(Math.random() * responses.exercise.length)];
-    } else {
-      return responses.general[Math.floor(Math.random() * responses.general.length)];
+    // Glucose prediction queries
+    if (lowerMessage.includes('predict') && (lowerMessage.includes('glucose') || lowerMessage.includes('sugar') || lowerMessage.includes('level'))) {
+      if (lowerMessage.includes('meal') || lowerMessage.includes('eat') || lowerMessage.includes('food')) {
+        return `Based on your recent meal and activity, your glucose might rise to around 110-120 mg/dL in the next hour. Your last meal had ${mockUserData.lastMeal.carbs}g carbs and ${mockUserData.lastMeal.protein}g protein, which should provide a moderate, stable response. The protein will help slow absorption.`;
+      }
+      return `Based on your current glucose of ${mockUserData.currentGlucose} mg/dL and recent patterns, I predict your levels will remain stable between 90-110 mg/dL over the next 2 hours. Your ${mockUserData.recentExercise.duration}-minute ${mockUserData.recentExercise.type.toLowerCase()} earlier should help maintain stability.`;
     }
+
+    // Current glucose status
+    if (lowerMessage.includes('current') && (lowerMessage.includes('glucose') || lowerMessage.includes('sugar') || lowerMessage.includes('level'))) {
+      return `Your current glucose is ${mockUserData.currentGlucose} mg/dL, which is excellent and within your target range of 70-140. You're doing great! Your time in range this week is ${mockUserData.timeInRange}%, which is above the recommended 70%.`;
+    }
+
+    // Meal impact questions
+    if (lowerMessage.includes('meal') || lowerMessage.includes('eat') || lowerMessage.includes('food')) {
+      if (lowerMessage.includes('what') && (lowerMessage.includes('should') || lowerMessage.includes('can'))) {
+        return `For your next meal, I recommend 15-20g carbs with 20-25g protein. Based on your current glucose of ${mockUserData.currentGlucose} mg/dL, you have good flexibility. Consider lean protein with vegetables and a moderate portion of complex carbs.`;
+      }
+      return `Your last meal, ${mockUserData.lastMeal.name}, was well-balanced with ${mockUserData.lastMeal.carbs}g carbs and ${mockUserData.lastMeal.protein}g protein. This combination typically causes a gentle glucose rise of 20-30 mg/dL over 1-2 hours, then stabilizes.`;
+    }
+
+    // Exercise impact
+    if (lowerMessage.includes('exercise') || lowerMessage.includes('workout') || lowerMessage.includes('activity')) {
+      return `Your ${mockUserData.recentExercise.duration}-minute ${mockUserData.recentExercise.type.toLowerCase()} at ${mockUserData.recentExercise.time} was excellent timing! Exercise typically lowers glucose by 20-40 mg/dL and the effect can last 2-4 hours. This helps explain your current stable reading.`;
+    }
+
+    // Trends and patterns
+    if (lowerMessage.includes('trend') || lowerMessage.includes('pattern') || lowerMessage.includes('how') && lowerMessage.includes('doing')) {
+      return `You're doing excellent! Your average glucose this week is ${mockUserData.avgGlucose} mg/dL with ${mockUserData.timeInRange}% time in range. Your consistent logging and ${mockUserData.experience} years of experience really show in your stable patterns.`;
+    }
+
+    // Time in range
+    if (lowerMessage.includes('time in range') || lowerMessage.includes('tir')) {
+      return `Your time in range is ${mockUserData.timeInRange}%, which is excellent! The target is above 70%, so you're doing great. This means you're spending most of your time between 70-140 mg/dL, which reduces long-term complications.`;
+    }
+
+    // Recommendations
+    if (lowerMessage.includes('recommend') || lowerMessage.includes('suggest') || lowerMessage.includes('advice')) {
+      return `Based on your current patterns, I recommend continuing your balanced approach. Your protein intake has been excellent for glucose stability. Consider maintaining your current exercise routine and meal timing - they're working well for you!`;
+    }
+
+    // General health questions
+    if (lowerMessage.includes('how') && (lowerMessage.includes('health') || lowerMessage.includes('diabetes'))) {
+      return `Your diabetes management is impressive! With ${mockUserData.experience} years of experience, ${mockUserData.timeInRange}% time in range, and consistent logging, you're demonstrating excellent self-care. Keep up the great work!`;
+    }
+
+    // Default response
+    return `I'm here to help with your diabetes management! You can ask me about glucose predictions, meal recommendations, exercise timing, or your overall trends. Your current glucose is ${mockUserData.currentGlucose} mg/dL and you're doing great with ${mockUserData.timeInRange}% time in range.`;
   };
 
   const handleSendMessage = async (text: string) => {
@@ -127,7 +132,7 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
 
     // Simulate AI thinking time
     setTimeout(async () => {
-      const aiResponseText = generateAIResponse(text);
+      const aiResponseText = generateContextualResponse(text);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
@@ -138,89 +143,108 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
       setMessages(prev => [...prev, aiMessage]);
       setIsProcessing(false);
 
-      // Speak the AI response if speech is enabled
-      if (isSpeechEnabled && elevenLabsService.isConfigured()) {
-        await elevenLabsService.speakText(aiResponseText);
+      // Auto-play AI response if speech is enabled
+      if (isSpeechEnabled) {
+        await playAIResponse(aiMessage);
       }
     }, 1500);
   };
 
-  const startRecording = async () => {
+  const playAIResponse = async (message: Message) => {
     try {
-      if (Platform.OS === 'web') {
-        Alert.alert('Voice Recording', 'Voice recording is not available on web. Please use the text input.');
+      setPlayingMessageId(message.id);
+      
+      // Check if ElevenLabs is configured
+      const apiKey = process.env.EXPO_PUBLIC_ELEVENLABS_API_KEY;
+      const voiceId = process.env.EXPO_PUBLIC_ELEVENLABS_VOICE_ID;
+      
+      if (!apiKey || !voiceId) {
+        // Fallback to native speech synthesis
+        Alert.alert('Voice Not Available', 'ElevenLabs voice service is not configured. Using system voice.');
         return;
       }
 
-      const permission = await Audio.requestPermissionsAsync();
-      if (permission.status !== 'granted') {
-        Alert.alert('Permission Required', 'Please grant microphone permission to use voice recording.');
-        return;
-      }
-
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
+      // Call ElevenLabs API
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': apiKey,
+        },
+        body: JSON.stringify({
+          text: message.text,
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0.0,
+            use_speaker_boost: true
+          }
+        }),
       });
 
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
+      if (!response.ok) {
+        throw new Error(`ElevenLabs API error: ${response.status}`);
+      }
 
-      setRecording(recording);
-      setIsRecording(true);
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      
+      // Update message with audio URL
+      setMessages(prev => prev.map(msg => 
+        msg.id === message.id ? { ...msg, audioUrl } : msg
+      ));
+
+      // Play audio
+      const audio = new Audio(audioUrl);
+      audio.onended = () => setPlayingMessageId(null);
+      await audio.play();
+
     } catch (error) {
-      console.error('Failed to start recording:', error);
+      console.error('Voice synthesis error:', error);
+      Alert.alert('Voice Error', 'Could not generate voice response. Please check your connection.');
+    } finally {
+      setPlayingMessageId(null);
+    }
+  };
+
+  const toggleMessagePlayback = async (message: Message) => {
+    if (playingMessageId === message.id) {
+      // Stop current playback
+      setPlayingMessageId(null);
+      return;
+    }
+
+    if (message.audioUrl) {
+      // Play existing audio
+      setPlayingMessageId(message.id);
+      const audio = new Audio(message.audioUrl);
+      audio.onended = () => setPlayingMessageId(null);
+      await audio.play();
+    } else {
+      // Generate and play new audio
+      await playAIResponse(message);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      Alert.alert('Voice Recording', 'Voice recording feature coming soon! Please use the text input for now.');
+    } catch (error) {
+      console.error('Recording error:', error);
       Alert.alert('Recording Error', 'Failed to start voice recording.');
     }
   };
 
-  const stopRecording = async () => {
-    try {
-      if (!recording) return;
-
-      setIsRecording(false);
-      await recording.stopAndUnloadAsync();
-      
-      const uri = recording.getURI();
-      setRecording(null);
-
-      if (uri) {
-        // For demo purposes, we'll simulate speech-to-text
-        // In a real implementation, you would send the audio to a speech-to-text service
-        const simulatedText = "I'd like to know about my glucose levels";
-        await handleSendMessage(simulatedText);
-      }
-    } catch (error) {
-      console.error('Failed to stop recording:', error);
-      Alert.alert('Recording Error', 'Failed to process voice recording.');
-    }
-  };
-
-  const playMessage = async (message: Message) => {
-    if (!elevenLabsService.isConfigured()) {
-      Alert.alert('Voice Not Available', 'ElevenLabs voice service is not configured.');
-      return;
-    }
-
-    setMessages(prev =>
-      prev.map(msg =>
-        msg.id === message.id ? { ...msg, isPlaying: true } : msg
-      )
-    );
-
-    try {
-      await elevenLabsService.speakText(message.text);
-    } catch (error) {
-      console.error('Playback error:', error);
-    } finally {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === message.id ? { ...msg, isPlaying: false } : msg
-        )
-      );
-    }
-  };
+  const quickQuestions = [
+    "What's my predicted sugar level after this meal?",
+    "How are my glucose trends looking?",
+    "What should I eat for my next meal?",
+    "When is the best time to exercise?",
+    "How is my time in range?",
+    "Any recommendations for better control?"
+  ];
 
   if (!isVisible) return null;
 
@@ -275,14 +299,14 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
                 )}
               </View>
               <Text style={styles.messageTime}>{message.timestamp}</Text>
-              {message.type === 'ai' && elevenLabsService.isConfigured() && (
+              {message.type === 'ai' && (
                 <TouchableOpacity
                   style={styles.playButton}
-                  onPress={() => playMessage(message)}
-                  disabled={message.isPlaying}
+                  onPress={() => toggleMessagePlayback(message)}
+                  disabled={playingMessageId === message.id}
                 >
-                  {message.isPlaying ? (
-                    <ActivityIndicator size="small\" color="#1e293b" />
+                  {playingMessageId === message.id ? (
+                    <ActivityIndicator size="small" color="#1e293b" />
                   ) : (
                     <Volume2 size={16} color="#1e293b" />
                   )}
@@ -303,31 +327,46 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
             </View>
             <View style={styles.typingIndicator}>
               <ActivityIndicator size="small" color="#6b7280" />
-              <Text style={styles.typingText}>AI is thinking...</Text>
+              <Text style={styles.typingText}>AI is analyzing your data...</Text>
             </View>
           </View>
         )}
       </ScrollView>
+
+      {/* Quick Questions */}
+      <View style={styles.quickQuestions}>
+        <Text style={styles.quickQuestionsTitle}>Quick questions:</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {quickQuestions.map((question, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => setInputText(question)}
+              style={styles.quickQuestionButton}
+            >
+              <Text style={styles.quickQuestionText}>{question}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.textInput}
           value={inputText}
           onChangeText={setInputText}
-          placeholder="Type your message or use voice..."
+          placeholder="Ask about glucose predictions, meal advice, or trends..."
           multiline
           maxLength={500}
         />
         <View style={styles.inputActions}>
           <TouchableOpacity
             style={[styles.voiceButton, isRecording && styles.voiceButtonActive]}
-            onPress={isRecording ? stopRecording : startRecording}
-            disabled={Platform.OS === 'web'}
+            onPress={startRecording}
           >
             {isRecording ? (
               <MicOff size={20} color="#ffffff" />
             ) : (
-              <Mic size={20} color={Platform.OS === 'web' ? "#9ca3af" : "#ffffff"} />
+              <Mic size={20} color="#ffffff" />
             )}
           </TouchableOpacity>
           <TouchableOpacity
@@ -340,13 +379,14 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
         </View>
       </View>
 
-      {!elevenLabsService.isConfigured() && (
-        <View style={styles.configWarning}>
-          <Text style={styles.configWarningText}>
-            Configure ElevenLabs API key for voice features
-          </Text>
-        </View>
-      )}
+      {/* Configuration Notice */}
+      <View style={styles.configNotice}>
+        <Text style={styles.configNoticeText}>
+          {process.env.EXPO_PUBLIC_ELEVENLABS_API_KEY 
+            ? '🎤 ElevenLabs voice enabled' 
+            : '⚠️ Configure ElevenLabs API key for voice features'}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -455,6 +495,27 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     fontStyle: 'italic',
   },
+  quickQuestions: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+  },
+  quickQuestionsTitle: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 8,
+  },
+  quickQuestionButton: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginRight: 8,
+  },
+  quickQuestionText: {
+    fontSize: 12,
+    color: '#374151',
+  },
   inputContainer: {
     padding: 16,
     backgroundColor: '#ffffff',
@@ -496,13 +557,13 @@ const styles = StyleSheet.create({
   sendButtonDisabled: {
     backgroundColor: '#9ca3af',
   },
-  configWarning: {
-    backgroundColor: '#fef3c7',
+  configNotice: {
+    backgroundColor: '#f3f4f6',
     padding: 8,
     alignItems: 'center',
   },
-  configWarningText: {
+  configNoticeText: {
     fontSize: 12,
-    color: '#92400e',
+    color: '#6b7280',
   },
 });
