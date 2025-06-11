@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  TextInput,
+  Modal,
 } from 'react-native';
 import {
   Plus,
@@ -17,33 +19,70 @@ import {
   Scale,
   Brain,
   Bed,
+  X,
+  Save,
 } from 'lucide-react-native';
 
 export default function TrackingTab() {
+  const [showLogForm, setShowLogForm] = useState(false);
+  const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
+  const [logData, setLogData] = useState({
+    // Meal fields
+    mealName: '',
+    carbs: '',
+    protein: '',
+    calories: '',
+    alcohol: '',
+    // Exercise fields
+    exerciseType: '',
+    duration: '',
+    intensity: 'moderate',
+    // Glucose fields
+    glucose: '',
+    context: 'fasting',
+    notes: '',
+    // Profile fields
+    age: '',
+    diabetesType: 'Type 1',
+    height: '',
+    weight: '',
+    stressLevel: '3',
+    gender: 'female',
+    sleepQuality: '7',
+    sleepDuration: '7.5',
+    // Common fields
+    time: new Date().toTimeString().slice(0, 5),
+    date: new Date().toISOString().split('T')[0]
+  });
+
   const quickLog = [
     { 
       icon: Utensils, 
       label: 'Log Meal', 
-      sublabel: 'Carbs & Calories',
+      sublabel: 'Carbs, Protein & Alcohol',
       color: '#1e293b',
+      action: () => openLogForm('meal')
     },
     { 
       icon: Activity, 
       label: 'Exercise', 
       sublabel: 'Type & Duration',
       color: '#1e293b',
+      action: () => openLogForm('exercise')
     },
     { 
       icon: Droplets, 
       label: 'Glucose', 
       sublabel: 'Current Level',
       color: '#1e293b',
+      action: () => openLogForm('glucose')
     },
     { 
       icon: User, 
       label: 'Profile', 
       sublabel: 'Age, BMI, Sleep',
       color: '#1e293b',
+      action: () => openLogForm('profile')
     }
   ];
 
@@ -52,9 +91,9 @@ export default function TrackingTab() {
       type: 'meal', 
       item: 'Grilled Chicken Salad', 
       time: '12:30 PM', 
-      details: '15g carbs, 350 cal', 
+      details: '15g carbs, 35g protein, 350 cal', 
       impact: 'low',
-      aiNote: 'Good carb choice for stable glucose'
+      aiNote: 'Good protein balance for stable glucose'
     },
     { 
       type: 'exercise', 
@@ -86,7 +125,7 @@ export default function TrackingTab() {
     {
       icon: Utensils,
       title: '3 Meals',
-      subtitle: '45g total carbs',
+      subtitle: '45g carbs, 85g protein',
       color: '#3b82f6',
     },
     {
@@ -109,6 +148,27 @@ export default function TrackingTab() {
     },
   ];
 
+  const openLogForm = (type: 'meal' | 'exercise' | 'glucose' | 'profile') => {
+    setLogType(type);
+    setShowLogForm(true);
+  };
+
+  const handleLogSubmit = () => {
+    // Handle form submission
+    console.log('Log submitted:', { type: logType, data: logData });
+    setShowLogForm(false);
+    // Reset form
+    setLogData({
+      mealName: '', carbs: '', protein: '', calories: '', alcohol: '',
+      exerciseType: '', duration: '', intensity: 'moderate',
+      glucose: '', context: 'fasting', notes: '',
+      age: '', diabetesType: 'Type 1', height: '', weight: '', stressLevel: '3',
+      gender: 'female', sleepQuality: '7', sleepDuration: '7.5',
+      time: new Date().toTimeString().slice(0, 5),
+      date: new Date().toISOString().split('T')[0]
+    });
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -123,7 +183,7 @@ export default function TrackingTab() {
           <Text style={styles.sectionTitle}>Quick Data Logging</Text>
           <View style={styles.aiInsightBanner}>
             <Text style={styles.aiInsightText}>
-              <Text style={styles.aiInsightBold}>AI-Powered Insights:</Text> Log all parameters for comprehensive glucose predictions and personalized recommendations.
+              <Text style={styles.aiInsightBold}>AI-Powered Insights:</Text> Log all parameters including protein and alcohol for comprehensive glucose predictions and personalized recommendations.
             </Text>
           </View>
           <View style={styles.quickLogGrid}>
@@ -131,6 +191,7 @@ export default function TrackingTab() {
               <TouchableOpacity
                 key={index}
                 style={[styles.quickLogButton, { backgroundColor: action.color }]}
+                onPress={action.action}
               >
                 <action.icon size={24} color="#ffffff" />
                 <Text style={styles.quickLogLabel}>{action.label}</Text>
@@ -199,6 +260,7 @@ export default function TrackingTab() {
             <Text style={styles.insightText}>
               Your consistent logging has improved AI prediction accuracy by 12%. 
               Your glucose control shows a 5% improvement in time-in-range compared to last week.
+              Protein intake tracking is helping optimize meal responses.
             </Text>
             <View style={styles.insightStats}>
               <View style={styles.insightStat}>
@@ -217,6 +279,278 @@ export default function TrackingTab() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Universal Log Form Modal */}
+      <Modal visible={showLogForm} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                Log {logType.charAt(0).toUpperCase() + logType.slice(1)}
+              </Text>
+              <TouchableOpacity onPress={() => setShowLogForm(false)}>
+                <X size={20} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalContent}>
+              {/* Common fields for non-profile logs */}
+              {logType !== 'profile' && (
+                <View style={styles.inputRow}>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Date</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={logData.date}
+                      onChangeText={(text) => setLogData({...logData, date: text})}
+                    />
+                  </View>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Time</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={logData.time}
+                      onChangeText={(text) => setLogData({...logData, time: text})}
+                    />
+                  </View>
+                </View>
+              )}
+
+              {/* Meal-specific fields */}
+              {logType === 'meal' && (
+                <>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Meal Name *</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={logData.mealName}
+                      onChangeText={(text) => setLogData({...logData, mealName: text})}
+                      placeholder="e.g., Grilled Chicken Salad"
+                    />
+                  </View>
+                  <View style={styles.inputRow}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Carbs (g) *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.carbs}
+                        onChangeText={(text) => setLogData({...logData, carbs: text})}
+                        placeholder="15"
+                        keyboardType="numeric"
+                      />
+                      <Text style={styles.inputNote}>Critical for glucose prediction</Text>
+                    </View>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Protein (g) *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.protein}
+                        onChangeText={(text) => setLogData({...logData, protein: text})}
+                        placeholder="35"
+                        keyboardType="numeric"
+                      />
+                      <Text style={styles.inputNote}>Affects satiety & glucose</Text>
+                    </View>
+                  </View>
+                  <View style={styles.inputRow}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Calories</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.calories}
+                        onChangeText={(text) => setLogData({...logData, calories: text})}
+                        placeholder="350"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Alcohol (g)</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.alcohol}
+                        onChangeText={(text) => setLogData({...logData, alcohol: text})}
+                        placeholder="0"
+                        keyboardType="numeric"
+                      />
+                      <Text style={styles.inputNote}>Impacts glucose control</Text>
+                    </View>
+                  </View>
+                </>
+              )}
+
+              {/* Exercise-specific fields */}
+              {logType === 'exercise' && (
+                <>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Exercise Type *</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={logData.exerciseType}
+                      onChangeText={(text) => setLogData({...logData, exerciseType: text})}
+                      placeholder="Walking, Running, Cycling..."
+                    />
+                  </View>
+                  <View style={styles.inputRow}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Duration (min) *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.duration}
+                        onChangeText={(text) => setLogData({...logData, duration: text})}
+                        placeholder="30"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Intensity *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.intensity}
+                        onChangeText={(text) => setLogData({...logData, intensity: text})}
+                        placeholder="light, moderate, vigorous"
+                      />
+                    </View>
+                  </View>
+                </>
+              )}
+
+              {/* Glucose-specific fields */}
+              {logType === 'glucose' && (
+                <>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Glucose Level (mg/dL) *</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={logData.glucose}
+                      onChangeText={(text) => setLogData({...logData, glucose: text})}
+                      placeholder="94"
+                      keyboardType="numeric"
+                    />
+                  </View>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Context</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={logData.context}
+                      onChangeText={(text) => setLogData({...logData, context: text})}
+                      placeholder="fasting, before-meal, after-meal..."
+                    />
+                  </View>
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.inputLabel}>Notes</Text>
+                    <TextInput
+                      style={[styles.input, styles.textArea]}
+                      value={logData.notes}
+                      onChangeText={(text) => setLogData({...logData, notes: text})}
+                      placeholder="How are you feeling? Any symptoms?"
+                      multiline
+                      numberOfLines={3}
+                    />
+                  </View>
+                </>
+              )}
+
+              {/* Profile-specific fields */}
+              {logType === 'profile' && (
+                <>
+                  <View style={styles.inputRow}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Age *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.age}
+                        onChangeText={(text) => setLogData({...logData, age: text})}
+                        placeholder="34"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Gender *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.gender}
+                        onChangeText={(text) => setLogData({...logData, gender: text})}
+                        placeholder="female, male"
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.inputRow}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Height (cm) *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.height}
+                        onChangeText={(text) => setLogData({...logData, height: text})}
+                        placeholder="165"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Weight (kg) *</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.weight}
+                        onChangeText={(text) => setLogData({...logData, weight: text})}
+                        placeholder="68"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.inputRow}>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Sleep Quality (1-10)</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.sleepQuality}
+                        onChangeText={(text) => setLogData({...logData, sleepQuality: text})}
+                        placeholder="7"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                    <View style={styles.inputGroup}>
+                      <Text style={styles.inputLabel}>Sleep Duration (h)</Text>
+                      <TextInput
+                        style={styles.input}
+                        value={logData.sleepDuration}
+                        onChangeText={(text) => setLogData({...logData, sleepDuration: text})}
+                        placeholder="7.5"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  </View>
+                </>
+              )}
+
+              <View style={styles.aiInsightBox}>
+                <Text style={styles.aiInsightBoxText}>
+                  <Text style={styles.aiInsightBoxBold}>AI Integration:</Text> {
+                    logType === 'meal' ? 'Carbs, protein, and alcohol content are key factors for glucose predictions.' :
+                    logType === 'exercise' ? 'Type, duration, and intensity all affect glucose response patterns.' :
+                    logType === 'glucose' ? 'Regular readings help AI learn your patterns and improve predictions.' :
+                    'These parameters are essential for accurate glucose predictions and personalized recommendations.'
+                  }
+                </Text>
+              </View>
+            </ScrollView>
+
+            <View style={styles.modalActions}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowLogForm(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={handleLogSubmit}
+              >
+                <Save size={16} color="#ffffff" />
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -431,5 +765,118 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#6b7280',
     marginTop: 2,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    margin: 20,
+    maxHeight: '80%',
+    width: '90%',
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  modalContent: {
+    flex: 1,
+    padding: 16,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 4,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+    backgroundColor: '#ffffff',
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  inputNote: {
+    fontSize: 10,
+    color: '#6b7280',
+    marginTop: 2,
+  },
+  aiInsightBox: {
+    backgroundColor: '#dbeafe',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  aiInsightBoxText: {
+    fontSize: 12,
+    color: '#1e40af',
+    lineHeight: 16,
+  },
+  aiInsightBoxBold: {
+    fontWeight: '600',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6b7280',
+  },
+  saveButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#1e293b',
+    borderRadius: 8,
+    gap: 8,
+  },
+  saveButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#ffffff',
   },
 });

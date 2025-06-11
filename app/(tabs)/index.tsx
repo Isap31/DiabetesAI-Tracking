@@ -72,7 +72,9 @@ export default function HomeTab() {
       data: {
         mealName: 'Grilled Chicken Salad',
         carbs: '15',
+        protein: '35',
         calories: '350',
+        alcohol: '0',
         time: '12:30 PM'
       },
       time: '12:30 PM',
@@ -118,7 +120,7 @@ export default function HomeTab() {
   const formatLogDisplay = (log: any) => {
     switch (log.type) {
       case 'meal':
-        return `${log.data.mealName} (${log.data.carbs}g carbs)`;
+        return `${log.data.mealName} (${log.data.carbs}g carbs, ${log.data.protein}g protein)`;
       case 'exercise':
         return `${log.data.exerciseType} (${log.data.duration} min, ${log.data.intensity})`;
       case 'glucose':
@@ -303,7 +305,7 @@ export default function HomeTab() {
           
           <View style={styles.aiInsightBanner}>
             <Text style={styles.aiInsightText}>
-              <Text style={styles.aiInsightBold}>AI-Powered Insights:</Text> Log meals (carbs), exercise (type/duration/intensity), and glucose readings for accurate predictions.
+              <Text style={styles.aiInsightBold}>AI-Powered Insights:</Text> Log meals (carbs, protein, alcohol), exercise (type/duration/intensity), and glucose readings for accurate predictions.
             </Text>
           </View>
           

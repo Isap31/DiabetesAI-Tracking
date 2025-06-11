@@ -47,16 +47,18 @@ export default function PredictionsTab() {
   };
 
   const modelMetrics = [
-    { label: 'Prediction Accuracy', value: '93.1%', trend: '+5.8%', description: 'Enhanced with hormonal cycle data' },
-    { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, hormonal logs' },
-    { label: 'Model Confidence', value: '91.2%', trend: '+4.5%', description: 'Hormonal pattern recognition' },
-    { label: 'Profile Completeness', value: '100%', trend: 'Complete', description: 'All parameters including cycle data' }
+    { label: 'Prediction Accuracy', value: '93.1%', trend: '+5.8%', description: 'Enhanced with protein & alcohol data' },
+    { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, nutrition logs' },
+    { label: 'Model Confidence', value: '91.2%', trend: '+4.5%', description: 'Comprehensive nutrition tracking' },
+    { label: 'Profile Completeness', value: '100%', trend: 'Complete', description: 'All parameters including macronutrients' }
   ];
 
   const parameterInfluence = [
     { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils },
+    { parameter: 'Protein Content', influence: 68, icon: Utensils },
     { parameter: 'Menstrual Cycle Phase', influence: 72, icon: Moon },
     { parameter: 'Exercise Intensity', influence: 68, icon: Activity },
+    { parameter: 'Alcohol Consumption', influence: 45, icon: Utensils },
     { parameter: 'Sleep Quality & Duration', influence: 65, icon: Bed },
     { parameter: 'Time of Day', influence: 58, icon: Clock },
     { parameter: 'Years Since Diagnosis', influence: 55, icon: Calendar },
@@ -67,30 +69,30 @@ export default function PredictionsTab() {
   const predictions = [
     {
       type: 'warning',
-      title: 'Hormonal Glucose Variability Risk',
-      message: `Based on ${getMenstrualPhase()?.toLowerCase()} phase (day ${userProfile.menstrualCycleDay}) and 25g carbs from breakfast, ${getMenstrualPhase() === 'Ovulation' ? '22%' : '15%'} chance of glucose exceeding 140 mg/dL due to hormonal insulin resistance`,
+      title: 'Post-Meal Glucose Response',
+      message: `Based on ${getMenstrualPhase()?.toLowerCase()} phase (day ${userProfile.menstrualCycleDay}), 25g carbs, 35g protein, and 0g alcohol from breakfast, 18% chance of glucose exceeding 140 mg/dL. Protein helps stabilize response.`,
       confidence: getMenstrualPhase() === 'Ovulation' ? 89 : 82,
-      action: getMenstrualPhase() === 'Ovulation' ? 'Consider reducing carbs by 5-8g or light exercise post-meal' : 'Monitor glucose closely, maintain regular meal timing',
+      action: getMenstrualPhase() === 'Ovulation' ? 'Consider reducing carbs by 5-8g, protein ratio is optimal' : 'Monitor glucose closely, good protein balance',
       timeframe: '1-2 hours',
-      factors: ['Carb content: 25g', `${getMenstrualPhase()} phase`, 'Type 1 diabetes', '9 years experience', 'Hormonal insulin resistance']
+      factors: ['Carb content: 25g', 'Protein: 35g', 'No alcohol', `${getMenstrualPhase()} phase`, 'Type 1 diabetes', '9 years experience']
     },
     {
       type: 'positive',
-      title: 'Cycle-Optimized Exercise Window',
-      message: `Current glucose (94 mg/dL), moderate stress, and ${getMenstrualPhase()?.toLowerCase()} phase hormonal profile suggest ${getMenstrualPhase() === 'Follicular' ? 'excellent' : 'good'} conditions for physical activity`,
+      title: 'Optimal Nutrition Balance',
+      message: `Current glucose (94 mg/dL), moderate stress, and excellent protein-to-carb ratio (1.4:1) suggest ${getMenstrualPhase() === 'Follicular' ? 'excellent' : 'good'} metabolic conditions`,
       confidence: getMenstrualPhase() === 'Follicular' ? 94 : 88,
-      action: getMenstrualPhase() === 'Ovulation' ? 'Perfect time for 30-45 minutes moderate exercise - may help counteract hormonal effects' : 'Good time for regular exercise routine',
+      action: 'Maintain current protein intake strategy - helps with glucose stability',
       timeframe: 'Next 2 hours',
-      factors: ['Current glucose: 94 mg/dL', 'BMI: 25.0', `${getMenstrualPhase()} phase`, 'Sleep quality: 7/10', 'Diabetes experience: 9 years']
+      factors: ['Current glucose: 94 mg/dL', 'BMI: 25.0', 'Protein ratio: optimal', `${getMenstrualPhase()} phase`, 'Sleep quality: 7/10']
     },
     {
       type: 'info',
-      title: 'Cycle-Aware Meal Recommendation',
-      message: `Based on ${getMenstrualPhase()?.toLowerCase()} phase insulin sensitivity changes and your diabetes experience, optimal next meal should contain ${getMenstrualPhase() === 'Ovulation' ? '12-15g' : '15-18g'} carbs`,
+      title: 'Nutrition-Aware Meal Recommendation',
+      message: `Based on ${getMenstrualPhase()?.toLowerCase()} phase and morning protein intake, optimal next meal should contain ${getMenstrualPhase() === 'Ovulation' ? '12-15g' : '15-18g'} carbs with 20-25g protein`,
       confidence: 85,
-      action: getMenstrualPhase() === 'Ovulation' ? 'Focus on protein + vegetables, limit complex carbs during ovulation' : 'Balanced meal with normal carb content',
+      action: getMenstrualPhase() === 'Ovulation' ? 'Focus on lean protein + vegetables, moderate carbs' : 'Balanced meal with good protein content',
       timeframe: 'Lunch (12:00 PM)',
-      factors: [`${getMenstrualPhase()} phase effects`, 'Morning glucose pattern', 'Exercise history', 'Sleep quality', 'Years since diagnosis: 9']
+      factors: [`${getMenstrualPhase()} phase effects`, 'Morning protein intake', 'Exercise history', 'Sleep quality', 'Years since diagnosis: 9']
     }
   ];
 
@@ -100,7 +102,7 @@ export default function PredictionsTab() {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>AI Predictions & Analytics</Text>
-          <Text style={styles.headerSubtitle}>Advanced glucose modeling with comprehensive parameter analysis</Text>
+          <Text style={styles.headerSubtitle}>Advanced glucose modeling with comprehensive nutrition analysis</Text>
         </View>
 
         {/* AI Status Banner */}
@@ -112,7 +114,7 @@ export default function PredictionsTab() {
             <View style={styles.aiStatusInfo}>
               <Text style={styles.aiStatusTitle}>FlowSense AI Analytics Engine</Text>
               <Text style={styles.aiStatusSubtitle}>
-                Advanced neural network ensemble analyzing your glucose patterns with comprehensive parameter integration including hormonal cycles, sleep quality, exercise impact, and meal timing.
+                Advanced neural network analyzing glucose patterns with comprehensive nutrition tracking including carbohydrates, protein, alcohol consumption, hormonal cycles, sleep quality, and exercise impact.
               </Text>
             </View>
           </View>
@@ -176,6 +178,17 @@ export default function PredictionsTab() {
           </View>
         </View>
 
+        {/* Nutrition Impact */}
+        <View style={styles.nutritionSection}>
+          <View style={styles.nutritionHeader}>
+            <Utensils size={16} color="#6b7280" />
+            <Text style={styles.nutritionTitle}>Nutrition Impact Analysis</Text>
+          </View>
+          <Text style={styles.nutritionText}>
+            <Text style={styles.nutritionBold}>Macronutrient Tracking:</Text> Protein intake (35g this morning) helps stabilize glucose response. Carb-to-protein ratio of 0.7:1 is optimal for glucose control. No alcohol consumption supports stable patterns.
+          </Text>
+        </View>
+
         {/* Hormonal Cycle Impact */}
         {userProfile.gender === 'female' && !userProfile.isPregnant && (
           <View style={styles.hormonalSection}>
@@ -185,10 +198,10 @@ export default function PredictionsTab() {
             </View>
             <Text style={styles.hormonalText}>
               <Text style={styles.hormonalBold}>{getMenstrualPhase()} Phase:</Text> {
-                getMenstrualPhase() === 'Ovulation' ? 'Increased insulin resistance may cause higher glucose levels. Consider reducing carb intake by 20-30%.' :
-                getMenstrualPhase() === 'Luteal' ? 'Progesterone may increase insulin resistance. Monitor glucose more closely.' :
-                getMenstrualPhase() === 'Menstrual' ? 'Hormonal fluctuations may cause glucose variability. Stay hydrated and maintain regular meals.' :
-                'Estrogen levels rising may improve insulin sensitivity. Good time for normal carb intake.'
+                getMenstrualPhase() === 'Ovulation' ? 'Increased insulin resistance may cause higher glucose levels. Maintain high protein intake to help stabilize response.' :
+                getMenstrualPhase() === 'Luteal' ? 'Progesterone may increase insulin resistance. Continue balanced protein intake.' :
+                getMenstrualPhase() === 'Menstrual' ? 'Hormonal fluctuations may cause glucose variability. Protein helps maintain stability.' :
+                'Estrogen levels rising may improve insulin sensitivity. Good time for normal nutrition intake.'
               }
             </Text>
           </View>
@@ -214,7 +227,7 @@ export default function PredictionsTab() {
           <Text style={styles.sectionTitle}>
             Parameter Influence on Predictions
             {userProfile.gender === 'female' && !userProfile.isPregnant && (
-              <Text style={styles.influenceSubtitle}> (Female Cycle-Enhanced)</Text>
+              <Text style={styles.influenceSubtitle}> (Nutrition & Cycle-Enhanced)</Text>
             )}
           </Text>
           <View style={styles.influenceList}>
@@ -244,7 +257,7 @@ export default function PredictionsTab() {
           <Text style={styles.sectionTitle}>
             AI Predictions & Recommendations
             {userProfile.gender === 'female' && !userProfile.isPregnant && (
-              <Text style={styles.influenceSubtitle}> (Cycle-Aware)</Text>
+              <Text style={styles.influenceSubtitle}> (Nutrition & Cycle-Aware)</Text>
             )}
           </Text>
           <View style={styles.predictionsList}>
@@ -304,7 +317,7 @@ export default function PredictionsTab() {
             Next prediction update in 8 minutes
           </Text>
           <Text style={styles.footerSources}>
-            Data sources: CGM, meal logs, exercise tracker, sleep data, profile data
+            Data sources: CGM, meal logs (carbs/protein/alcohol), exercise tracker, sleep data, profile data
             {userProfile.gender === 'female' && !userProfile.isPregnant && ', hormonal cycle'}
           </Text>
         </View>
@@ -417,6 +430,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#1f2937',
+  },
+  nutritionSection: {
+    backgroundColor: '#f9fafb',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  nutritionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  nutritionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  nutritionText: {
+    fontSize: 12,
+    color: '#374151',
+    lineHeight: 16,
+  },
+  nutritionBold: {
+    fontWeight: '600',
   },
   hormonalSection: {
     backgroundColor: '#f9fafb',
