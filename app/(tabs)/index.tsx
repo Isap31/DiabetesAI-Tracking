@@ -22,6 +22,8 @@ import {
   Goal,
   Mic,
   MessageCircle,
+  Plus,
+  Camera,
 } from 'lucide-react-native';
 import VoiceChat from '../../components/VoiceChat';
 import GoalsModal from '../../components/GoalsModal';
@@ -38,6 +40,9 @@ export default function HomeTab() {
       trend: 'stable',
       icon: Droplets,
       color: '#3b82f6',
+      details: 'Target: 70-140',
+      status: 'In Range',
+      lastReading: '2 min ago'
     },
     {
       title: 'Time in Range',
@@ -46,6 +51,9 @@ export default function HomeTab() {
       trend: 'up',
       icon: Target,
       color: '#10b981',
+      details: 'Goal: >70%',
+      status: 'Excellent',
+      lastReading: 'Today'
     },
     {
       title: 'Logging Streak',
@@ -54,6 +62,9 @@ export default function HomeTab() {
       trend: 'up',
       icon: Clock,
       color: '#f59e0b',
+      details: 'Best: 28 days',
+      status: 'Active',
+      lastReading: 'Current'
     },
     {
       title: 'Health Score',
@@ -62,6 +73,9 @@ export default function HomeTab() {
       trend: 'up',
       icon: Heart,
       color: '#ef4444',
+      details: 'Avg: 7.8/10',
+      status: 'Great',
+      lastReading: 'This week'
     },
   ];
 
@@ -116,6 +130,33 @@ export default function HomeTab() {
     sleepQuality: 7,
     sleepDuration: 7.5
   };
+
+  const quickActions = [
+    { 
+      icon: Utensils, 
+      label: 'Log Meal', 
+      sublabel: 'Carbs, Protein & Alcohol',
+      color: '#1e293b',
+    },
+    { 
+      icon: Activity, 
+      label: 'Exercise', 
+      sublabel: 'Type & Duration',
+      color: '#1e293b',
+    },
+    { 
+      icon: Droplets, 
+      label: 'Glucose', 
+      sublabel: 'Current Level',
+      color: '#1e293b',
+    },
+    { 
+      icon: Camera, 
+      label: 'Scan Food', 
+      sublabel: 'Quick Recognition',
+      color: '#1e293b',
+    }
+  ];
 
   const formatLogDisplay = (log: any) => {
     switch (log.type) {
@@ -198,13 +239,13 @@ export default function HomeTab() {
           </Text>
         </TouchableOpacity>
 
-        {/* Key Metrics Grid */}
-        <View style={styles.statsGrid}>
+        {/* Compact Key Metrics Grid */}
+        <View style={styles.compactStatsGrid}>
           {stats.map((stat, index) => (
-            <View key={index} style={styles.statCard}>
-              <View style={styles.statHeader}>
-                <View style={[styles.statIcon, { backgroundColor: `${stat.color}20` }]}>
-                  <stat.icon size={20} color={stat.color} />
+            <View key={index} style={styles.compactStatCard}>
+              <View style={styles.compactStatHeader}>
+                <View style={[styles.compactStatIcon, { backgroundColor: `${stat.color}20` }]}>
+                  <stat.icon size={16} color={stat.color} />
                 </View>
                 {stat.trend && (
                   <View style={[styles.trendIndicator, 
@@ -213,16 +254,21 @@ export default function HomeTab() {
                   ]} />
                 )}
               </View>
-              <Text style={styles.statTitle}>{stat.title}</Text>
-              <View style={styles.statValueContainer}>
-                <Text style={styles.statValue}>{stat.value}</Text>
-                {stat.unit && <Text style={styles.statUnit}>{stat.unit}</Text>}
+              <Text style={styles.compactStatTitle}>{stat.title}</Text>
+              <View style={styles.compactStatValueContainer}>
+                <Text style={styles.compactStatValue}>{stat.value}</Text>
+                {stat.unit && <Text style={styles.compactStatUnit}>{stat.unit}</Text>}
+              </View>
+              <Text style={styles.compactStatDetails}>{stat.details}</Text>
+              <View style={styles.compactStatFooter}>
+                <Text style={styles.compactStatStatus}>{stat.status}</Text>
+                <Text style={styles.compactStatTime}>{stat.lastReading}</Text>
               </View>
             </View>
           ))}
         </View>
 
-        {/* Health Profile Summary */}
+        {/* Health Profile Summary with Quick Actions */}
         <View style={styles.profileCard}>
           <View style={styles.profileHeader}>
             <Text style={styles.profileTitle}>Health Profile</Text>
@@ -258,6 +304,23 @@ export default function HomeTab() {
               </View>
               <Text style={styles.profileValue}>{getSleepQualityText(userProfile.sleepQuality)}</Text>
               <Text style={styles.profileLabel}>{userProfile.sleepDuration}h sleep</Text>
+            </View>
+          </View>
+
+          {/* Quick Actions Section */}
+          <View style={styles.quickActionsSection}>
+            <Text style={styles.quickActionsTitle}>Quick Actions</Text>
+            <View style={styles.quickActionsGrid}>
+              {quickActions.map((action, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[styles.quickActionButton, { backgroundColor: action.color }]}
+                >
+                  <action.icon size={20} color="#ffffff" />
+                  <Text style={styles.quickActionLabel}>{action.label}</Text>
+                  <Text style={styles.quickActionSublabel}>{action.sublabel}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         </View>
@@ -501,34 +564,34 @@ const styles = StyleSheet.create({
     color: '#cbd5e1',
     lineHeight: 20,
   },
-  statsGrid: {
+  compactStatsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     padding: 8,
     gap: 8,
   },
-  statCard: {
+  compactStatCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 8,
+    padding: 12,
     width: '47%',
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
-  statHeader: {
+  compactStatHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  statIcon: {
-    padding: 8,
-    borderRadius: 8,
+  compactStatIcon: {
+    padding: 6,
+    borderRadius: 6,
   },
   trendIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   trendUp: {
     backgroundColor: '#10b981',
@@ -539,26 +602,46 @@ const styles = StyleSheet.create({
   trendStable: {
     backgroundColor: '#6b7280',
   },
-  statTitle: {
-    fontSize: 12,
+  compactStatTitle: {
+    fontSize: 10,
     fontWeight: '500',
     color: '#6b7280',
-    marginBottom: 4,
+    marginBottom: 2,
   },
-  statValueContainer: {
+  compactStatValueContainer: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    marginBottom: 4,
   },
-  statValue: {
-    fontSize: 24,
+  compactStatValue: {
+    fontSize: 18,
     fontWeight: '700',
     color: '#1f2937',
   },
-  statUnit: {
-    fontSize: 12,
+  compactStatUnit: {
+    fontSize: 10,
     fontWeight: '500',
     color: '#6b7280',
-    marginLeft: 4,
+    marginLeft: 2,
+  },
+  compactStatDetails: {
+    fontSize: 9,
+    color: '#9ca3af',
+    marginBottom: 4,
+  },
+  compactStatFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  compactStatStatus: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#10b981',
+  },
+  compactStatTime: {
+    fontSize: 8,
+    color: '#9ca3af',
   },
   profileCard: {
     backgroundColor: '#ffffff',
@@ -588,6 +671,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 16,
+    marginBottom: 20,
   },
   profileItem: {
     alignItems: 'center',
@@ -612,6 +696,38 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#6b7280',
     textAlign: 'center',
+  },
+  quickActionsSection: {
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    paddingTop: 16,
+  },
+  quickActionsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 12,
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  quickActionButton: {
+    width: '47%',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    gap: 4,
+  },
+  quickActionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  quickActionSublabel: {
+    fontSize: 9,
+    color: '#cbd5e1',
   },
   glucoseOverviewCard: {
     backgroundColor: '#ffffff',
@@ -679,11 +795,6 @@ const styles = StyleSheet.create({
   quickActions: {
     flexDirection: 'row',
     gap: 8,
-  },
-  quickActionButton: {
-    backgroundColor: '#1e293b',
-    padding: 8,
-    borderRadius: 8,
   },
   aiInsightBanner: {
     backgroundColor: '#dbeafe',
