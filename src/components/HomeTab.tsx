@@ -188,20 +188,26 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
     return t.poor;
   };
 
-  // Enhanced menopause detection
+  // Fixed menopause detection - age 34 cannot be post-menopause
   const getMenopauseStatus = () => {
     if (userProfile.gender !== 'female') return null;
     
+    // Check if explicitly marked as menopause
     if (userProfile.isMenopause) return 'menopause';
     
+    // Age-based detection - menopause typically starts 45-55
+    // At age 34, cannot be post-menopause naturally
     if (userProfile.age >= 55) return 'postmenopause';
     if (userProfile.age >= 45) return 'perimenopause';
     
-    const lastPeriod = new Date(userProfile.lastMenstrualPeriod);
-    const monthsSinceLastPeriod = (Date.now() - lastPeriod.getTime()) / (1000 * 60 * 60 * 24 * 30);
-    
-    if (monthsSinceLastPeriod >= 12) return 'menopause';
-    if (monthsSinceLastPeriod >= 6) return 'perimenopause';
+    // For younger women, check last menstrual period only if they marked menopause
+    if (userProfile.age < 45) {
+      const lastPeriod = new Date(userProfile.lastMenstrualPeriod);
+      const monthsSinceLastPeriod = (Date.now() - lastPeriod.getTime()) / (1000 * 60 * 60 * 24 * 30);
+      
+      // Only consider early menopause if explicitly marked or 12+ months without period
+      if (monthsSinceLastPeriod >= 12 && userProfile.isMenopause) return 'early_menopause';
+    }
     
     return 'premenopause';
   };
@@ -249,7 +255,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                       type="date"
                       value={logData.date}
                       onChange={(e) => setLogData({...logData, date: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     />
                   </div>
@@ -259,7 +265,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                       type="time"
                       value={logData.time}
                       onChange={(e) => setLogData({...logData, time: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     />
                   </div>
@@ -275,7 +281,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                       type="text"
                       value={logData.mealName}
                       onChange={(e) => setLogData({...logData, mealName: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="e.g., Grilled Chicken Salad"
                       required
                     />
@@ -292,7 +298,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                         type="number"
                         value={logData.carbs}
                         onChange={(e) => setLogData({...logData, carbs: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="15"
                         min="0"
                         step="0.1"
@@ -306,7 +312,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                         type="number"
                         value={logData.calories}
                         onChange={(e) => setLogData({...logData, calories: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="350"
                         min="0"
                       />
@@ -323,7 +329,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                     <select
                       value={logData.exerciseType}
                       onChange={(e) => setLogData({...logData, exerciseType: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     >
                       <option value="">Select exercise type</option>
@@ -350,7 +356,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                         type="number"
                         value={logData.duration}
                         onChange={(e) => setLogData({...logData, duration: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="30"
                         min="1"
                         required
@@ -366,7 +372,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                       <select
                         value={logData.intensity}
                         onChange={(e) => setLogData({...logData, intensity: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="light">Light</option>
                         <option value="moderate">Moderate</option>
@@ -396,7 +402,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                       type="number"
                       value={logData.glucose}
                       onChange={(e) => setLogData({...logData, glucose: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="94"
                       min="40"
                       max="400"
@@ -409,7 +415,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                     <select
                       value={logData.context}
                       onChange={(e) => setLogData({...logData, context: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="fasting">Fasting</option>
                       <option value="before-meal">Before Meal</option>
@@ -424,7 +430,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                     <textarea
                       value={logData.notes}
                       onChange={(e) => setLogData({...logData, notes: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="How are you feeling? Any symptoms?"
                       rows={2}
                     />
@@ -449,7 +455,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                           type="number"
                           value={logData.age}
                           onChange={(e) => setLogData({...logData, age: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="34"
                           min="1"
                           max="120"
@@ -466,7 +472,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                         <select
                           value={logData.gender}
                           onChange={(e) => setLogData({...logData, gender: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="female">{t.female}</option>
                           <option value="male">{t.male}</option>
@@ -483,7 +489,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                       <select
                         value={logData.diabetesType}
                         onChange={(e) => setLogData({...logData, diabetesType: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="Type 1">{t.type1}</option>
                         <option value="Type 2">{t.type2}</option>
@@ -494,23 +500,36 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                     </div>
                   </div>
 
-                  {/* Enhanced Female Health Section */}
+                  {/* Enhanced Female Health Section with Fixed Logic */}
                   {logData.gender === 'female' && (
                     <div className="bg-pink-50 p-4 rounded-lg">
                       <h4 className="font-medium text-gray-900 mb-3">Female Health Information</h4>
                       <div className="space-y-4">
-                        <div className="flex items-center space-x-3">
-                          <input
-                            type="checkbox"
-                            id="isMenopause"
-                            checked={logData.isMenopause}
-                            onChange={(e) => setLogData({...logData, isMenopause: e.target.checked})}
-                            className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
-                          />
-                          <label htmlFor="isMenopause" className="text-sm font-medium text-gray-700">
-                            I am in menopause or post-menopause
-                          </label>
-                        </div>
+                        {/* Only show menopause option for appropriate ages */}
+                        {parseInt(logData.age) >= 40 && (
+                          <div className="flex items-center space-x-3">
+                            <input
+                              type="checkbox"
+                              id="isMenopause"
+                              checked={logData.isMenopause}
+                              onChange={(e) => setLogData({...logData, isMenopause: e.target.checked})}
+                              className="w-4 h-4 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+                            />
+                            <label htmlFor="isMenopause" className="text-sm font-medium text-gray-700">
+                              I am in menopause or experiencing early menopause
+                            </label>
+                          </div>
+                        )}
+                        
+                        {/* Show age-appropriate messaging */}
+                        {parseInt(logData.age) < 40 && (
+                          <div className="bg-blue-100 p-3 rounded-lg">
+                            <p className="text-xs text-blue-800">
+                              <strong>Note:</strong> Menopause typically occurs between ages 45-55. At your age, 
+                              we'll focus on menstrual cycle tracking for optimal glucose predictions.
+                            </p>
+                          </div>
+                        )}
                         
                         {!logData.isMenopause && (
                           <div>
@@ -521,7 +540,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                               type="date"
                               value={logData.lastMenstrualPeriod}
                               onChange={(e) => setLogData({...logData, lastMenstrualPeriod: e.target.value})}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <p className="text-xs text-gray-500 mt-1">
                               Helps AI provide more accurate glucose predictions based on hormonal cycles
@@ -555,7 +574,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                           type="number"
                           value={logData.height}
                           onChange={(e) => setLogData({...logData, height: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="165"
                           min="100"
                           max="250"
@@ -573,7 +592,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                           type="number"
                           value={logData.weight}
                           onChange={(e) => setLogData({...logData, weight: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="68"
                           min="30"
                           max="300"
@@ -601,7 +620,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                         <select
                           value={logData.sleepQuality}
                           onChange={(e) => setLogData({...logData, sleepQuality: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           {[1,2,3,4,5,6,7,8,9,10].map(num => (
                             <option key={num} value={num.toString()}>{num} - {getSleepQualityText(num)}</option>
@@ -616,7 +635,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                           type="number"
                           value={logData.sleepDuration}
                           onChange={(e) => setLogData({...logData, sleepDuration: e.target.value})}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="7.5"
                           min="3"
                           max="12"
@@ -631,7 +650,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                       <select
                         value={logData.stressLevel}
                         onChange={(e) => setLogData({...logData, stressLevel: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="1">1 - Very Low</option>
                         <option value="2">2 - Low</option>
@@ -663,7 +682,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center justify-center space-x-2"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
                 >
                   <Save className="h-4 w-4" />
                   <span>{logType === 'profile' ? 'Update' : t.save}</span>
@@ -700,43 +719,6 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
         </div>
       </div>
 
-      {/* Enhanced Quick Access Buttons */}
-      <div className="px-4 grid grid-cols-2 gap-4">
-        {/* Goals Quick Access */}
-        <button
-          onClick={() => setShowGoalsModal(true)}
-          className="bg-gradient-to-r from-slate-700 to-slate-900 text-white p-4 rounded-lg flex items-center justify-between hover:from-slate-800 hover:to-slate-900 transition-all duration-200"
-        >
-          <div className="flex items-center space-x-3">
-            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-              <Target className="h-5 w-5" />
-            </div>
-            <div className="text-left">
-              <h3 className="font-semibold text-sm">Health Goals</h3>
-              <p className="text-xs text-slate-200">Track objectives</p>
-            </div>
-          </div>
-          <Goal className="h-4 w-4 text-slate-300" />
-        </button>
-
-        {/* Grocery List Quick Access */}
-        <button
-          onClick={() => setShowGroceryModal(true)}
-          className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-4 rounded-lg flex items-center justify-between hover:from-green-700 hover:to-blue-700 transition-all duration-200"
-        >
-          <div className="flex items-center space-x-3">
-            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-              <ShoppingCart className="h-5 w-5" />
-            </div>
-            <div className="text-left">
-              <h3 className="font-semibold text-sm">Smart Grocery</h3>
-              <p className="text-xs text-green-100">Budget-friendly list</p>
-            </div>
-          </div>
-          <Plus className="h-4 w-4 text-green-200" />
-        </button>
-      </div>
-
       {/* Enhanced User Profile Summary with Menopause Status */}
       <div className="px-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -744,7 +726,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
             <h3 className="font-semibold text-gray-900">{t.healthProfile}</h3>
             <button
               onClick={() => openLogForm('profile')}
-              className="text-sm text-slate-600 hover:text-slate-700 font-medium"
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
               {t.updateProfile}
             </button>
@@ -782,6 +764,8 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
               <p className="text-xs text-pink-800">
                 {getMenopauseStatus() === 'menopause' || getMenopauseStatus() === 'postmenopause' 
                   ? '🌸 Post-menopause: Stable hormonal patterns for better glucose predictability'
+                  : getMenopauseStatus() === 'early_menopause'
+                  ? '🌺 Early menopause: Monitoring hormonal transitions for glucose management'
                   : getMenopauseStatus() === 'perimenopause'
                   ? '🌺 Perimenopause: Monitoring hormonal transitions for glucose management'
                   : '🌷 Premenopause: Tracking menstrual cycle for optimal glucose predictions'}
@@ -791,42 +775,46 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
         </div>
       </div>
 
-      {/* Key Metrics Grid */}
+      {/* Quick Actions - Moved up right after Health Profile */}
       <div className="px-4">
-        <div className="grid grid-cols-2 gap-4">
-          <StatsCard
-            title={t.currentGlucose}
-            value="94"
-            unit={t.mgdl}
-            trend="stable"
-            icon={Droplets}
-            color="blue"
-          />
-          <StatsCard
-            title={t.timeInRange}
-            value="87"
-            unit="%"
-            trend="up"
-            icon={Target}
-            color="green"
-          />
-          <StatsCard
-            title={t.loggingStreak}
-            value="12"
-            unit={t.days}
-            trend="up"
-            icon={Clock}
-            color="orange"
-          />
-          <StatsCard
-            title={t.healthScore}
-            value="8.4"
-            unit="/10"
-            trend="up"
-            icon={Heart}
-            color="red"
-          />
-        </div>
+        <QuickActions onDataLogged={onDataLogged} language={language} />
+      </div>
+
+      {/* Enhanced Quick Access Buttons */}
+      <div className="px-4 grid grid-cols-2 gap-4">
+        {/* Goals Quick Access */}
+        <button
+          onClick={() => setShowGoalsModal(true)}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-lg flex items-center justify-between hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+        >
+          <div className="flex items-center space-x-3">
+            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+              <Target className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <h3 className="font-semibold text-sm">Health Goals</h3>
+              <p className="text-xs text-blue-100">Track objectives</p>
+            </div>
+          </div>
+          <Goal className="h-4 w-4 text-blue-200" />
+        </button>
+
+        {/* Grocery List Quick Access */}
+        <button
+          onClick={() => setShowGroceryModal(true)}
+          className="bg-gradient-to-r from-green-600 to-teal-600 text-white p-4 rounded-lg flex items-center justify-between hover:from-green-700 hover:to-teal-700 transition-all duration-200"
+        >
+          <div className="flex items-center space-x-3">
+            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+              <ShoppingCart className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <h3 className="font-semibold text-sm">Smart Grocery</h3>
+              <p className="text-xs text-green-100">Budget-friendly list</p>
+            </div>
+          </div>
+          <Plus className="h-4 w-4 text-green-200" />
+        </button>
       </div>
 
       {/* Today's Glucose Overview */}
@@ -863,21 +851,21 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
             <div className="flex space-x-2">
               <button
                 onClick={() => openLogForm('meal')}
-                className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 title="Log Meal & Carbs"
               >
                 <Utensils className="h-4 w-4" />
               </button>
               <button
                 onClick={() => openLogForm('exercise')}
-                className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 title="Log Exercise"
               >
                 <Activity className="h-4 w-4" />
               </button>
               <button
                 onClick={() => openLogForm('glucose')}
-                className="p-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
+                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 title="Log Glucose Reading"
               >
                 <Droplets className="h-4 w-4" />
@@ -909,11 +897,6 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="px-4">
-        <QuickActions onDataLogged={onDataLogged} language={language} />
       </div>
     </div>
   );
