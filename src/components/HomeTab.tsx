@@ -693,15 +693,15 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
         </div>
       )}
 
-      {/* Page Header */}
-      <div className="px-4">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.dashboard}</h2>
-        <p className="text-gray-600">{t.welcomeBack}, Sarah. {t.healthOverview}</p>
-      </div>
-
       {/* Daily Affirmation */}
       <div className="px-4">
         <DailyAffirmation language={language} />
+      </div>
+
+      {/* Dashboard Title - Moved here, right above Welcome section */}
+      <div className="px-4">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.dashboard}</h2>
+        <p className="text-gray-600">{t.welcomeBack}, Sarah. {t.healthOverview}</p>
       </div>
 
       {/* Current Status Alert */}
