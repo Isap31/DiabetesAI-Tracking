@@ -202,6 +202,28 @@ export default function HomeTab() {
           <Text style={styles.welcomeSubtitle}>Here's your health overview for today.</Text>
         </View>
 
+        {/* PROMINENT AI Voice Chat - First Thing Users See */}
+        <TouchableOpacity 
+          style={styles.prominentVoiceChatCard}
+          onPress={() => setShowVoiceChat(true)}
+        >
+          <View style={styles.prominentVoiceChatContent}>
+            <View style={styles.prominentVoiceChatIcon}>
+              <Mic size={32} color="#ffffff" />
+            </View>
+            <View style={styles.prominentVoiceChatText}>
+              <Text style={styles.prominentVoiceChatTitle}>🎤 Start Voice Conversation</Text>
+              <Text style={styles.prominentVoiceChatSubtitle}>Talk to FlowSense AI - Complete Speech-to-Speech</Text>
+              <Text style={styles.prominentVoiceChatDescription}>
+                Ask about glucose patterns, meal suggestions, or get personalized health advice
+              </Text>
+            </View>
+            <View style={styles.prominentVoiceChatAction}>
+              <Volume2 size={24} color="#ffffff" />
+            </View>
+          </View>
+        </TouchableOpacity>
+
         {/* Daily Affirmation */}
         <View style={styles.affirmationCard}>
           <View style={styles.affirmationHeader}>
@@ -217,28 +239,6 @@ export default function HomeTab() {
             "You are stronger than your challenges and more resilient than you know. Every healthy choice you make today is an investment in your future self."
           </Text>
         </View>
-
-        {/* AI Voice Chat Quick Access - PROMINENTLY DISPLAYED */}
-        <TouchableOpacity 
-          style={styles.voiceChatCard}
-          onPress={() => setShowVoiceChat(true)}
-        >
-          <View style={styles.voiceChatHeader}>
-            <View style={styles.voiceChatIcon}>
-              <Mic size={24} color="#ffffff" />
-            </View>
-            <View style={styles.voiceChatInfo}>
-              <Text style={styles.voiceChatTitle}>🎤 FlowSense AI Voice Assistant</Text>
-              <Text style={styles.voiceChatSubtitle}>Tap to start voice conversation</Text>
-            </View>
-            <View style={styles.voiceChatAction}>
-              <Volume2 size={20} color="#ffffff" />
-            </View>
-          </View>
-          <Text style={styles.voiceChatDescription}>
-            Ask questions about your glucose patterns, get meal suggestions, or receive personalized health advice using voice commands. Complete speech-to-speech interaction!
-          </Text>
-        </TouchableOpacity>
 
         {/* Compact Key Metrics Grid */}
         <View style={styles.compactStatsGrid}>
@@ -479,6 +479,53 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6b7280',
   },
+  prominentVoiceChatCard: {
+    backgroundColor: '#1e293b',
+    margin: 16,
+    padding: 24,
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: '#3b82f6',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  prominentVoiceChatContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  prominentVoiceChatIcon: {
+    backgroundColor: '#3b82f6',
+    padding: 16,
+    borderRadius: 16,
+    marginRight: 16,
+  },
+  prominentVoiceChatText: {
+    flex: 1,
+  },
+  prominentVoiceChatTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  prominentVoiceChatSubtitle: {
+    fontSize: 16,
+    color: '#cbd5e1',
+    marginBottom: 8,
+  },
+  prominentVoiceChatDescription: {
+    fontSize: 14,
+    color: '#94a3b8',
+    lineHeight: 20,
+  },
+  prominentVoiceChatAction: {
+    backgroundColor: 'rgba(59, 130, 246, 0.3)',
+    padding: 12,
+    borderRadius: 12,
+  },
   affirmationCard: {
     backgroundColor: '#7c3aed',
     margin: 16,
@@ -512,53 +559,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: '#ffffff',
     fontWeight: '500',
-  },
-  voiceChatCard: {
-    backgroundColor: '#1e293b',
-    margin: 16,
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#3b82f6',
-    shadowColor: '#3b82f6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  voiceChatHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  voiceChatIcon: {
-    backgroundColor: '#3b82f6',
-    padding: 12,
-    borderRadius: 12,
-    marginRight: 16,
-  },
-  voiceChatInfo: {
-    flex: 1,
-  },
-  voiceChatTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#ffffff',
-    marginBottom: 4,
-  },
-  voiceChatSubtitle: {
-    fontSize: 14,
-    color: '#cbd5e1',
-  },
-  voiceChatAction: {
-    backgroundColor: 'rgba(59, 130, 246, 0.3)',
-    padding: 8,
-    borderRadius: 8,
-  },
-  voiceChatDescription: {
-    fontSize: 14,
-    color: '#cbd5e1',
-    lineHeight: 20,
   },
   compactStatsGrid: {
     flexDirection: 'row',

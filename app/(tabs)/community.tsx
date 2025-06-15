@@ -151,31 +151,33 @@ export default function CommunityTab() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* AI Chat Quick Access - PROMINENTLY DISPLAYED */}
-        <View style={styles.aiChatSection}>
-          <View style={styles.aiHeader}>
-            <View style={styles.aiIcon}>
-              <Bot size={20} color="#ffffff" />
+        {/* PROMINENT AI Chat Quick Access - First Thing Users See */}
+        <View style={styles.prominentAiChatSection}>
+          <View style={styles.prominentAiHeader}>
+            <View style={styles.prominentAiIcon}>
+              <Bot size={28} color="#ffffff" />
             </View>
-            <View style={styles.aiInfo}>
-              <Text style={styles.aiTitle}>FlowSense AI</Text>
-              <Text style={styles.aiSubtitle}>Your 24/7 health companion</Text>
+            <View style={styles.prominentAiInfo}>
+              <Text style={styles.prominentAiTitle}>🤖 FlowSense AI Assistant</Text>
+              <Text style={styles.prominentAiSubtitle}>Your 24/7 health companion with voice support</Text>
             </View>
           </View>
-          <View style={styles.aiButtons}>
+          <View style={styles.prominentAiButtons}>
             <TouchableOpacity 
-              style={[styles.aiButton, styles.voiceButton]}
+              style={[styles.prominentAiButton, styles.prominentVoiceButton]}
               onPress={() => setShowVoiceChat(true)}
             >
-              <Mic size={16} color="#ffffff" />
-              <Text style={styles.aiButtonText}>🎤 Voice Chat</Text>
+              <Mic size={20} color="#ffffff" />
+              <Text style={styles.prominentAiButtonText}>🎤 Voice Chat</Text>
+              <Text style={styles.prominentAiButtonSubtext}>Speech-to-Speech</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.aiButton, styles.textButton]}
+              style={[styles.prominentAiButton, styles.prominentTextButton]}
               onPress={() => setShowAIChat(true)}
             >
-              <MessageCircle size={16} color="#ffffff" />
-              <Text style={styles.aiButtonText}>Text Chat</Text>
+              <MessageCircle size={20} color="#ffffff" />
+              <Text style={styles.prominentAiButtonText}>💬 Text Chat</Text>
+              <Text style={styles.prominentAiButtonSubtext}>Type & Chat</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -382,64 +384,70 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  aiChatSection: {
+  prominentAiChatSection: {
     backgroundColor: '#1e293b',
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 24,
     marginBottom: 24,
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: '#3b82f6',
     shadowColor: '#3b82f6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
   },
-  aiHeader: {
+  prominentAiHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
-  aiIcon: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 8,
-    borderRadius: 8,
-    marginRight: 12,
+  prominentAiIcon: {
+    backgroundColor: '#3b82f6',
+    padding: 12,
+    borderRadius: 12,
+    marginRight: 16,
   },
-  aiInfo: {
+  prominentAiInfo: {
     flex: 1,
   },
-  aiTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+  prominentAiTitle: {
+    fontSize: 20,
+    fontWeight: '700',
     color: '#ffffff',
+    marginBottom: 4,
   },
-  aiSubtitle: {
-    fontSize: 14,
+  prominentAiSubtitle: {
+    fontSize: 16,
     color: '#cbd5e1',
   },
-  aiButtons: {
+  prominentAiButtons: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 16,
   },
-  aiButton: {
+  prominentAiButton: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 12,
     gap: 8,
   },
-  voiceButton: {
+  prominentVoiceButton: {
     backgroundColor: '#3b82f6',
   },
-  textButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  prominentTextButton: {
+    backgroundColor: '#059669',
   },
-  aiButtonText: {
+  prominentAiButtonText: {
     color: '#ffffff',
-    fontWeight: '500',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  prominentAiButtonSubtext: {
+    color: '#e2e8f0',
+    fontSize: 12,
   },
   statsContainer: {
     backgroundColor: '#ffffff',
