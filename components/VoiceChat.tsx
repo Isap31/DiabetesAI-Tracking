@@ -21,6 +21,8 @@ import {
   Play,
   Pause,
 } from 'lucide-react-native';
+import { supabase, ChatMessage } from '../lib/supabase';
+import { elevenLabsService } from '../services/elevenLabsService';
 
 interface Message {
   id: string;
@@ -37,20 +39,78 @@ interface VoiceChatProps {
 }
 
 export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      type: 'ai',
-      text: "Hello! I'm FlowSense AI, your diabetes management assistant. I can help you with glucose patterns, meal suggestions, exercise recommendations, and answer any health questions you have. You can type or speak to me!",
-      timestamp: new Date().toLocaleTimeString(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(true);
   const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
+  const [sessionId] = useState(() => `session_${Date.now()}`);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // Load chat history from Supabase on component mount
+  useEffect(() => {
+    if (isVisible) {
+      loadChatHistory();
+    }
+  }, [isVisible]);
+
+  const loadChatHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('session_id', sessionId)
+        .order('created_at', { ascending: true })
+        .limit(50);
+
+      if (error) {
+        console.error('Error loading chat history:', error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const formattedMessages: Message[] = data.map((msg: ChatMessage) => ({
+          id: msg.id,
+          type: msg.message_type,
+          text: msg.message_content,
+          timestamp: new Date(msg.created_at).toLocaleTimeString(),
+        }));
+        setMessages(formattedMessages);
+      } else {
+        // Add initial AI message if no history exists
+        const initialMessage: Message = {
+          id: '1',
+          type: 'ai',
+          text: "Hello! I'm FlowSense AI, your diabetes management assistant. I can help you with glucose patterns, meal suggestions, exercise recommendations, and answer any health questions you have. You can type or speak to me!",
+          timestamp: new Date().toLocaleTimeString(),
+        };
+        setMessages([initialMessage]);
+        await saveChatMessage(initialMessage);
+      }
+    } catch (error) {
+      console.error('Error in loadChatHistory:', error);
+    }
+  };
+
+  const saveChatMessage = async (message: Message) => {
+    try {
+      const { error } = await supabase
+        .from('chat_messages')
+        .insert({
+          user_id: 'demo_user', // In a real app, this would be the authenticated user's ID
+          message_content: message.text,
+          message_type: message.type,
+          session_id: sessionId,
+        });
+
+      if (error) {
+        console.error('Error saving chat message:', error);
+      }
+    } catch (error) {
+      console.error('Error in saveChatMessage:', error);
+    }
+  };
 
   // Mock user data for realistic responses
   const mockUserData = {
@@ -130,6 +190,9 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
     setInputText('');
     setIsProcessing(true);
 
+    // Save user message to Supabase
+    await saveChatMessage(userMessage);
+
     // Simulate AI thinking time
     setTimeout(async () => {
       const aiResponseText = generateContextualResponse(text);
@@ -143,8 +206,11 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
       setMessages(prev => [...prev, aiMessage]);
       setIsProcessing(false);
 
+      // Save AI message to Supabase
+      await saveChatMessage(aiMessage);
+
       // Auto-play AI response if speech is enabled
-      if (isSpeechEnabled) {
+      if (isSpeechEnabled && elevenLabsService.isConfigured()) {
         await playAIResponse(aiMessage);
       }
     }, 1500);
@@ -154,52 +220,20 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
     try {
       setPlayingMessageId(message.id);
       
-      // Check if ElevenLabs is configured
-      const apiKey = process.env.EXPO_PUBLIC_ELEVENLABS_API_KEY;
-      const voiceId = process.env.EXPO_PUBLIC_ELEVENLABS_VOICE_ID;
-      
-      if (!apiKey || !voiceId) {
-        // Fallback to native speech synthesis
-        Alert.alert('Voice Not Available', 'ElevenLabs voice service is not configured. Using system voice.');
+      if (!elevenLabsService.isConfigured()) {
+        Alert.alert('Voice Not Available', 'ElevenLabs voice service is not configured.');
         return;
       }
 
-      // Call ElevenLabs API
-      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          text: message.text,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.0,
-            use_speaker_boost: true
-          }
-        }),
-      });
+      const audioUrl = await elevenLabsService.textToSpeech(message.text);
+      if (audioUrl) {
+        // Update message with audio URL
+        setMessages(prev => prev.map(msg => 
+          msg.id === message.id ? { ...msg, audioUrl } : msg
+        ));
 
-      if (!response.ok) {
-        throw new Error(`ElevenLabs API error: ${response.status}`);
+        await elevenLabsService.playAudio(audioUrl);
       }
-
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      
-      // Update message with audio URL
-      setMessages(prev => prev.map(msg => 
-        msg.id === message.id ? { ...msg, audioUrl } : msg
-      ));
-
-      // Play audio
-      const audio = new Audio(audioUrl);
-      audio.onended = () => setPlayingMessageId(null);
-      await audio.play();
 
     } catch (error) {
       console.error('Voice synthesis error:', error);
@@ -219,9 +253,8 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
     if (message.audioUrl) {
       // Play existing audio
       setPlayingMessageId(message.id);
-      const audio = new Audio(message.audioUrl);
-      audio.onended = () => setPlayingMessageId(null);
-      await audio.play();
+      await elevenLabsService.playAudio(message.audioUrl);
+      setPlayingMessageId(null);
     } else {
       // Generate and play new audio
       await playAIResponse(message);
@@ -382,7 +415,7 @@ export default function VoiceChat({ isVisible, onClose }: VoiceChatProps) {
       {/* Configuration Notice */}
       <View style={styles.configNotice}>
         <Text style={styles.configNoticeText}>
-          {process.env.EXPO_PUBLIC_ELEVENLABS_API_KEY 
+          {elevenLabsService.isConfigured() 
             ? '🎤 ElevenLabs voice enabled' 
             : '⚠️ Configure ElevenLabs API key for voice features'}
         </Text>
