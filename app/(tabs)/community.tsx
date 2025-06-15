@@ -151,7 +151,7 @@ export default function CommunityTab() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* AI Chat Quick Access */}
+        {/* AI Chat Quick Access - PROMINENTLY DISPLAYED */}
         <View style={styles.aiChatSection}>
           <View style={styles.aiHeader}>
             <View style={styles.aiIcon}>
@@ -168,7 +168,7 @@ export default function CommunityTab() {
               onPress={() => setShowVoiceChat(true)}
             >
               <Mic size={16} color="#ffffff" />
-              <Text style={styles.aiButtonText}>Voice Chat</Text>
+              <Text style={styles.aiButtonText}>🎤 Voice Chat</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.aiButton, styles.textButton]}
@@ -387,6 +387,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
+    borderWidth: 2,
+    borderColor: '#3b82f6',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   aiHeader: {
     flexDirection: 'row',
@@ -425,7 +432,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   voiceButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#3b82f6',
   },
   textButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',

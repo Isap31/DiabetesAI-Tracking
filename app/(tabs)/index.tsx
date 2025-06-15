@@ -24,6 +24,8 @@ import {
   MessageCircle,
   Plus,
   Camera,
+  Volume2,
+  Bot,
 } from 'lucide-react-native';
 import VoiceChat from '../../components/VoiceChat';
 import GoalsModal from '../../components/GoalsModal';
@@ -192,10 +194,6 @@ export default function HomeTab() {
               <Text style={styles.appSubtitle}>AI-Powered Diabetes Management</Text>
             </View>
           </View>
-          <View style={styles.glucoseStatus}>
-            <Text style={styles.glucoseValue}>94</Text>
-            <Text style={styles.glucoseUnit}>mg/dL</Text>
-          </View>
         </View>
 
         {/* Welcome Message */}
@@ -220,22 +218,25 @@ export default function HomeTab() {
           </Text>
         </View>
 
-        {/* AI Voice Chat Quick Access */}
+        {/* AI Voice Chat Quick Access - PROMINENTLY DISPLAYED */}
         <TouchableOpacity 
           style={styles.voiceChatCard}
           onPress={() => setShowVoiceChat(true)}
         >
           <View style={styles.voiceChatHeader}>
             <View style={styles.voiceChatIcon}>
-              <Mic size={20} color="#ffffff" />
+              <Mic size={24} color="#ffffff" />
             </View>
             <View style={styles.voiceChatInfo}>
-              <Text style={styles.voiceChatTitle}>FlowSense AI Voice</Text>
-              <Text style={styles.voiceChatSubtitle}>Talk to your health assistant</Text>
+              <Text style={styles.voiceChatTitle}>🎤 FlowSense AI Voice Assistant</Text>
+              <Text style={styles.voiceChatSubtitle}>Tap to start voice conversation</Text>
+            </View>
+            <View style={styles.voiceChatAction}>
+              <Volume2 size={20} color="#ffffff" />
             </View>
           </View>
           <Text style={styles.voiceChatDescription}>
-            Ask questions about your glucose patterns, get meal suggestions, or receive personalized health advice using voice commands.
+            Ask questions about your glucose patterns, get meal suggestions, or receive personalized health advice using voice commands. Complete speech-to-speech interaction!
           </Text>
         </TouchableOpacity>
 
@@ -465,24 +466,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
   },
-  glucoseStatus: {
-    backgroundColor: '#dcfce7',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#bbf7d0',
-    alignItems: 'center',
-  },
-  glucoseValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#166534',
-  },
-  glucoseUnit: {
-    fontSize: 12,
-    color: '#166534',
-  },
   welcomeSection: {
     padding: 16,
   },
@@ -533,8 +516,15 @@ const styles = StyleSheet.create({
   voiceChatCard: {
     backgroundColor: '#1e293b',
     margin: 16,
-    padding: 16,
+    padding: 20,
     borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#3b82f6',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   voiceChatHeader: {
     flexDirection: 'row',
@@ -542,22 +532,28 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   voiceChatIcon: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 8,
-    borderRadius: 8,
-    marginRight: 12,
+    backgroundColor: '#3b82f6',
+    padding: 12,
+    borderRadius: 12,
+    marginRight: 16,
   },
   voiceChatInfo: {
     flex: 1,
   },
   voiceChatTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '700',
     color: '#ffffff',
+    marginBottom: 4,
   },
   voiceChatSubtitle: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#cbd5e1',
+  },
+  voiceChatAction: {
+    backgroundColor: 'rgba(59, 130, 246, 0.3)',
+    padding: 8,
+    borderRadius: 8,
   },
   voiceChatDescription: {
     fontSize: 14,
