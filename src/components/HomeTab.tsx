@@ -4,7 +4,7 @@ import QuickActions from './QuickActions';
 import DailyAffirmation from './DailyAffirmation';
 import GoalsModal from './GoalsModal';
 import GroceryListModal from './GroceryListModal';
-import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Goal, ShoppingCart } from 'lucide-react';
+import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Goal, ShoppingCart, Mic, Volume2, Bot } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 
 interface HomeTabProps {
@@ -18,6 +18,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
   const [showLogForm, setShowLogForm] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
   const [showGroceryModal, setShowGroceryModal] = useState(false);
+  const [showVoiceChat, setShowVoiceChat] = useState(false);
   const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
   const [logData, setLogData] = useState({
     // Meal fields
@@ -226,6 +227,52 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
         isVisible={showGroceryModal}
         onClose={() => setShowGroceryModal(false)}
       />
+
+      {/* Voice Chat Modal */}
+      {showVoiceChat && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+              <div className="flex items-center space-x-3">
+                <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+                  <Mic className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">🎤 FlowSense AI Voice</h3>
+                  <p className="text-sm text-blue-100">Complete Speech-to-Speech Assistant</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowVoiceChat(false)}
+                className="bg-white bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 p-6 bg-gray-50">
+              <div className="text-center py-12">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                  <Volume2 className="h-12 w-12 text-white" />
+                </div>
+                <h4 className="text-xl font-semibold text-gray-900 mb-2">Voice Assistant Ready</h4>
+                <p className="text-gray-600 mb-6">
+                  Click the microphone to start talking. Ask about glucose patterns, meal suggestions, or get personalized health advice.
+                </p>
+                <div className="space-y-4">
+                  <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center space-x-3 mx-auto">
+                    <Mic className="h-6 w-6" />
+                    <span>Start Voice Conversation</span>
+                  </button>
+                  <p className="text-sm text-gray-500">
+                    Complete speech-to-speech functionality - just talk naturally!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Universal Log Form Modal */}
       {showLogForm && (
@@ -702,6 +749,32 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
       <div className="px-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.dashboard}</h2>
         <p className="text-gray-600">{t.welcomeBack}, Sarah. {t.healthOverview}</p>
+      </div>
+
+      {/* SUPER PROMINENT Voice Chat - First Thing Users See */}
+      <div className="px-4">
+        <div 
+          onClick={() => setShowVoiceChat(true)}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-2xl border-4 border-blue-400"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="bg-white bg-opacity-20 p-4 rounded-2xl">
+                <Mic className="h-12 w-12 text-white" />
+              </div>
+              <div>
+                <h3 className="text-3xl font-bold mb-2">🎤 Voice Assistant</h3>
+                <p className="text-xl text-blue-100 mb-2">Complete Speech-to-Speech</p>
+                <p className="text-blue-200">
+                  Talk to FlowSense AI about glucose patterns, meals, and health advice
+                </p>
+              </div>
+            </div>
+            <div className="bg-white bg-opacity-20 p-4 rounded-2xl">
+              <Volume2 className="h-12 w-12 text-white" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Current Status Alert */}

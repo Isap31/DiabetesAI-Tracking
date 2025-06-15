@@ -138,22 +138,6 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
     };
   }, []);
 
-  const getGlucoseStatus = () => {
-    if (currentGlucose >= 70 && currentGlucose <= 140) return 'normal';
-    if (currentGlucose < 70) return 'low';
-    return 'high';
-  };
-
-  const getStatusColor = () => {
-    const status = getGlucoseStatus();
-    switch (status) {
-      case 'normal': return 'text-green-700 bg-green-50 border-green-200';
-      case 'low': return 'text-red-700 bg-red-50 border-red-200';
-      case 'high': return 'text-orange-700 bg-orange-50 border-orange-200';
-      default: return 'text-gray-700 bg-gray-50 border-gray-200';
-    }
-  };
-
   const connectionStatus = {
     bgm: { connected: true, label: t.bloodGlucoseMeter },
     bluetooth: { connected: true, label: t.bluetooth },
@@ -249,14 +233,6 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
           </div>
           
           <div className="flex items-center space-x-6">
-            {/* Recent Glucose Reading */}
-            <div className={`px-4 py-2 rounded-lg border ${getStatusColor()}`}>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">{t.recentGlucoseReading}</span>
-                <span className="text-lg font-bold">{currentGlucose} {t.mgdl}</span>
-              </div>
-            </div>
-            
             {/* Language Selector */}
             <div className="relative" ref={languageMenuRef}>
               <button
