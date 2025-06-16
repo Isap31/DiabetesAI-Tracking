@@ -151,34 +151,30 @@ export default function CommunityTab() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* PROMINENT AI Chat Quick Access - First Thing Users See */}
-        <View style={styles.prominentAiChatSection}>
-          <View style={styles.prominentAiHeader}>
-            <View style={styles.prominentAiIcon}>
-              <Bot size={28} color="#ffffff" />
+        {/* COMPACT AI Chat Quick Access - Much Smaller */}
+        <View style={styles.compactAiChatSection}>
+          <View style={styles.compactAiHeader}>
+            <View style={styles.compactAiIcon}>
+              <Bot size={18} color="#ffffff" />
             </View>
-            <View style={styles.prominentAiInfo}>
-              <Text style={styles.prominentAiTitle}>🤖 FlowSense AI Assistant</Text>
-              <Text style={styles.prominentAiSubtitle}>Your 24/7 health companion with voice support</Text>
+            <View style={styles.compactAiInfo}>
+              <Text style={styles.compactAiTitle}>FlowSense AI</Text>
+              <Text style={styles.compactAiSubtitle}>Voice & Text Assistant</Text>
             </View>
-          </View>
-          <View style={styles.prominentAiButtons}>
-            <TouchableOpacity 
-              style={[styles.prominentAiButton, styles.prominentVoiceButton]}
-              onPress={() => setShowVoiceChat(true)}
-            >
-              <Mic size={20} color="#ffffff" />
-              <Text style={styles.prominentAiButtonText}>🎤 Voice Chat</Text>
-              <Text style={styles.prominentAiButtonSubtext}>Speech-to-Speech</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.prominentAiButton, styles.prominentTextButton]}
-              onPress={() => setShowAIChat(true)}
-            >
-              <MessageCircle size={20} color="#ffffff" />
-              <Text style={styles.prominentAiButtonText}>💬 Text Chat</Text>
-              <Text style={styles.prominentAiButtonSubtext}>Type & Chat</Text>
-            </TouchableOpacity>
+            <View style={styles.compactAiButtons}>
+              <TouchableOpacity 
+                style={styles.compactVoiceButton}
+                onPress={() => setShowVoiceChat(true)}
+              >
+                <Mic size={14} color="#ffffff" />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.compactTextButton}
+                onPress={() => setShowAIChat(true)}
+              >
+                <MessageCircle size={14} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -384,70 +380,51 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  prominentAiChatSection: {
+  // COMPACT AI Chat Styles - Much Smaller
+  compactAiChatSection: {
     backgroundColor: '#1e293b',
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: 12,
+    padding: 12,
     marginBottom: 24,
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#3b82f6',
-    shadowColor: '#3b82f6',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
   },
-  prominentAiHeader: {
+  compactAiHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'space-between',
   },
-  prominentAiIcon: {
+  compactAiIcon: {
     backgroundColor: '#3b82f6',
-    padding: 12,
-    borderRadius: 12,
-    marginRight: 16,
+    padding: 8,
+    borderRadius: 8,
+    marginRight: 12,
   },
-  prominentAiInfo: {
+  compactAiInfo: {
     flex: 1,
   },
-  prominentAiTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+  compactAiTitle: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#ffffff',
-    marginBottom: 4,
   },
-  prominentAiSubtitle: {
-    fontSize: 16,
+  compactAiSubtitle: {
+    fontSize: 11,
     color: '#cbd5e1',
   },
-  prominentAiButtons: {
+  compactAiButtons: {
     flexDirection: 'row',
-    gap: 16,
-  },
-  prominentAiButton: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
     gap: 8,
   },
-  prominentVoiceButton: {
+  compactVoiceButton: {
     backgroundColor: '#3b82f6',
+    padding: 8,
+    borderRadius: 8,
   },
-  prominentTextButton: {
+  compactTextButton: {
     backgroundColor: '#059669',
-  },
-  prominentAiButtonText: {
-    color: '#ffffff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  prominentAiButtonSubtext: {
-    color: '#e2e8f0',
-    fontSize: 12,
+    padding: 8,
+    borderRadius: 8,
   },
   statsContainer: {
     backgroundColor: '#ffffff',

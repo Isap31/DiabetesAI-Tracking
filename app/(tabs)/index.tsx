@@ -26,6 +26,7 @@ import {
   Camera,
   Volume2,
   Bot,
+  X,
 } from 'lucide-react-native';
 import VoiceChat from '../../components/VoiceChat';
 import GoalsModal from '../../components/GoalsModal';
@@ -202,27 +203,34 @@ export default function HomeTab() {
           <Text style={styles.welcomeSubtitle}>Here's your health overview for today.</Text>
         </View>
 
-        {/* PROMINENT AI Voice Chat - First Thing Users See */}
-        <TouchableOpacity 
-          style={styles.prominentVoiceChatCard}
-          onPress={() => setShowVoiceChat(true)}
-        >
-          <View style={styles.prominentVoiceChatContent}>
-            <View style={styles.prominentVoiceChatIcon}>
-              <Mic size={32} color="#ffffff" />
+        {/* COMPACT AI Voice Chat - Much Smaller */}
+        <View style={styles.compactVoiceChatCard}>
+          <View style={styles.compactVoiceChatContent}>
+            <View style={styles.compactVoiceChatLeft}>
+              <View style={styles.compactVoiceChatIcon}>
+                <Mic size={20} color="#ffffff" />
+              </View>
+              <View style={styles.compactVoiceChatText}>
+                <Text style={styles.compactVoiceChatTitle}>FlowSense AI</Text>
+                <Text style={styles.compactVoiceChatSubtitle}>Voice & Text Assistant</Text>
+              </View>
             </View>
-            <View style={styles.prominentVoiceChatText}>
-              <Text style={styles.prominentVoiceChatTitle}>🎤 Start Voice Conversation</Text>
-              <Text style={styles.prominentVoiceChatSubtitle}>Talk to FlowSense AI - Complete Speech-to-Speech</Text>
-              <Text style={styles.prominentVoiceChatDescription}>
-                Ask about glucose patterns, meal suggestions, or get personalized health advice
-              </Text>
-            </View>
-            <View style={styles.prominentVoiceChatAction}>
-              <Volume2 size={24} color="#ffffff" />
+            <View style={styles.compactVoiceChatButtons}>
+              <TouchableOpacity 
+                style={styles.compactVoiceButton}
+                onPress={() => setShowVoiceChat(true)}
+              >
+                <Mic size={16} color="#ffffff" />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.compactTextButton}
+                onPress={() => setShowVoiceChat(true)}
+              >
+                <MessageCircle size={16} color="#ffffff" />
+              </TouchableOpacity>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
 
         {/* Daily Affirmation */}
         <View style={styles.affirmationCard}>
@@ -479,52 +487,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6b7280',
   },
-  prominentVoiceChatCard: {
+  // COMPACT Voice Chat Styles - Much Smaller
+  compactVoiceChatCard: {
     backgroundColor: '#1e293b',
     margin: 16,
-    padding: 24,
-    borderRadius: 16,
-    borderWidth: 3,
-    borderColor: '#3b82f6',
-    shadowColor: '#3b82f6',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
-  },
-  prominentVoiceChatContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  prominentVoiceChatIcon: {
-    backgroundColor: '#3b82f6',
-    padding: 16,
-    borderRadius: 16,
-    marginRight: 16,
-  },
-  prominentVoiceChatText: {
-    flex: 1,
-  },
-  prominentVoiceChatTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#ffffff',
-    marginBottom: 4,
-  },
-  prominentVoiceChatSubtitle: {
-    fontSize: 16,
-    color: '#cbd5e1',
-    marginBottom: 8,
-  },
-  prominentVoiceChatDescription: {
-    fontSize: 14,
-    color: '#94a3b8',
-    lineHeight: 20,
-  },
-  prominentVoiceChatAction: {
-    backgroundColor: 'rgba(59, 130, 246, 0.3)',
     padding: 12,
     borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#3b82f6',
+  },
+  compactVoiceChatContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  compactVoiceChatLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  compactVoiceChatIcon: {
+    backgroundColor: '#3b82f6',
+    padding: 8,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  compactVoiceChatText: {
+    flex: 1,
+  },
+  compactVoiceChatTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  compactVoiceChatSubtitle: {
+    fontSize: 11,
+    color: '#cbd5e1',
+  },
+  compactVoiceChatButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  compactVoiceButton: {
+    backgroundColor: '#3b82f6',
+    padding: 8,
+    borderRadius: 8,
+  },
+  compactTextButton: {
+    backgroundColor: '#059669',
+    padding: 8,
+    borderRadius: 8,
   },
   affirmationCard: {
     backgroundColor: '#7c3aed',
