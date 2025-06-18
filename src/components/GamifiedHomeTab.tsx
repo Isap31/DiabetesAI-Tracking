@@ -38,8 +38,9 @@ import {
   Award,
   Crown,
   Shield,
-  Mic
-} from 'lucide-react';
+  Mic,
+  Lock
+} from 'lucide-react-native';
 import CompassionMode from '../../components/CompassionMode';
 import AuroraJournal from '../../components/AuroraJournal';
 import CareCircle from '../../components/CareCircle';
@@ -57,6 +58,10 @@ const GamifiedHomeTab = () => {
   const [showAccessibilityHub, setShowAccessibilityHub] = useState(false);
   const [showJournal, setShowJournal] = useState(false);
   const [showCareCircle, setShowCareCircle] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  
+  // Subscription state
+  const [isPremium, setIsPremium] = useState(false);
   
   // User preferences
   const [userPreferences, setUserPreferences] = useState({
@@ -336,6 +341,21 @@ const GamifiedHomeTab = () => {
     return messages[companion.mood];
   };
 
+  // Check if a feature requires premium
+  const isPremiumFeature = (featureId: string): boolean => {
+    const premiumFeatures = ['care-circle', 'aurora-journal', 'voice-assistant', 'advanced-ai'];
+    return premiumFeatures.includes(featureId);
+  };
+
+  // Handle premium feature access
+  const handlePremiumFeature = (featureId: string, action: () => void) => {
+    if (isPremium || !isPremiumFeature(featureId)) {
+      action();
+    } else {
+      setShowSubscriptionModal(true);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -359,6 +379,23 @@ const GamifiedHomeTab = () => {
             </View>
           </View>
         </View>
+
+        {/* Premium Banner (if not premium) */}
+        {!isPremium && (
+          <TouchableOpacity 
+            style={styles.premiumBanner}
+            onPress={() => setShowSubscriptionModal(true)}
+          >
+            <View style={styles.premiumBannerContent}>
+              <Crown size={20} color="#ffffff" />
+              <View style={styles.premiumBannerText}>
+                <Text style={styles.premiumBannerTitle}>Upgrade to Premium</Text>
+                <Text style={styles.premiumBannerDescription}>Unlock advanced AI predictions, Care Circle, and more</Text>
+              </View>
+              <ChevronRight size={20} color="#ffffff" />
+            </View>
+          </TouchableOpacity>
+        )}
 
         {/* Mood Check-in */}
         <View style={styles.moodSection}>
@@ -436,10 +473,11 @@ const GamifiedHomeTab = () => {
         <View style={styles.featureNavigation}>
           <TouchableOpacity 
             style={styles.featureButton}
-            onPress={() => setShowJournal(true)}
+            onPress={() => handlePremiumFeature('aurora-journal', () => setShowJournal(true))}
           >
             <View style={[styles.featureIcon, { backgroundColor: '#8b5cf6' }]}>
               <Book size={24} color="#ffffff" />
+              {!isPremium && <View style={styles.lockIconContainer}><Lock size={12} color="#ffffff" /></View>}
             </View>
             <View style={styles.featureInfo}>
               <Text style={styles.featureTitle}>Aurora Journal</Text>
@@ -450,10 +488,11 @@ const GamifiedHomeTab = () => {
 
           <TouchableOpacity 
             style={styles.featureButton}
-            onPress={() => setShowCareCircle(true)}
+            onPress={() => handlePremiumFeature('care-circle', () => setShowCareCircle(true))}
           >
             <View style={[styles.featureIcon, { backgroundColor: '#3b82f6' }]}>
               <Users size={24} color="#ffffff" />
+              {!isPremium && <View style={styles.lockIconContainer}><Lock size={12} color="#ffffff" /></View>}
             </View>
             <View style={styles.featureInfo}>
               <Text style={styles.featureTitle}>Care Circle</Text>
@@ -615,16 +654,40 @@ const GamifiedHomeTab = () => {
                 styles.engagementOption,
                 userPreferences.engagementMode === 'insight' && styles.engagementSelected
               ]}
-              onPress={() => setUserPreferences({...userPreferences, engagementMode: 'insight'})}
+              onPress={() => handlePremiumFeature('advanced-ai', () => 
+                setUserPreferences({...userPreferences, engagementMode: 'insight'})
+              )}
             >
               <View style={styles.engagementIcon}>
                 <Target size={20} color="#3b82f6" />
+                {!isPremium && <View style={styles.lockIconSmall}><Lock size={10} color="#ffffff" /></View>}
               </View>
               <Text style={styles.engagementTitle}>Insight</Text>
               <Text style={styles.engagementDescription}>Detailed analytics</Text>
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Premium Upgrade Banner */}
+        {!isPremium && (
+          <TouchableOpacity 
+            style={styles.upgradeBanner}
+            onPress={() => setShowSubscriptionModal(true)}
+          >
+            <View style={styles.upgradeIconContainer}>
+              <Crown size={24} color="#ffffff" />
+            </View>
+            <View style={styles.upgradeContent}>
+              <Text style={styles.upgradeTitle}>Upgrade to Premium</Text>
+              <Text style={styles.upgradeDescription}>
+                Unlock advanced AI predictions, Care Circle, Aurora Journal, and more premium features
+              </Text>
+              <View style={styles.upgradeButton}>
+                <Text style={styles.upgradeButtonText}>See Plans</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       {/* Quick Actions */}
@@ -641,8 +704,12 @@ const GamifiedHomeTab = () => {
           <Activity size={20} color="#f59e0b" />
           <Text style={styles.quickActionText}>Log Activity</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.quickActionButton}>
+        <TouchableOpacity 
+          style={styles.quickActionButton}
+          onPress={() => handlePremiumFeature('voice-assistant', () => console.log('Voice assistant activated'))}
+        >
           <Mic size={20} color="#8b5cf6" />
+          {!isPremium && <View style={styles.lockIconTiny}><Lock size={8} color="#ffffff" /></View>}
           <Text style={styles.quickActionText}>Voice</Text>
         </TouchableOpacity>
       </View>
@@ -739,6 +806,31 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#8b5cf6',
     borderRadius: 3,
+  },
+  premiumBanner: {
+    backgroundColor: '#8b5cf6',
+    margin: 16,
+    marginTop: 8,
+    padding: 12,
+    borderRadius: 12,
+  },
+  premiumBannerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  premiumBannerText: {
+    flex: 1,
+    marginLeft: 12,
+    marginRight: 12,
+  },
+  premiumBannerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  premiumBannerDescription: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   moodSection: {
     backgroundColor: '#ffffff',
@@ -881,6 +973,40 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     marginRight: 16,
+    position: 'relative',
+  },
+  lockIconContainer: {
+    position: 'absolute',
+    bottom: -4,
+    right: -4,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockIconSmall: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockIconTiny: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   featureInfo: {
     flex: 1,
@@ -1113,6 +1239,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#f3f4f6',
     marginBottom: 8,
+    position: 'relative',
   },
   engagementTitle: {
     fontSize: 14,
@@ -1124,6 +1251,46 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#6b7280',
     textAlign: 'center',
+  },
+  upgradeBanner: {
+    backgroundColor: '#8b5cf6',
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  upgradeIconContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 12,
+    borderRadius: 12,
+    marginRight: 16,
+  },
+  upgradeContent: {
+    flex: 1,
+  },
+  upgradeTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  upgradeDescription: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 12,
+  },
+  upgradeButton: {
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+  },
+  upgradeButtonText: {
+    color: '#8b5cf6',
+    fontSize: 14,
+    fontWeight: '600',
   },
   quickActions: {
     position: 'absolute',
@@ -1139,6 +1306,7 @@ const styles = StyleSheet.create({
   },
   quickActionButton: {
     alignItems: 'center',
+    position: 'relative',
   },
   quickActionText: {
     fontSize: 10,

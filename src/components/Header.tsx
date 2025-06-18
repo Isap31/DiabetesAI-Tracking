@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Settings, User, Activity, Wifi, ChevronDown, LogOut, Shield, Monitor, Bluetooth, Globe, X, Save, Eye, EyeOff, Lock, Mail, Phone, Calendar, MapPin, Camera, Download, Trash2, Key, CreditCard, Smartphone, Languages } from 'lucide-react';
+import { Bell, Settings, User, Activity, Wifi, ChevronDown, LogOut, Shield, Monitor, Bluetooth, Globe, X, Save, Eye, EyeOff, Lock, Mail, Phone, Calendar, MapPin, Camera, Download, Trash2, Key, CreditCard, Smartphone, Languages, Crown } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 
 interface HeaderProps {
@@ -8,9 +8,19 @@ interface HeaderProps {
   isConnected: boolean;
   language: string;
   onLanguageChange: (language: string) => void;
+  isPremium?: boolean;
+  onUpgradeClick?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, language, onLanguageChange }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  userName, 
+  currentGlucose, 
+  isConnected, 
+  language, 
+  onLanguageChange,
+  isPremium = false,
+  onUpgradeClick
+}) => {
   const t = useTranslation(language);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showConnectionMenu, setShowConnectionMenu] = useState(false);
@@ -233,6 +243,22 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
           </div>
           
           <div className="flex items-center space-x-6">
+            {/* Premium Status */}
+            {isPremium ? (
+              <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-lg">
+                <Crown className="h-4 w-4" />
+                <span className="text-sm font-medium">Premium</span>
+              </div>
+            ) : (
+              <button 
+                onClick={onUpgradeClick}
+                className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 rounded-lg hover:shadow-md transition-all"
+              >
+                <Crown className="h-4 w-4" />
+                <span className="text-sm font-medium">Upgrade</span>
+              </button>
+            )}
+            
             {/* Language Selector */}
             <div className="relative" ref={languageMenuRef}>
               <button
@@ -340,6 +366,12 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
                     <div className="p-3 border-b border-gray-100">
                       <p className="text-sm font-semibold text-gray-900">{currentUserData.fullName}</p>
                       <p className="text-xs text-gray-500">{currentUserData.email}</p>
+                      {isPremium && (
+                        <div className="mt-2 flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-1 rounded text-xs">
+                          <Crown className="h-3 w-3" />
+                          <span>Premium Member</span>
+                        </div>
+                      )}
                     </div>
                     <div className="p-2">
                       <button 
@@ -363,6 +395,15 @@ const Header: React.FC<HeaderProps> = ({ userName, currentGlucose, isConnected, 
                         <Settings className="h-4 w-4" />
                         <span>Account Settings</span>
                       </button>
+                      {!isPremium && (
+                        <button 
+                          onClick={onUpgradeClick}
+                          className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                        >
+                          <Crown className="h-4 w-4" />
+                          <span>Upgrade to Premium</span>
+                        </button>
+                      )}
                       <hr className="my-2 border-gray-200" />
                       <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                         <LogOut className="h-4 w-4" />

@@ -8,10 +8,13 @@ import CommunityTab from './components/CommunityTab';
 import PetTab from './components/PetTab';
 import AchievementsTab from './components/AchievementsTab';
 import PredictionsTab from './components/PredictionsTab';
+import SubscriptionPlans from './components/SubscriptionPlans';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [language, setLanguage] = useState('en');
+  const [showSubscriptionPlans, setShowSubscriptionPlans] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
   const [allLogs, setAllLogs] = useState([
     { 
       id: 1, 
@@ -79,6 +82,13 @@ function App() {
     setAllLogs(prev => [newLog, ...prev]);
   };
 
+  const handleSubscribe = (plan: 'monthly' | 'annual') => {
+    setIsPremium(true);
+    setShowSubscriptionPlans(false);
+    // In a real app, this would handle payment processing
+    console.log(`Subscribed to ${plan} plan`);
+  };
+
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'home':
@@ -107,6 +117,8 @@ function App() {
         isConnected={true}
         language={language}
         onLanguageChange={setLanguage}
+        isPremium={isPremium}
+        onUpgradeClick={() => setShowSubscriptionPlans(true)}
       />
       
       <div className="flex">
@@ -130,6 +142,24 @@ function App() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
+
+      {/* Subscription Plans Modal */}
+      {showSubscriptionPlans && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowSubscriptionPlans(false)}></div>
+            <div className="relative bg-white w-full max-w-4xl mx-4 rounded-2xl shadow-xl">
+              <button 
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowSubscriptionPlans(false)}
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <SubscriptionPlans />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
