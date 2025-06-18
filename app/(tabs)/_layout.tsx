@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Activity, MessageCircle, Trophy, Heart, TrendingUp } from 'lucide-react-native';
+import { Chrome as Home, Activity, MessageCircle, Trophy, Heart, TrendingUp, Book, Users } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -51,9 +51,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="community"
         options={{
-          title: 'Chat',
+          title: 'Circle',
           tabBarIcon: ({ size, color }) => (
-            <MessageCircle size={size} color={color} />
+            <Users size={size} color={color} />
           ),
         }}
       />
@@ -69,7 +69,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="achievements"
         options={{
-          title: 'Goals',
+          title: 'Quest',
           tabBarIcon: ({ size, color }) => (
             <Trophy size={size} color={color} />
           ),

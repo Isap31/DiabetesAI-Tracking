@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Activity, MessageCircle, Trophy, Heart, TrendingUp } from 'lucide-react';
+import { Home, Activity, MessageCircle, Trophy, Heart, TrendingUp, Book, Users } from 'lucide-react';
 
 interface TabNavigationProps {
   activeTab: string;
@@ -11,9 +11,9 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
     { id: 'home', label: 'Home', icon: Home },
     { id: 'tracking', label: 'Track', icon: Activity },
     { id: 'predictions', label: 'AI', icon: TrendingUp },
-    { id: 'community', label: 'Chat', icon: MessageCircle },
+    { id: 'community', label: 'Circle', icon: Users },
     { id: 'pet', label: 'Pet', icon: Heart },
-    { id: 'achievements', label: 'Goals', icon: Trophy }
+    { id: 'achievements', label: 'Quest', icon: Trophy }
   ];
 
   return (

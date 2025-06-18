@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import TabNavigation from './components/TabNavigation';
-import HomeTab from './components/HomeTab';
+import GamifiedHomeTab from './components/GamifiedHomeTab';
 import TrackingTab from './components/TrackingTab';
 import CommunityTab from './components/CommunityTab';
 import PetTab from './components/PetTab';
@@ -82,7 +82,7 @@ function App() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} />;
+        return <GamifiedHomeTab />;
       case 'tracking':
         return <TrackingTab onDataLogged={handleDataLogged} language={language} />;
       case 'predictions':
@@ -94,7 +94,7 @@ function App() {
       case 'achievements':
         return <AchievementsTab language={language} />;
       default:
-        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} />;
+        return <GamifiedHomeTab />;
     }
   };
 

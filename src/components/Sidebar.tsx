@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users, TrendingUp, Mic } from 'lucide-react';
+import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users, TrendingUp, Mic, Book } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 
 interface SidebarProps {
@@ -15,9 +15,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) =
     { id: 'home', label: t.dashboard, icon: Home },
     { id: 'tracking', label: t.tracking, icon: Activity },
     { id: 'predictions', label: t.predictions, icon: TrendingUp },
-    { id: 'community', label: t.community, icon: Users },
+    { id: 'community', label: 'Care Circle', icon: Users },
     { id: 'pet', label: t.petCompanion, icon: Heart },
-    { id: 'achievements', label: t.achievements, icon: Trophy }
+    { id: 'achievements', label: 'HealthQuest', icon: Trophy }
   ];
 
   return (
@@ -41,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) =
         </nav>
       </div>
       
-      {/* AI Assistant Quick Access - MOVED UP */}
+      {/* AI Assistant Quick Access */}
       <div className="absolute bottom-20 left-6 right-6">
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-4 text-white shadow-lg border-2 border-blue-400">
           <div className="flex items-center space-x-3 mb-3">
