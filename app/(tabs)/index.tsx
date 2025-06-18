@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  Image,
 } from 'react-native';
 import {
   Droplets,
