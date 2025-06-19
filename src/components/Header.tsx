@@ -10,6 +10,7 @@ interface HeaderProps {
   onLanguageChange: (language: string) => void;
   isPremium?: boolean;
   onUpgradeClick?: () => void;
+  onProfileClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -19,7 +20,8 @@ const Header: React.FC<HeaderProps> = ({
   language, 
   onLanguageChange,
   isPremium = false,
-  onUpgradeClick
+  onUpgradeClick,
+  onProfileClick
 }) => {
   const t = useTranslation(language);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -350,7 +352,7 @@ const Header: React.FC<HeaderProps> = ({
               {/* User Menu - Now uses dynamic user data */}
               <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  onClick={() => { setShowUserMenu(!showUserMenu); onProfileClick && onProfileClick(); }}
                   className="flex items-center space-x-3 bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
                 >
                   <User className="h-4 w-4 text-gray-600" />
@@ -375,7 +377,7 @@ const Header: React.FC<HeaderProps> = ({
                     </div>
                     <div className="p-2">
                       <button 
-                        onClick={() => openModal('profile')}
+                        onClick={() => { openModal('profile'); onProfileClick && onProfileClick(); }}
                         className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                       >
                         <User className="h-4 w-4" />

@@ -41,4 +41,4 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
   );
 };
 
-export default TabNavigation;
+export default TabNavigation; 

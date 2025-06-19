@@ -90,6 +90,9 @@ export interface Translation {
   bloodGlucoseMeter: string;
   bluetooth: string;
   internet: string;
+  
+  // New key
+  enterDataToSeePredictions: string;
 }
 
 export const translations: Record<string, Translation> = {
@@ -185,6 +188,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "Blood Glucose Meter",
     bluetooth: "Bluetooth",
     internet: "Internet",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   es: {
@@ -279,6 +285,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "Medidor de Glucosa",
     bluetooth: "Bluetooth",
     internet: "Internet",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   fr: {
@@ -373,6 +382,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "Glucomètre",
     bluetooth: "Bluetooth",
     internet: "Internet",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   de: {
@@ -467,6 +479,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "Blutzuckermessgerät",
     bluetooth: "Bluetooth",
     internet: "Internet",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   zh: {
@@ -561,6 +576,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "血糖仪",
     bluetooth: "蓝牙",
     internet: "互联网",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   ja: {
@@ -655,6 +673,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "血糖測定器",
     bluetooth: "Bluetooth",
     internet: "インターネット",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   ko: {
@@ -749,6 +770,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "혈당 측정기",
     bluetooth: "블루투스",
     internet: "인터넷",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   ar: {
@@ -843,6 +867,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "جهاز قياس السكر",
     bluetooth: "البلوتوث",
     internet: "الإنترنت",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   hi: {
@@ -937,6 +964,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "रक्त शर्करा मीटर",
     bluetooth: "ब्लूटूथ",
     internet: "इंटरनेट",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   pt: {
@@ -1031,6 +1061,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "Medidor de Glicose",
     bluetooth: "Bluetooth",
     internet: "Internet",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   },
   
   ru: {
@@ -1125,6 +1158,9 @@ export const translations: Record<string, Translation> = {
     bloodGlucoseMeter: "Глюкометр",
     bluetooth: "Bluetooth",
     internet: "Интернет",
+    
+    // New key
+    enterDataToSeePredictions: "Enter your data to see predictions.",
   }
 };
 

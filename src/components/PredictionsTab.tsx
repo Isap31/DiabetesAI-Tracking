@@ -2,14 +2,22 @@ import React from 'react';
 import ProgressChart from './ProgressChart';
 import PredictiveInsights from './PredictiveInsights';
 import { Brain, TrendingUp, Target, Activity } from 'lucide-react';
+import { useTranslation } from '../utils/translations';
 
-const PredictionsTab = () => {
+interface PredictionsTabProps {
+  language: string;
+  useDemoData: boolean;
+}
+
+const PredictionsTab: React.FC<PredictionsTabProps> = ({ language, useDemoData }) => {
+  const t = useTranslation(language);
+
   return (
     <div className="space-y-8">
       {/* Page Header */}
       <div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">AI Predictions & Analytics</h2>
-        <p className="text-gray-600">Advanced glucose modeling with comprehensive parameter analysis and forecasting.</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">{t.aiPredictionsAnalytics}</h2>
+        <p className="text-gray-600">{t.advancedGlucoseModeling}</p>
       </div>
 
       {/* AI Status Banner */}
@@ -19,29 +27,29 @@ const PredictionsTab = () => {
             <Brain className="h-8 w-8 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-xl font-bold mb-2">FlowSense AI Analytics Engine</h3>
+            <h3 className="text-xl font-bold mb-2">{t.flowSenseAI}</h3>
             <p className="text-slate-200 mb-4">
-              Advanced neural network ensemble analyzing your glucose patterns with comprehensive parameter integration including hormonal cycles, sleep quality, exercise impact, and meal timing.
+              {t.intelligentHealthAssistant}
             </p>
             <div className="grid grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="flex items-center justify-center space-x-2 mb-1">
                   <TrendingUp className="h-4 w-4 text-blue-400" />
-                  <span className="text-sm font-medium">Prediction Accuracy</span>
+                  <span className="text-sm font-medium">{t.predictionAccuracy}</span>
                 </div>
                 <p className="text-2xl font-bold text-blue-400">93.1%</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center space-x-2 mb-1">
                   <Target className="h-4 w-4 text-green-400" />
-                  <span className="text-sm font-medium">Model Confidence</span>
+                  <span className="text-sm font-medium">{t.modelConfidence}</span>
                 </div>
                 <p className="text-2xl font-bold text-green-400">91.2%</p>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center space-x-2 mb-1">
                   <Activity className="h-4 w-4 text-purple-400" />
-                  <span className="text-sm font-medium">Data Points</span>
+                  <span className="text-sm font-medium">{t.dataPoints}</span>
                 </div>
                 <p className="text-2xl font-bold text-purple-400">3,247</p>
               </div>
@@ -53,10 +61,10 @@ const PredictionsTab = () => {
       {/* Main Analytics Content */}
       <div className="space-y-8">
         {/* FlowSense AI Insights */}
-        <PredictiveInsights />
+        <PredictiveInsights language={language} useDemoData={useDemoData} />
         
         {/* Glucose Trends & Predictions Chart */}
-        <ProgressChart />
+        <ProgressChart language={language} useDemoData={useDemoData} />
       </div>
 
       {/* Additional Analytics Summary */}
@@ -87,4 +95,4 @@ const PredictionsTab = () => {
   );
 };
 
-export default PredictionsTab;
+export default PredictionsTab; 

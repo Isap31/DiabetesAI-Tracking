@@ -4,7 +4,7 @@ import { DivideIcon as LucideIcon, ArrowRight } from 'lucide-react';
 interface FeatureCardProps {
   title: string;
   description: string;
-  icon: LucideIcon;
+  icon: typeof LucideIcon;
   color: 'purple' | 'teal' | 'blue' | 'magenta';
   status?: string;
   action?: string;
@@ -57,4 +57,4 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   );
 };
 
-export default FeatureCard;
+export default FeatureCard; 

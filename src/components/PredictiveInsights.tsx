@@ -1,7 +1,15 @@
 import React from 'react';
 import { Brain, TrendingUp, AlertTriangle, CheckCircle, Target, Clock, User, Scale, Activity, Utensils, Calendar, Baby, Moon, Bed } from 'lucide-react';
+import { useTranslation } from '../utils/translations';
 
-const PredictiveInsights = () => {
+interface PredictiveInsightsProps {
+  language: string;
+  useDemoData?: boolean;
+}
+
+const PredictiveInsights: React.FC<PredictiveInsightsProps> = ({ language, useDemoData }) => {
+  const t = useTranslation(language);
+
   // Enhanced user profile with menopause consideration
   const userProfile = {
     age: 34,
@@ -60,6 +68,10 @@ const PredictiveInsights = () => {
 
   // Gender and menopause-adaptive predictions with budget-friendly food focus
   const getPredictions = () => {
+    if (!useDemoData) {
+      // Real data mode: block or prompt for real user input if needed
+      return [];
+    }
     const menopauseStatus = getMenopauseStatus();
     const menstrualPhase = getMenstrualPhase();
     
@@ -189,304 +201,65 @@ const PredictiveInsights = () => {
   const predictions = getPredictions();
   const menopauseStatus = getMenopauseStatus();
 
-  // Enhanced model metrics with menopause consideration
-  const getModelMetrics = () => {
-    if (userProfile.gender === 'female') {
-      if (menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause') {
-        return [
-          { label: 'Prediction Accuracy', value: '94.2%', trend: '+6.1%', description: 'Enhanced with post-menopause stability' },
-          { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, hormone status' },
-          { label: 'Model Confidence', value: '92.8%', trend: '+5.2%', description: 'Post-menopause predictability' },
-          { label: 'Profile Completeness', value: '100%', trend: 'Complete', description: 'All parameters including menopause status' }
-        ];
-      } else if (menopauseStatus === 'perimenopause') {
-        return [
-          { label: 'Prediction Accuracy', value: '89.5%', trend: '+2.8%', description: 'Adjusted for perimenopause variability' },
-          { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, transition data' },
-          { label: 'Model Confidence', value: '87.1%', trend: '+1.9%', description: 'Perimenopause adaptation' },
-          { label: 'Profile Completeness', value: '100%', trend: 'Complete', description: 'All parameters including transition status' }
-        ];
-      } else {
-        return [
-          { label: 'Prediction Accuracy', value: '93.1%', trend: '+5.8%', description: 'Enhanced with hormonal cycle data' },
-          { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, hormonal logs' },
-          { label: 'Model Confidence', value: '91.2%', trend: '+4.5%', description: 'Hormonal pattern recognition' },
-          { label: 'Profile Completeness', value: '100%', trend: 'Complete', description: 'All parameters including cycle data' }
-        ];
-      }
-    } else {
-      return [
-        { label: 'Prediction Accuracy', value: '89.2%', trend: '+3.1%', description: 'Based on comprehensive data' },
-        { label: 'Data Points Used', value: '3,247', trend: '+189', description: 'Glucose, meals, exercise, sleep logs' },
-        { label: 'Model Confidence', value: '87.4%', trend: '+2.3%', description: 'Personalization level' },
-        { label: 'Profile Completeness', value: '95%', trend: 'Complete', description: 'All key parameters logged' }
-      ];
-    }
-  };
-
-  const modelMetrics = getModelMetrics();
-
-  // Enhanced parameter influence with menopause consideration
-  const getParameterInfluence = () => {
-    if (userProfile.gender === 'female') {
-      if (menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause') {
-        return [
-          { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-gray-600' },
-          { parameter: 'Exercise Intensity', influence: 75, icon: Activity, color: 'bg-gray-500' },
-          { parameter: 'Sleep Quality & Duration', influence: 70, icon: Bed, color: 'bg-gray-600' },
-          { parameter: 'Post-Menopause Stability', influence: 65, icon: Moon, color: 'bg-gray-500' },
-          { parameter: 'Time of Day', influence: 58, icon: Clock, color: 'bg-gray-600' },
-          { parameter: 'Years Since Diagnosis', influence: 55, icon: Calendar, color: 'bg-gray-500' },
-          { parameter: 'Stress Level', influence: 45, icon: Brain, color: 'bg-gray-600' },
-          { parameter: 'BMI/Weight', influence: 38, icon: Scale, color: 'bg-gray-500' }
-        ];
-      } else if (menopauseStatus === 'perimenopause') {
-        return [
-          { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-gray-600' },
-          { parameter: 'Perimenopause Fluctuations', influence: 78, icon: Moon, color: 'bg-gray-500' },
-          { parameter: 'Exercise Intensity', influence: 68, icon: Activity, color: 'bg-gray-600' },
-          { parameter: 'Sleep Quality & Duration', influence: 65, icon: Bed, color: 'bg-gray-500' },
-          { parameter: 'Time of Day', influence: 58, icon: Clock, color: 'bg-gray-600' },
-          { parameter: 'Years Since Diagnosis', influence: 55, icon: Calendar, color: 'bg-gray-500' },
-          { parameter: 'Stress Level', influence: 50, icon: Brain, color: 'bg-gray-600' },
-          { parameter: 'BMI/Weight', influence: 42, icon: Scale, color: 'bg-gray-500' }
-        ];
-      } else {
-        return [
-          { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-gray-600' },
-          { parameter: 'Menstrual Cycle Phase', influence: 72, icon: Moon, color: 'bg-gray-500' },
-          { parameter: 'Exercise Intensity', influence: 68, icon: Activity, color: 'bg-gray-600' },
-          { parameter: 'Sleep Quality & Duration', influence: 65, icon: Bed, color: 'bg-gray-500' },
-          { parameter: 'Time of Day', influence: 58, icon: Clock, color: 'bg-gray-600' },
-          { parameter: 'Years Since Diagnosis', influence: 55, icon: Calendar, color: 'bg-gray-500' },
-          { parameter: 'Stress Level', influence: 45, icon: Brain, color: 'bg-gray-600' },
-          { parameter: 'BMI/Weight', influence: 38, icon: Scale, color: 'bg-gray-500' }
-        ];
-      }
-    } else {
-      return [
-        { parameter: 'Carbohydrate Content', influence: 85, icon: Utensils, color: 'bg-gray-600' },
-        { parameter: 'Exercise Intensity', influence: 75, icon: Activity, color: 'bg-gray-500' },
-        { parameter: 'Sleep Quality & Duration', influence: 68, icon: Bed, color: 'bg-gray-600' },
-        { parameter: 'Time of Day', influence: 65, icon: Clock, color: 'bg-gray-500' },
-        { parameter: 'Years Since Diagnosis', influence: 58, icon: Calendar, color: 'bg-gray-600' },
-        { parameter: 'Stress Level', influence: 48, icon: Brain, color: 'bg-gray-500' },
-        { parameter: 'BMI/Weight', influence: 42, icon: Scale, color: 'bg-gray-600' },
-        { parameter: 'Age', influence: 35, icon: User, color: 'bg-gray-500' }
-      ];
-    }
-  };
-
-  const parameterInfluence = getParameterInfluence();
+  if (!useDemoData) {
+    // Only render a minimal prompt if not in demo mode
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-6 text-center text-gray-500">
+        {t.enterDataToSeePredictions}
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="bg-slate-900 p-2 rounded-lg">
-            <Brain className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">FlowSense AI Analytics</h3>
-            <p className="text-sm text-gray-500">
-              {userProfile.gender === 'female' 
-                ? `Personalized glucose modeling with ${menopauseStatus} insights` 
-                : 'Personalized glucose modeling & insights'}
-            </p>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="text-sm font-medium text-gray-900">
-            Model: FlowSense v{userProfile.gender === 'female' ? '2.4' : '2.1'}
-          </p>
-          <p className="text-xs text-gray-500">
-            {userProfile.gender === 'female' 
-              ? `Enhanced with ${menopauseStatus} data` 
-              : 'Neural network ensemble'}
-          </p>
-        </div>
-      </div>
-
-      {/* Enhanced Profile Integration with Menopause */}
-      <div className="bg-slate-50 p-4 rounded-lg mb-6">
-        <h4 className="font-medium text-gray-900 mb-3">Current Profile Parameters</h4>
-        <div className={`grid ${userProfile.gender === 'female' ? 'grid-cols-6' : 'grid-cols-4'} gap-4 text-sm`}>
-          <div>
-            <span className="text-gray-600">Age/Type:</span>
-            <span className="ml-2 font-medium">{userProfile.age}y, {userProfile.diabetesType}</span>
-          </div>
-          <div>
-            <span className="text-gray-600">BMI:</span>
-            <span className="ml-2 font-medium">{userProfile.bmi}</span>
-          </div>
-          <div>
-            <span className="text-gray-600">Experience:</span>
-            <span className="ml-2 font-medium">{userProfile.yearsSinceDiagnosis} years</span>
-          </div>
-          <div>
-            <span className="text-gray-600">Sleep:</span>
-            <span className="ml-2 font-medium">{userProfile.sleepDuration}h (Q:{userProfile.sleepQuality}/10)</span>
-          </div>
-          {userProfile.gender === 'female' && (
-            <>
-              <div>
-                <span className="text-gray-600">Status:</span>
-                <span className="ml-2 font-medium text-gray-700 capitalize">{menopauseStatus}</span>
-              </div>
-              <div>
-                <span className="text-gray-600">Phase:</span>
-                <span className="ml-2 font-medium text-gray-700">
-                  {getMenstrualPhase() || 'N/A'}
-                </span>
-              </div>
-            </>
-          )}
-          {userProfile.gender === 'male' && (
-            <div>
-              <span className="text-gray-600">Stress:</span>
-              <span className="ml-2 font-medium">Level {userProfile.currentStress}/5</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Enhanced Gender-Specific Impact Notice */}
-      {userProfile.gender === 'female' && (
-        <div className="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
-          <div className="flex items-center space-x-2 mb-2">
-            <Moon className="h-4 w-4 text-gray-600" />
-            <h4 className="font-medium text-gray-900">
-              {menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause' 
-                ? 'Post-Menopause Impact' 
-                : menopauseStatus === 'perimenopause' 
-                ? 'Perimenopause Impact' 
-                : 'Hormonal Cycle Impact'}
-            </h4>
-          </div>
-          <p className="text-sm text-gray-700">
-            <strong>{menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause' 
-              ? 'Post-Menopause:' 
-              : menopauseStatus === 'perimenopause' 
-              ? 'Perimenopause:' 
-              : getMenstrualPhase() + ' Phase:'}</strong> {
-              menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause' 
-                ? 'Hormonal stability may improve glucose predictability. Focus on consistent nutrition and exercise routines.' :
-              menopauseStatus === 'perimenopause' 
-                ? 'Hormonal fluctuations may increase glucose variability. Monitor more frequently and consider smaller, frequent meals.' :
-              getMenstrualPhase() === 'Ovulation' ? 'Increased insulin resistance may cause higher glucose levels. Consider reducing carb intake by 20-30%.' :
-              getMenstrualPhase() === 'Luteal' ? 'Progesterone may increase insulin resistance. Monitor glucose more closely.' :
-              getMenstrualPhase() === 'Menstrual' ? 'Hormonal fluctuations may cause glucose variability. Stay hydrated and maintain regular meals.' :
-              'Estrogen levels rising may improve insulin sensitivity. Good time for normal carb intake.'
-            }
-          </p>
-        </div>
-      )}
-
-      {/* Budget-Friendly Nutrition Focus */}
-      <div className="bg-green-50 p-4 rounded-lg mb-6 border border-green-200">
-        <div className="flex items-center space-x-2 mb-2">
-          <Utensils className="h-4 w-4 text-green-600" />
-          <h4 className="font-medium text-green-900">Budget-Friendly Nutrition Focus</h4>
-        </div>
-        <p className="text-sm text-green-800">
-          <strong>Affordable Diabetes-Friendly Foods:</strong> Dried beans ($1.50/lb), oats ($3/container), eggs ($2/dozen), 
-          seasonal vegetables ($0.50-1/lb), and generic whole grains provide excellent nutrition without breaking the budget. 
-          Shop sales, buy in bulk, and use frozen vegetables for consistent, affordable nutrition.
-        </p>
-      </div>
-
-      {/* Model Performance Metrics */}
-      <div className="grid grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-        {modelMetrics.map((metric, index) => (
-          <div key={index} className="text-center">
-            <p className="text-lg font-bold text-gray-900">{metric.value}</p>
-            <p className="text-xs text-gray-600">{metric.label}</p>
-            <p className="text-xs text-green-600 font-medium">{metric.trend}</p>
-            <p className="text-xs text-gray-500 mt-1">{metric.description}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Enhanced Parameter Influence Chart */}
-      <div className="mb-6">
-        <h4 className="font-medium text-gray-900 mb-3">
-          Parameter Influence on Predictions 
-          {userProfile.gender === 'female' && (
-            <span className="text-sm text-gray-600 ml-2">({menopauseStatus}-Enhanced)</span>
-          )}
-        </h4>
-        <div className="space-y-3">
-          {parameterInfluence.map((param, index) => (
-            <div key={index} className="flex items-center space-x-3">
-              <div className={`${param.color} p-2 rounded-lg`}>
-                <param.icon className="h-4 w-4 text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-900">{param.parameter}</span>
-                  <span className="text-sm text-gray-600">{param.influence}%</span>
-                </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full ${param.color} transition-all duration-500`}
-                    style={{ width: `${param.influence}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Enhanced Predictions */}
-      <div className="space-y-4">
-        <h4 className="font-medium text-gray-900">
-          AI Predictions & Recommendations
-          {userProfile.gender === 'female' && (
-            <span className="text-sm text-gray-600 ml-2">({menopauseStatus}-Aware & Budget-Focused)</span>
-          )}
-        </h4>
+    <div className="space-y-8">
+      {/* Predictions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {predictions.map((prediction, index) => (
-          <div key={index} className={`${prediction.bgColor} ${prediction.borderColor} border rounded-lg p-4`}>
-            <div className="flex items-start space-x-3">
-              <div className="bg-white p-2 rounded-lg shadow-sm">
-                <prediction.icon className={`h-4 w-4 ${prediction.textColor}`} />
+          <div
+            key={index}
+            className={`${prediction.bgColor} ${prediction.borderColor} border rounded-xl p-6 transition-transform duration-300 hover:scale-105`}
+          >
+            <div className="flex items-start space-x-4">
+              <div className={`${prediction.textColor} p-2 rounded-lg bg-white bg-opacity-50`}>
+                <prediction.icon className="h-6 w-6" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className={`text-sm font-semibold ${prediction.textColor}`}>
-                    {prediction.title}
-                  </h4>
+                <h3 className={`font-semibold ${prediction.textColor} mb-2`}>{prediction.title}</h3>
+                <p className="text-gray-700 text-sm mb-4">{prediction.message}</p>
+                
+                {/* Confidence and Timeframe */}
+                <div className="flex items-center space-x-4 mb-4">
                   <div className="flex items-center space-x-2">
-                    <Clock className="h-3 w-3 text-gray-500" />
-                    <span className="text-xs text-gray-500">{prediction.timeframe}</span>
+                    <Target className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {prediction.confidence}% {t.modelConfidence}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">{prediction.timeframe}</span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 mb-2">{prediction.message}</p>
-                <p className="text-sm font-medium text-gray-600 mb-3">{prediction.action}</p>
-                
-                {/* Factors considered */}
-                <div className="mb-3">
-                  <p className="text-xs font-medium text-gray-600 mb-1">Factors considered:</p>
-                  <div className="flex flex-wrap gap-1">
+
+                {/* Factors */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Contributing Factors:</h4>
+                  <div className="flex flex-wrap gap-2">
                     {prediction.factors.map((factor, idx) => (
-                      <span key={idx} className="text-xs bg-white bg-opacity-60 px-2 py-1 rounded">
+                      <span
+                        key={idx}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white bg-opacity-50 text-gray-700"
+                      >
                         {factor}
                       </span>
                     ))}
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-500">
-                    Confidence: {prediction.confidence}%
-                  </span>
-                  <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gray-600 transition-all duration-500"
-                      style={{ width: `${prediction.confidence}%` }}
-                    ></div>
-                  </div>
+
+                {/* Action */}
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Recommended Action:</h4>
+                  <p className="text-sm text-gray-600">{prediction.action}</p>
                 </div>
               </div>
             </div>
@@ -494,17 +267,112 @@ const PredictiveInsights = () => {
         ))}
       </div>
 
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <span>Next prediction update in 8 minutes</span>
-          <span>
-            Data sources: CGM, meal logs, exercise tracker, sleep data, profile data
-            {userProfile.gender === 'female' && `, ${menopauseStatus} status`}
-          </span>
+      {/* Parameter Influence */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Parameter Influences</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {/* Sleep Quality */}
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <Bed className="h-5 w-5 text-purple-500" />
+              <span className="text-sm font-medium text-gray-700">Sleep Quality</span>
+            </div>
+            <div className="flex items-end space-x-2">
+              <span className="text-2xl font-bold text-gray-900">{userProfile.sleepQuality}/10</span>
+              <span className="text-sm text-gray-500 mb-1">({userProfile.sleepDuration}h)</span>
+            </div>
+          </div>
+
+          {/* Stress Level */}
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <Brain className="h-5 w-5 text-blue-500" />
+              <span className="text-sm font-medium text-gray-700">Stress Level</span>
+            </div>
+            <div className="flex items-end space-x-2">
+              <span className="text-2xl font-bold text-gray-900">{userProfile.currentStress}/10</span>
+              <span className="text-sm text-gray-500 mb-1">
+                {userProfile.currentStress <= 3 ? t.good : userProfile.currentStress <= 7 ? t.fair : t.poor}
+              </span>
+            </div>
+          </div>
+
+          {/* Hormonal Status */}
+          {userProfile.gender === 'female' && (
+            <div>
+              <div className="flex items-center space-x-2 mb-2">
+                <Moon className="h-5 w-5 text-pink-500" />
+                <span className="text-sm font-medium text-gray-700">Hormonal Status</span>
+              </div>
+              <div className="flex items-end space-x-2">
+                <span className="text-2xl font-bold text-gray-900">
+                  {menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause'
+                    ? 'Post-M'
+                    : getMenstrualPhase() || 'N/A'}
+                </span>
+                <span className="text-sm text-gray-500 mb-1">
+                  {menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause'
+                    ? t.good
+                    : `${t.days} ${userProfile.menstrualCycleDay}`}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Experience Level */}
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <User className="h-5 w-5 text-green-500" />
+              <span className="text-sm font-medium text-gray-700">Experience</span>
+            </div>
+            <div className="flex items-end space-x-2">
+              <span className="text-2xl font-bold text-gray-900">{userProfile.yearsSinceDiagnosis}y</span>
+              <span className="text-sm text-gray-500 mb-1">{t.type1}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Model Performance */}
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-6 text-white">
+        <h3 className="text-lg font-semibold mb-4">{t.flowSenseAI}</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <Target className="h-5 w-5 text-blue-400" />
+              <span className="text-sm font-medium">{t.predictionAccuracy}</span>
+            </div>
+            <p className="text-2xl font-bold text-blue-400">93.1%</p>
+            <p className="text-xs text-gray-400">Last 7 {t.days}</p>
+          </div>
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <Activity className="h-5 w-5 text-green-400" />
+              <span className="text-sm font-medium">{t.dataPoints}</span>
+            </div>
+            <p className="text-2xl font-bold text-green-400">3,247</p>
+            <p className="text-xs text-gray-400">Total analyzed</p>
+          </div>
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <Brain className="h-5 w-5 text-purple-400" />
+              <span className="text-sm font-medium">Parameters</span>
+            </div>
+            <p className="text-2xl font-bold text-purple-400">15+</p>
+            <p className="text-xs text-gray-400">Tracked factors</p>
+          </div>
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <TrendingUp className="h-5 w-5 text-pink-400" />
+              <span className="text-sm font-medium">Improvement</span>
+            </div>
+            <p className="text-2xl font-bold text-pink-400">+12.4%</p>
+            <p className="text-xs text-gray-400">vs. last month</p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default PredictiveInsights;
+export default PredictiveInsights; 

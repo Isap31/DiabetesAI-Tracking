@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Bed } from 'lucide-react';
+import { predictGlucose } from '../services/predictiveModelService';
 
 interface TrackingTabProps {
   onDataLogged?: (data: any) => void;
+  useDemoData: boolean;
 }
 
-const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
+const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) => {
   const [showMealForm, setShowMealForm] = useState(false);
   const [showExerciseForm, setShowExerciseForm] = useState(false);
   const [showGlucoseForm, setShowGlucoseForm] = useState(false);
@@ -38,6 +40,18 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
     sleepQuality: '7',
     sleepDuration: '7.5'
   });
+  const [predictedGlucose, setPredictedGlucose] = useState<number | null>(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
+  const [predictionParams, setPredictionParams] = useState({
+    glucose: '',
+    hr_mean_30min: '',
+    activity_30min: '',
+    carbs_30min: '',
+    protein_30min: '',
+    fat_30min: '',
+  });
+  const [showPredictionPrompt, setShowPredictionPrompt] = useState(false);
 
   const quickLog = [
     { 
@@ -105,6 +119,52 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
     }
   ];
 
+  const allParamsFilled = Object.values(predictionParams).every(v => v !== '');
+
+  const fetchPrediction = async () => {
+    setPredictionLoading(true);
+    setPredictionError(null);
+    try {
+      let input;
+      if (useDemoData) {
+        input = {
+          glucose: 130,
+          hr_mean_30min: 72,
+          activity_30min: 3.2,
+          carbs_30min: 40,
+          protein_30min: 15,
+          fat_30min: 10,
+          time_sin: Math.sin((2 * Math.PI * (new Date().getHours() + new Date().getMinutes() / 60)) / 24),
+          time_cos: Math.cos((2 * Math.PI * (new Date().getHours() + new Date().getMinutes() / 60)) / 24),
+        };
+      } else {
+        if (!allParamsFilled) {
+          setPredictionLoading(false);
+          setShowPredictionPrompt(true);
+          return;
+        }
+        const now = new Date();
+        const hours = now.getHours() + now.getMinutes() / 60;
+        input = {
+          glucose: parseFloat(predictionParams.glucose),
+          hr_mean_30min: parseFloat(predictionParams.hr_mean_30min),
+          activity_30min: parseFloat(predictionParams.activity_30min),
+          carbs_30min: parseFloat(predictionParams.carbs_30min),
+          protein_30min: parseFloat(predictionParams.protein_30min),
+          fat_30min: parseFloat(predictionParams.fat_30min),
+          time_sin: Math.sin((2 * Math.PI * hours) / 24),
+          time_cos: Math.cos((2 * Math.PI * hours) / 24),
+        };
+      }
+      const res = await predictGlucose(input);
+      setPredictedGlucose(res.predicted_glucose_30min);
+      setPredictionLoading(false);
+    } catch (err) {
+      setPredictionError('Prediction unavailable');
+      setPredictionLoading(false);
+    }
+  };
+
   const handleMealSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newMealLog = {
@@ -129,6 +189,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
     
     setMealData({ name: '', carbs: '', calories: '', time: new Date().toTimeString().slice(0, 5) });
     setShowMealForm(false);
+    fetchPrediction();
   };
 
   const handleExerciseSubmit = (e: React.FormEvent) => {
@@ -155,6 +216,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
     
     setExerciseData({ type: '', duration: '', intensity: 'moderate', time: new Date().toTimeString().slice(0, 5) });
     setShowExerciseForm(false);
+    fetchPrediction();
   };
 
   const handleGlucoseSubmit = (e: React.FormEvent) => {
@@ -181,6 +243,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
     
     setGlucoseData({ reading: '', context: 'fasting', notes: '', time: new Date().toTimeString().slice(0, 5) });
     setShowGlucoseForm(false);
+    fetchPrediction();
   };
 
   const handleProfileSubmit = (e: React.FormEvent) => {
@@ -201,6 +264,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
     }
     
     setShowProfileForm(false);
+    fetchPrediction();
   };
 
   const calculateBMI = (height: string, weight: string) => {
@@ -231,8 +295,43 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged }) => {
     return 'Poor';
   };
 
+  if (!useDemoData && !allParamsFilled) {
+    return (
+      <div className="space-y-6">
+        <div className="mb-4 bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex flex-wrap gap-2 items-center">
+          {Object.entries(predictionParams).map(([key, value]) => (
+            <input
+              key={key}
+              type="number"
+              value={value}
+              onChange={e => setPredictionParams(p => ({ ...p, [key]: e.target.value }))}
+              placeholder={key.replace(/_/g, ' ')}
+              className="w-24 px-2 py-1 border border-yellow-200 rounded text-xs"
+              min="0"
+            />
+          ))}
+          <span className="text-xs text-yellow-700">Enter all values to predict</span>
+        </div>
+        <div className="text-center text-gray-500 mt-8">Enter your data to see predictions.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Prediction Toast */}
+      <div>
+        {predictionLoading ? (
+          <div className="bg-blue-50 text-blue-700 p-3 rounded-lg text-center font-semibold mb-2">Loading prediction...</div>
+        ) : predictionError ? (
+          <div className="bg-red-50 text-red-700 p-3 rounded-lg text-center font-semibold mb-2">{predictionError}</div>
+        ) : predictedGlucose !== null ? (
+          <div className="bg-green-50 text-green-700 p-3 rounded-lg text-center font-semibold mb-2">
+            Predicted Glucose (30 min): {predictedGlucose} mg/dL
+          </div>
+        ) : null}
+      </div>
+
       {/* Meal Logging Modal */}
       {showMealForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

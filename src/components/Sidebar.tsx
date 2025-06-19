@@ -1,6 +1,7 @@
-import React from 'react';
-import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users, TrendingUp, Mic, Book } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users, TrendingUp, Mic, Book, Bot, X, Send } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
+import { elevenLabsService } from '../services/elevenLabsService';
 
 interface SidebarProps {
   activeTab: string;
@@ -10,11 +11,47 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) => {
   const t = useTranslation(language);
-  
+  const [showFlowSense, setShowFlowSense] = useState(false);
+  const [micAllowed, setMicAllowed] = useState(false);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [chatInput, setChatInput] = useState('');
+  const [chatHistory, setChatHistory] = useState<{ type: 'user' | 'ai'; message: string }[]>([]);
+  const [sessionActive, setSessionActive] = useState(false);
+
+  const handleExplainMic = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicAllowed(true);
+    } catch (err) {
+      setMicError('Microphone access denied or unavailable. Please allow microphone access to use FlowSense AI.');
+    }
+  };
+
+  const handleStartVoice = async () => {
+    try {
+      // Placeholder for future integration with the Vite SDK
+    } catch (err) {
+      setMicError('Failed to start voice session.');
+    }
+  };
+
+  const handleEndVoice = async () => {
+    // Placeholder for future integration with the Vite SDK
+    setSessionActive(false);
+  };
+
+  const handleSend = () => {
+    if (chatInput.trim()) {
+      // Placeholder for future integration with the Vite SDK
+      setChatInput('');
+    }
+  };
+
   const tabs = [
     { id: 'home', label: t.dashboard, icon: Home },
     { id: 'tracking', label: t.tracking, icon: Activity },
     { id: 'predictions', label: t.predictions, icon: TrendingUp },
+    { id: 'flowsense', label: 'FlowSense AI', icon: Bot },
     { id: 'community', label: 'Care Circle', icon: Users },
     { id: 'pet', label: t.petCompanion, icon: Heart },
     { id: 'achievements', label: 'HealthQuest', icon: Trophy }
@@ -40,7 +77,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) =
           ))}
         </nav>
       </div>
-      
       {/* AI Assistant Quick Access */}
       <div className="absolute bottom-20 left-6 right-6">
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-4 text-white shadow-lg border-2 border-blue-400">

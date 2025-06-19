@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
-import DailyAffirmation from './DailyAffirmation';
 import GoalsModal from './GoalsModal';
 import GroceryListModal from './GroceryListModal';
 import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Goal, ShoppingCart, Mic, Volume2, Bot } from 'lucide-react';
@@ -11,9 +10,10 @@ interface HomeTabProps {
   allLogs: any[];
   onDataLogged: (data: any) => void;
   language: string;
+  useDemoData: boolean;
 }
 
-const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) => {
+const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useDemoData }) => {
   const t = useTranslation(language);
   const [showLogForm, setShowLogForm] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
@@ -741,9 +741,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language }) =>
       )}
 
       {/* Daily Affirmation */}
-      <div className="px-4">
+      {/* <div className="px-4">
         <DailyAffirmation language={language} />
-      </div>
+      </div> */}
 
       {/* Dashboard Title - Moved here, right above Welcome section */}
       <div className="px-4">

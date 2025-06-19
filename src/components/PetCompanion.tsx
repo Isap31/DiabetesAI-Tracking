@@ -121,4 +121,4 @@ const PetCompanion: React.FC<PetCompanionProps> = ({
   );
 };
 
-export default PetCompanion;
+export default PetCompanion; 

@@ -1,7 +1,3 @@
-import { Audio } from 'expo-av';
-import * as Speech from 'expo-speech';
-import { Platform } from 'react-native';
-
 export interface VoiceSettings {
   stability: number;
   similarity_boost: number;
@@ -37,13 +33,6 @@ class ElevenLabsService {
       if (!this.apiKey || !this.voiceId) {
         console.warn('ElevenLabs API key or Voice ID not configured');
         // Fallback to native speech synthesis
-        if (Platform.OS !== 'web') {
-          Speech.speak(text, {
-            language: 'en-US',
-            pitch: 1.0,
-            rate: 0.9,
-          });
-        }
         return null;
       }
 
@@ -73,38 +62,15 @@ class ElevenLabsService {
       console.error('ElevenLabs TTS error:', error);
       
       // Fallback to native speech synthesis
-      if (Platform.OS !== 'web') {
-        Speech.speak(text, {
-          language: 'en-US',
-          pitch: 1.0,
-          rate: 0.9,
-        });
-      }
-      
       return null;
     }
   }
 
   async playAudio(audioBase64: string): Promise<void> {
     try {
-      if (Platform.OS === 'web') {
-        // Web audio playback
-        const audio = new window.Audio(`data:audio/mpeg;base64,${audioBase64}`);
-        await audio.play();
-      } else {
-        // React Native audio playback
-        const { sound } = await Audio.Sound.createAsync(
-          { uri: `data:audio/mpeg;base64,${audioBase64}` },
-          { shouldPlay: true }
-        );
-        
-        // Clean up after playback
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if (status.isLoaded && status.didJustFinish) {
-            sound.unloadAsync();
-          }
-        });
-      }
+      // Web audio playback
+      const audio = new window.Audio(`data:audio/mpeg;base64,${audioBase64}`);
+      await audio.play();
     } catch (error) {
       console.error('Audio playback error:', error);
     }

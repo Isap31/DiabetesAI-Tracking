@@ -64,4 +64,4 @@ const GameProgress = () => {
   );
 };
 
-export default GameProgress;
+export default GameProgress; 
