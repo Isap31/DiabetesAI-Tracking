@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gift, Star, Heart, Zap, Crown, Bone, ChevronDown } from 'lucide-react';
+import { Gift, Star, Heart, Zap, Crown, Bone, ChevronDown, Sparkles, Trophy } from 'lucide-react';
 
 const PetTab = () => {
   const [petStats, setPetStats] = useState({
@@ -132,7 +132,7 @@ const PetTab = () => {
   const currentPet = petTypes[selectedPetType];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Feedback Messages */}
       {feedbacks.length > 0 && (
         <div className="fixed top-20 right-4 z-50 space-y-2">
@@ -144,22 +144,30 @@ const PetTab = () => {
         </div>
       )}
 
-      {/* Pet Selection */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Choose Your Companion</h3>
+      {/* Modern Pet Companion Card */}
+      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200 shadow-lg">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-xl">
+              <Heart className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Your Companion</h3>
+              <p className="text-sm text-purple-600">Level {petStats.level} • {petStats.coins} coins</p>
+            </div>
+          </div>
           <div className="relative">
             <button
               onClick={() => setShowPetSelector(!showPetSelector)}
-              className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-white rounded-xl hover:bg-gray-50 transition-colors shadow-sm border border-gray-200"
             >
-              <span className="text-lg">{currentPet.emoji}</span>
+              <span className="text-2xl">{currentPet.emoji}</span>
               <span className="text-sm font-medium text-gray-700">{selectedPetType.charAt(0).toUpperCase() + selectedPetType.slice(1)}</span>
               <ChevronDown className="h-4 w-4 text-gray-600" />
             </button>
             
             {showPetSelector && (
-              <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+              <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
                 {Object.entries(petTypes).map(([type, pet]) => (
                   <button
                     key={type}
@@ -167,8 +175,8 @@ const PetTab = () => {
                       setSelectedPetType(type as 'dog' | 'horse' | 'turtle');
                       setShowPetSelector(false);
                     }}
-                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg transition-colors ${
-                      selectedPetType === type ? 'bg-slate-50 border-l-4 border-slate-600' : ''
+                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl transition-colors ${
+                      selectedPetType === type ? 'bg-purple-50 border-l-4 border-purple-500' : ''
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -184,29 +192,41 @@ const PetTab = () => {
             )}
           </div>
         </div>
-      </div>
 
-      {/* Enhanced Pet Companion */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        {/* Modern Pet Avatar */}
         <div className="text-center mb-6">
-          {/* Pet Avatar */}
           <div className="relative inline-block">
             <div className={`w-32 h-32 rounded-full mx-auto mb-4 flex items-center justify-center text-6xl ${
-              petStats.happiness >= 80 ? 'bg-green-100' :
-              petStats.happiness >= 60 ? 'bg-gray-100' :
-              petStats.happiness >= 40 ? 'bg-yellow-100' : 'bg-red-100'
-            } shadow-lg`}>
+              petStats.happiness >= 80 ? 'bg-gradient-to-br from-green-100 to-green-200' :
+              petStats.happiness >= 60 ? 'bg-gradient-to-br from-blue-100 to-blue-200' :
+              petStats.happiness >= 40 ? 'bg-gradient-to-br from-yellow-100 to-yellow-200' : 
+              'bg-gradient-to-br from-red-100 to-red-200'
+            } shadow-xl border-4 border-white`}>
               {currentPet.emoji}
             </div>
             
-            {/* Level Badge */}
-            <div className="absolute -top-2 -right-2 bg-slate-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold shadow-lg">
+            {/* Level Badge with modern design */}
+            <div className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-sm font-bold shadow-lg border-4 border-white">
               {petStats.level}
+            </div>
+
+            {/* Mood indicator */}
+            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                petStats.happiness >= 80 ? 'bg-green-500 text-white' :
+                petStats.happiness >= 60 ? 'bg-blue-500 text-white' :
+                petStats.happiness >= 40 ? 'bg-yellow-500 text-white' : 
+                'bg-red-500 text-white'
+              }`}>
+                {petStats.happiness >= 80 ? '😊 Happy' :
+                 petStats.happiness >= 60 ? '😌 Content' :
+                 petStats.happiness >= 40 ? '😐 Okay' : '😔 Sad'}
+              </div>
             </div>
           </div>
 
           <h3 className="text-xl font-semibold text-gray-900 mb-2">{currentPet.name}</h3>
-          <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+          <p className="text-sm text-gray-600 bg-white bg-opacity-70 rounded-lg p-3 border border-purple-200">
             {petStats.happiness >= 80 && petStats.health >= 80 
               ? `${currentPet.name.split(' ')[0]} is thriving! Your consistent health management is paying off.`
               : petStats.happiness >= 60 
@@ -215,105 +235,96 @@ const PetTab = () => {
           </p>
         </div>
 
-        {/* Pet Stats */}
-        <div className="space-y-4 mb-6">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <Heart className="h-4 w-4 text-red-500" />
-                <span className="text-sm font-medium text-gray-700">Health</span>
-              </div>
-              <span className="text-sm font-semibold text-gray-900">{petStats.health}%</span>
-            </div>
-            <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+        {/* Modern Stats Display */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+            <Heart className="h-5 w-5 text-red-500 mx-auto mb-2" />
+            <div className="text-lg font-bold text-gray-900">{petStats.health}%</div>
+            <div className="text-xs text-gray-500">Health</div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
-                className="h-full bg-red-500 transition-all duration-500 rounded-full"
+                className="bg-gradient-to-r from-red-400 to-red-500 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${petStats.health}%` }}
               ></div>
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <Star className="h-4 w-4 text-yellow-500" />
-                <span className="text-sm font-medium text-gray-700">Happiness</span>
-              </div>
-              <span className="text-sm font-semibold text-gray-900">{petStats.happiness}%</span>
-            </div>
-            <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+            <Star className="h-5 w-5 text-yellow-500 mx-auto mb-2" />
+            <div className="text-lg font-bold text-gray-900">{petStats.happiness}%</div>
+            <div className="text-xs text-gray-500">Happiness</div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
-                className="h-full bg-yellow-500 transition-all duration-500 rounded-full"
+                className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${petStats.happiness}%` }}
               ></div>
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <Zap className="h-4 w-4 text-blue-500" />
-                <span className="text-sm font-medium text-gray-700">Energy</span>
-              </div>
-              <span className="text-sm font-semibold text-gray-900">{petStats.energy}%</span>
-            </div>
-            <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
+            <Zap className="h-5 w-5 text-blue-500 mx-auto mb-2" />
+            <div className="text-lg font-bold text-gray-900">{petStats.energy}%</div>
+            <div className="text-xs text-gray-500">Energy</div>
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
-                className="h-full bg-blue-500 transition-all duration-500 rounded-full"
+                className="bg-gradient-to-r from-blue-400 to-blue-500 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${petStats.energy}%` }}
               ></div>
             </div>
           </div>
         </div>
 
-        {/* Pet Care Actions */}
+        {/* Modern Care Actions */}
         <div className="grid grid-cols-3 gap-3">
           <button 
             onClick={() => handlePetAction('feed')}
-            className="bg-slate-600 text-white p-4 rounded-lg flex flex-col items-center space-y-2 hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+            className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl flex flex-col items-center space-y-2 hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1"
           >
             <Heart className="h-5 w-5" />
             <span className="text-sm font-medium">Feed</span>
-            <span className="text-xs text-slate-200">25 coins</span>
+            <span className="text-xs text-green-100">25 coins</span>
           </button>
           <button 
             onClick={() => handlePetAction('play')}
-            className="bg-slate-600 text-white p-4 rounded-lg flex flex-col items-center space-y-2 hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-xl flex flex-col items-center space-y-2 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1"
           >
             <Zap className="h-5 w-5" />
             <span className="text-sm font-medium">Play</span>
-            <span className="text-xs text-slate-200">15 coins</span>
+            <span className="text-xs text-blue-100">15 coins</span>
           </button>
           <button 
             onClick={() => handlePetAction('care')}
-            className="bg-slate-600 text-white p-4 rounded-lg flex flex-col items-center space-y-2 hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-xl flex flex-col items-center space-y-2 hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-1"
           >
             <Star className="h-5 w-5" />
             <span className="text-sm font-medium">Care</span>
-            <span className="text-xs text-slate-200">35 coins</span>
+            <span className="text-xs text-purple-100">35 coins</span>
           </button>
         </div>
       </div>
 
       {/* Pet Care Tips */}
-      <div className="bg-white rounded-xl p-4 border border-gray-100">
-        <h3 className="font-bold text-gray-900 mb-3">Pet Care Tips</h3>
+      <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+          <Trophy className="h-5 w-5 text-yellow-500" />
+          <span>Pet Care Tips</span>
+        </h3>
         <div className="space-y-3">
-          <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+          <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
             <Heart className="h-5 w-5 text-green-600 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-gray-900">Keep glucose in range</p>
               <p className="text-xs text-gray-600">Your companion's health improves when your glucose stays between 70-140 mg/dL</p>
             </div>
           </div>
-          <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+          <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <Star className="h-5 w-5 text-blue-600 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-gray-900">Log meals regularly</p>
               <p className="text-xs text-gray-600">Consistent logging makes your companion happier and helps them grow</p>
             </div>
           </div>
-          <div className="flex items-start space-x-3 p-3 bg-purple-50 rounded-lg">
+          <div className="flex items-start space-x-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
             <Zap className="h-5 w-5 text-purple-600 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-gray-900">Exercise together</p>
@@ -324,32 +335,38 @@ const PetTab = () => {
       </div>
 
       {/* Pet Store */}
-      <div className="bg-white rounded-xl p-4 border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-gray-900">Pet Store</h3>
-          <div className="flex items-center space-x-2 bg-slate-600 text-white px-3 py-1 rounded-full">
+      <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-bold text-gray-900 flex items-center space-x-2">
+            <Gift className="h-5 w-5 text-purple-500" />
+            <span>Pet Store</span>
+          </h3>
+          <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full shadow-sm">
             <Star className="h-4 w-4" />
             <span className="text-sm font-bold">{petStats.coins} coins</span>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {petItems.map((item, index) => (
-            <div key={index} className="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow">
-              <div className={`${item.color} p-2 rounded-lg w-fit mb-2`}>
+            <div key={index} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-200 hover:border-purple-300">
+              <div className={`${item.color} p-3 rounded-xl w-fit mb-3 shadow-sm`}>
                 <item.icon className="h-5 w-5 text-white" />
               </div>
-              <h4 className="text-sm font-bold text-gray-900">{item.name}</h4>
-              <p className="text-xs text-gray-600 mb-2">{item.description}</p>
+              <h4 className="text-sm font-bold text-gray-900 mb-1">{item.name}</h4>
+              <p className="text-xs text-gray-600 mb-3">{item.description}</p>
               <button 
                 onClick={() => handlePurchase(item)}
                 className={`w-full py-2 px-3 rounded-lg text-xs font-bold transition-all duration-200 ${
                   petStats.coins >= item.cost 
-                    ? 'bg-slate-600 text-white hover:bg-slate-700 hover:shadow-lg' 
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:shadow-lg transform hover:-translate-y-0.5' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
                 disabled={petStats.coins < item.cost}
               >
-                {item.cost} coins
+                <div className="flex items-center justify-center space-x-1">
+                  <Star className="h-3 w-3" />
+                  <span>{item.cost} coins</span>
+                </div>
               </button>
             </div>
           ))}

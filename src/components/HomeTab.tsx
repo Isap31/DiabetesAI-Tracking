@@ -3,7 +3,7 @@ import StatsCard from './StatsCard';
 import QuickActions from './QuickActions';
 import GoalsModal from './GoalsModal';
 import GroceryListModal from './GroceryListModal';
-import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Goal, ShoppingCart, Mic, Volume2, Bot } from 'lucide-react';
+import { Droplets, Target, Clock, Heart, TrendingUp, Plus, X, Save, Utensils, Activity, User, Scale, Calendar, Thermometer, Brain, Goal, ShoppingCart, Mic, Volume2, Bot, MessageCircle, Send, HelpCircle } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 
 interface HomeTabProps {
@@ -18,7 +18,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
   const [showLogForm, setShowLogForm] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
   const [showGroceryModal, setShowGroceryModal] = useState(false);
-  const [showVoiceChat, setShowVoiceChat] = useState(false);
+  const [showFlowSenseAI, setShowFlowSenseAI] = useState(false);
   const [logType, setLogType] = useState<'meal' | 'exercise' | 'glucose' | 'profile'>('meal');
   const [logData, setLogData] = useState({
     // Meal fields
@@ -62,6 +62,18 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
     isMenopause: false,
     lastMenstrualPeriod: '2024-01-01'
   });
+
+  // FlowSense AI Chat State
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState([
+    {
+      type: 'ai',
+      message: "Hello! I'm FlowSense AI, your diabetes management assistant. I can help you with glucose patterns, meal suggestions, exercise recommendations, and answer any health questions you have.",
+      timestamp: new Date().toLocaleTimeString()
+    }
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [chatMode, setChatMode] = useState<'text' | 'voice'>('text');
 
   const handleLogSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,6 +225,94 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
     return 'premenopause';
   };
 
+  // FlowSense AI Chat Functions
+  const generateAIResponse = (userMessage: string) => {
+    const responses = {
+      glucose: [
+        "Based on your recent patterns, your glucose levels have been stable. The reading of 94 mg/dL is excellent and within your target range.",
+        "Your glucose trends show good control. Consider maintaining your current meal timing and portion sizes.",
+        "I notice your glucose has been consistently in range. This suggests your current management strategy is working well.",
+        "Your glucose variability has decreased this week, which is a great sign of improved control."
+      ],
+      meal: [
+        "For stable glucose levels, I recommend focusing on lean proteins, non-starchy vegetables, and complex carbohydrates. A grilled chicken salad with quinoa would be ideal.",
+        "Based on your current glucose reading, a balanced meal with 15-20g of carbs would be appropriate. Consider adding fiber-rich vegetables.",
+        "Your meal timing looks good. For your next meal, try pairing carbohydrates with protein to help maintain stable glucose levels.",
+        "Consider the plate method: 1/2 non-starchy vegetables, 1/4 lean protein, 1/4 complex carbohydrates."
+      ],
+      exercise: [
+        "Light to moderate exercise like a 20-30 minute walk would be perfect right now. Your current glucose level is ideal for physical activity.",
+        "Based on your glucose patterns, post-meal walks have been very effective for you. I'd recommend continuing this routine.",
+        "Your glucose is stable, making this a great time for exercise. Consider resistance training or yoga for variety.",
+        "Exercise timing is important. Your data shows best results with activity 1-2 hours after meals."
+      ],
+      community: [
+        "The community here is incredibly supportive! Sharing your experiences helps others on their diabetes journey.",
+        "I see you're engaging with the community - that's fantastic for motivation and learning from others' experiences.",
+        "Community support is proven to improve diabetes outcomes. Keep sharing and learning from others!",
+        "Your participation in the community helps create a supportive environment for everyone managing diabetes."
+      ],
+      general: [
+        "Your overall diabetes management has been excellent. Keep up the consistent logging and monitoring.",
+        "I'm analyzing your data patterns. Your time in range has improved by 5% this week - great progress!",
+        "Remember to stay hydrated and maintain regular meal times. Your current routine is showing positive results.",
+        "Your consistency with logging is impressive. This data helps me provide better personalized recommendations.",
+        "Based on your patterns, you're doing an excellent job managing your diabetes. Keep up the great work!"
+      ]
+    };
+
+    const lowerMessage = userMessage.toLowerCase();
+    
+    if (lowerMessage.includes('glucose') || lowerMessage.includes('blood sugar') || lowerMessage.includes('reading') || lowerMessage.includes('level')) {
+      return responses.glucose[Math.floor(Math.random() * responses.glucose.length)];
+    } else if (lowerMessage.includes('meal') || lowerMessage.includes('eat') || lowerMessage.includes('food') || lowerMessage.includes('lunch') || lowerMessage.includes('dinner') || lowerMessage.includes('breakfast') || lowerMessage.includes('carb')) {
+      return responses.meal[Math.floor(Math.random() * responses.meal.length)];
+    } else if (lowerMessage.includes('exercise') || lowerMessage.includes('workout') || lowerMessage.includes('walk') || lowerMessage.includes('activity') || lowerMessage.includes('gym')) {
+      return responses.exercise[Math.floor(Math.random() * responses.exercise.length)];
+    } else if (lowerMessage.includes('community') || lowerMessage.includes('support') || lowerMessage.includes('help') || lowerMessage.includes('share')) {
+      return responses.community[Math.floor(Math.random() * responses.community.length)];
+    } else {
+      return responses.general[Math.floor(Math.random() * responses.general.length)];
+    }
+  };
+
+  const handleChatSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatMessage.trim()) return;
+
+    // Add user message
+    const userMsg = {
+      type: 'user',
+      message: chatMessage,
+      timestamp: new Date().toLocaleTimeString()
+    };
+    
+    setChatHistory(prev => [...prev, userMsg]);
+    setChatMessage('');
+    setIsTyping(true);
+
+    // Simulate AI thinking time
+    setTimeout(() => {
+      const aiResponse = {
+        type: 'ai',
+        message: generateAIResponse(chatMessage),
+        timestamp: new Date().toLocaleTimeString()
+      };
+      
+      setChatHistory(prev => [...prev, aiResponse]);
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  const quickQuestions = [
+    "How can I improve my glucose control?",
+    "What should I eat for my next meal?",
+    "Best exercise for my current level?",
+    "How are my trends looking?",
+    "Tips for better sleep?",
+    "Managing stress and diabetes?"
+  ];
+
   return (
     <div className="space-y-6 pb-20">
       {/* Goals Modal */}
@@ -228,47 +328,134 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
         onClose={() => setShowGroceryModal(false)}
       />
 
-      {/* Voice Chat Modal */}
-      {showVoiceChat && (
+      {/* FlowSense AI Modal */}
+      {showFlowSenseAI && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
             <div className="flex items-center justify-between p-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
               <div className="flex items-center space-x-3">
                 <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-                  <Mic className="h-6 w-6" />
+                  <Bot className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold">🎤 FlowSense AI Voice</h3>
-                  <p className="text-sm text-blue-100">Complete Speech-to-Speech Assistant</p>
+                  <h3 className="text-xl font-semibold">🤖 FlowSense AI</h3>
+                  <p className="text-sm text-blue-100">Your intelligent health assistant</p>
                 </div>
               </div>
-              <button 
-                onClick={() => setShowVoiceChat(false)}
-                className="bg-white bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setChatMode(chatMode === 'text' ? 'voice' : 'text')}
+                  className={`p-2 rounded-lg transition-colors ${
+                    chatMode === 'voice' 
+                      ? 'bg-white bg-opacity-30' 
+                      : 'bg-white bg-opacity-20 hover:bg-opacity-30'
+                  }`}
+                  title={chatMode === 'text' ? 'Switch to Voice Mode' : 'Switch to Text Mode'}
+                >
+                  {chatMode === 'text' ? <Mic className="h-4 w-4" /> : <MessageCircle className="h-4 w-4" />}
+                </button>
+                <button 
+                  onClick={() => setShowFlowSenseAI(false)}
+                  className="bg-white bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
             
             <div className="flex-1 p-6 bg-gray-50">
-              <div className="text-center py-12">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-                  <Volume2 className="h-12 w-12 text-white" />
-                </div>
-                <h4 className="text-xl font-semibold text-gray-900 mb-2">Voice Assistant Ready</h4>
-                <p className="text-gray-600 mb-6">
-                  Click the microphone to start talking. Ask about glucose patterns, meal suggestions, or get personalized health advice.
-                </p>
-                <div className="space-y-4">
-                  <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center space-x-3 mx-auto">
-                    <Mic className="h-6 w-6" />
-                    <span>Start Voice Conversation</span>
-                  </button>
-                  <p className="text-sm text-gray-500">
-                    Complete speech-to-speech functionality - just talk naturally!
+              {chatMode === 'voice' ? (
+                <div className="text-center py-12">
+                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+                    <Volume2 className="h-12 w-12 text-white" />
+                  </div>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-2">Speech-to-Speech Mode</h4>
+                  <p className="text-gray-600 mb-6">
+                    Talk naturally with FlowSense AI. Ask about glucose patterns, meal suggestions, or get personalized health advice.
                   </p>
+                  <div className="space-y-4">
+                    <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center space-x-3 mx-auto">
+                      <Mic className="h-6 w-6" />
+                      <span>Start Voice Conversation</span>
+                    </button>
+                    <p className="text-sm text-gray-500">
+                      Complete speech-to-speech functionality - just talk naturally!
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Chat History */}
+                  <div className="bg-white rounded-lg p-4 mb-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+                    <div className="space-y-4">
+                      {chatHistory.map((msg, index) => (
+                        <div key={index} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[80%] p-3 rounded-lg ${
+                            msg.type === 'user' 
+                              ? 'bg-slate-600 text-white' 
+                              : 'bg-white border border-gray-200 shadow-sm'
+                          }`}>
+                            <p className="text-sm">{msg.message}</p>
+                            <p className={`text-xs mt-1 ${
+                              msg.type === 'user' ? 'text-slate-200' : 'text-gray-500'
+                            }`}>
+                              {msg.timestamp}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Typing Indicator */}
+                      {isTyping && (
+                        <div className="flex justify-start">
+                          <div className="bg-white border border-gray-200 p-3 rounded-lg shadow-sm">
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Quick Questions */}
+                  <div className="mb-4">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Quick questions:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {quickQuestions.map((question, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setChatMessage(question)}
+                          className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full transition-colors border border-gray-200 hover:border-gray-300"
+                        >
+                          {question}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Chat Input */}
+                  <form onSubmit={handleChatSubmit} className="flex space-x-3">
+                    <input
+                      type="text"
+                      value={chatMessage}
+                      onChange={(e) => setChatMessage(e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      placeholder="Ask me anything about your health..."
+                      disabled={isTyping}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isTyping || !chatMessage.trim()}
+                      className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send className="h-4 w-4" />
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -740,41 +927,10 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
         </div>
       )}
 
-      {/* Daily Affirmation */}
-      {/* <div className="px-4">
-        <DailyAffirmation language={language} />
-      </div> */}
-
-      {/* Dashboard Title - Moved here, right above Welcome section */}
+      {/* Dashboard Title */}
       <div className="px-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">{t.dashboard}</h2>
         <p className="text-gray-600">{t.welcomeBack}, Sarah. {t.healthOverview}</p>
-      </div>
-
-      {/* SUPER PROMINENT Voice Chat - First Thing Users See */}
-      <div className="px-4">
-        <div 
-          onClick={() => setShowVoiceChat(true)}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-2xl border-4 border-blue-400"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <div className="bg-white bg-opacity-20 p-4 rounded-2xl">
-                <Mic className="h-12 w-12 text-white" />
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold mb-2">🎤 Voice Assistant</h3>
-                <p className="text-xl text-blue-100 mb-2">Complete Speech-to-Speech</p>
-                <p className="text-blue-200">
-                  Talk to FlowSense AI about glucose patterns, meals, and health advice
-                </p>
-              </div>
-            </div>
-            <div className="bg-white bg-opacity-20 p-4 rounded-2xl">
-              <Volume2 className="h-12 w-12 text-white" />
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Current Status Alert */}
@@ -890,6 +1046,24 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
         </button>
       </div>
 
+      {/* FlowSense AI Quick Access */}
+      <div className="px-4">
+        <button
+          onClick={() => setShowFlowSenseAI(true)}
+          className="w-full bg-gradient-to-r from-slate-700 to-slate-900 rounded-xl p-4 text-white hover:from-slate-800 hover:to-black transition-all duration-200"
+        >
+          <div className="flex items-center space-x-3">
+            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
+              <Bot className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <h3 className="font-bold">🤖 FlowSense AI</h3>
+              <p className="text-sm text-slate-200">Text & Speech Assistant • Ask anything about your health</p>
+            </div>
+          </div>
+        </button>
+      </div>
+
       {/* Today's Glucose Overview */}
       <div className="px-4">
         <div className="bg-white rounded-lg border border-gray-200 p-4">
@@ -971,6 +1145,15 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
           </div>
         </div>
       </div>
+
+      {/* Fixed Position Help Button - Bottom Right */}
+      <button
+        onClick={() => setShowFlowSenseAI(true)}
+        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-40"
+        title="Need Help? Ask FlowSense AI"
+      >
+        <HelpCircle className="h-6 w-6" />
+      </button>
     </div>
   );
 };

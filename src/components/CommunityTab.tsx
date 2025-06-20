@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, Users, Heart, ThumbsUp, Send, Bot, X, Mic, Paperclip } from 'lucide-react';
+import { MessageCircle, Users, Heart, ThumbsUp, Send, Bot, X, Mic, Paperclip, Trophy, Target, Utensils, Activity, Calendar, BookOpen, HelpCircle, Star, Award, Flame } from 'lucide-react';
 
 const CommunityTab = () => {
   const [showAIChat, setShowAIChat] = useState(false);
@@ -12,37 +12,211 @@ const CommunityTab = () => {
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('milestones');
 
-  const communityPosts = [
-    {
-      user: 'Sarah M.',
-      avatar: 'SM',
-      time: '2h ago',
-      content: 'Just hit my 30-day streak! My pet is so happy and I feel amazing. This app has changed my life! 🎉',
-      likes: 12,
-      comments: 3,
-      category: 'milestone'
-    },
-    {
-      user: 'Mike R.',
-      avatar: 'MR',
-      time: '4h ago',
-      content: 'Anyone have tips for managing glucose during exercise? My readings spike after workouts.',
-      likes: 8,
-      comments: 7,
-      category: 'question'
-    },
-    {
-      user: 'Dr. Lisa',
-      avatar: 'DL',
-      time: '6h ago',
-      content: 'Remember: small consistent changes lead to big results. Your pet companion is there to remind you that every healthy choice matters! 💚',
-      likes: 24,
-      comments: 5,
-      category: 'tip',
-      verified: true
-    }
+  const categories = [
+    { id: 'milestones', label: 'Milestones', icon: Trophy, color: 'bg-yellow-500' },
+    { id: 'exercise', label: 'Exercise', icon: Activity, color: 'bg-green-500' },
+    { id: 'nutrition', label: 'Nutrition', icon: Utensils, color: 'bg-blue-500' },
+    { id: 'support', label: 'Support', icon: Heart, color: 'bg-pink-500' },
+    { id: 'tips', label: 'Tips & Tricks', icon: BookOpen, color: 'bg-purple-500' },
+    { id: 'questions', label: 'Q&A', icon: HelpCircle, color: 'bg-orange-500' }
   ];
+
+  const postsByCategory = {
+    milestones: [
+      {
+        user: 'Sarah M.',
+        avatar: 'SM',
+        time: '2h ago',
+        content: 'Just hit my 30-day streak! My pet is so happy and I feel amazing. This app has changed my life! 🎉',
+        likes: 12,
+        comments: 3,
+        badge: '30-Day Streak',
+        verified: false
+      },
+      {
+        user: 'Alex R.',
+        avatar: 'AR',
+        time: '4h ago',
+        content: 'Reached Level 15 today! The gamification really keeps me motivated to log everything consistently.',
+        likes: 8,
+        comments: 5,
+        badge: 'Level 15',
+        verified: false
+      },
+      {
+        user: 'Maria G.',
+        avatar: 'MG',
+        time: '1d ago',
+        content: 'First week with 90% time in range! FlowSense AI predictions helped me adjust my meal timing perfectly.',
+        likes: 15,
+        comments: 7,
+        badge: 'Time in Range Master',
+        verified: false
+      }
+    ],
+    exercise: [
+      {
+        user: 'Mike R.',
+        avatar: 'MR',
+        time: '1h ago',
+        content: 'Anyone have tips for managing glucose during exercise? My readings spike after workouts.',
+        likes: 8,
+        comments: 7,
+        badge: null,
+        verified: false
+      },
+      {
+        user: 'Jenny L.',
+        avatar: 'JL',
+        time: '3h ago',
+        content: 'Post-meal walks are game changers! 20 minutes after dinner keeps my glucose stable all evening.',
+        likes: 14,
+        comments: 4,
+        badge: 'Walking Champion',
+        verified: false
+      },
+      {
+        user: 'Coach Tom',
+        avatar: 'CT',
+        time: '6h ago',
+        content: 'Remember: start with light exercise and monitor your glucose. Every body responds differently!',
+        likes: 22,
+        comments: 8,
+        badge: null,
+        verified: true
+      }
+    ],
+    nutrition: [
+      {
+        user: 'Chef Anna',
+        avatar: 'CA',
+        time: '30m ago',
+        content: 'Budget-friendly diabetes meal: Lentil soup with vegetables. High fiber, low cost, stable glucose! Recipe in comments.',
+        likes: 18,
+        comments: 12,
+        badge: null,
+        verified: true
+      },
+      {
+        user: 'David K.',
+        avatar: 'DK',
+        time: '2h ago',
+        content: 'Discovered that pairing protein with carbs really helps my post-meal numbers. Thanks FlowSense AI!',
+        likes: 9,
+        comments: 3,
+        badge: 'Nutrition Learner',
+        verified: false
+      },
+      {
+        user: 'Lisa P.',
+        avatar: 'LP',
+        time: '5h ago',
+        content: 'Meal prep Sunday! Made 5 diabetes-friendly meals for under $20. Sharing my grocery list below.',
+        likes: 25,
+        comments: 15,
+        badge: 'Budget Master',
+        verified: false
+      }
+    ],
+    support: [
+      {
+        user: 'Emma S.',
+        avatar: 'ES',
+        time: '1h ago',
+        content: 'Having a rough day with my numbers. Sometimes this feels overwhelming. Any encouragement?',
+        likes: 6,
+        comments: 12,
+        badge: null,
+        verified: false
+      },
+      {
+        user: 'Dr. Lisa',
+        avatar: 'DL',
+        time: '2h ago',
+        content: 'Remember: small consistent changes lead to big results. Your pet companion is there to remind you that every healthy choice matters! 💚',
+        likes: 24,
+        comments: 5,
+        badge: null,
+        verified: true
+      },
+      {
+        user: 'Support Group',
+        avatar: 'SG',
+        time: '4h ago',
+        content: 'Weekly reminder: You are not alone in this journey. This community is here for you! Share your wins and challenges.',
+        likes: 31,
+        comments: 18,
+        badge: null,
+        verified: true
+      }
+    ],
+    tips: [
+      {
+        user: 'Tech Sarah',
+        avatar: 'TS',
+        time: '1h ago',
+        content: 'Pro tip: Use FlowSense AI voice mode while cooking! Hands-free logging and real-time nutrition advice.',
+        likes: 16,
+        comments: 6,
+        badge: 'Tech Savvy',
+        verified: false
+      },
+      {
+        user: 'Nurse Kate',
+        avatar: 'NK',
+        time: '3h ago',
+        content: 'CGM tip: Calibrate in the morning when glucose is stable. More accurate readings throughout the day!',
+        likes: 20,
+        comments: 8,
+        badge: null,
+        verified: true
+      },
+      {
+        user: 'Budget Bob',
+        avatar: 'BB',
+        time: '6h ago',
+        content: 'Money-saving tip: Buy frozen vegetables in bulk. Same nutrition, longer shelf life, better prices!',
+        likes: 13,
+        comments: 4,
+        badge: 'Savings Expert',
+        verified: false
+      }
+    ],
+    questions: [
+      {
+        user: 'New User',
+        avatar: 'NU',
+        time: '30m ago',
+        content: 'Just diagnosed with Type 2. Feeling lost. Where do I start with this app?',
+        likes: 3,
+        comments: 8,
+        badge: null,
+        verified: false
+      },
+      {
+        user: 'Parent123',
+        avatar: 'P1',
+        time: '2h ago',
+        content: 'My teenager was just diagnosed. How can I help them stay motivated with tracking?',
+        likes: 7,
+        comments: 11,
+        badge: null,
+        verified: false
+      },
+      {
+        user: 'Educator Jane',
+        avatar: 'EJ',
+        time: '4h ago',
+        content: 'Q: How accurate are the AI predictions? A: They improve with more data! Log consistently for best results.',
+        likes: 19,
+        comments: 6,
+        badge: null,
+        verified: true
+      }
+    ]
+  };
 
   const generateAIResponse = (userMessage: string) => {
     const responses = {
@@ -131,8 +305,10 @@ const CommunityTab = () => {
     "Meal ideas for stable levels?"
   ];
 
+  const currentPosts = postsByCategory[activeCategory as keyof typeof postsByCategory] || [];
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* AI Chat Modal */}
       {showAIChat && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -293,7 +469,7 @@ const CommunityTab = () => {
 
       {/* Community Stats */}
       <div className="bg-white rounded-xl p-4 border border-gray-100">
-        <h3 className="font-bold text-gray-900 mb-3">Community</h3>
+        <h3 className="font-bold text-gray-900 mb-3">Care Circle Community</h3>
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
             <div className="bg-slate-50 p-3 rounded-lg mb-2">
@@ -319,9 +495,46 @@ const CommunityTab = () => {
         </div>
       </div>
 
+      {/* Category Navigation */}
+      <div className="bg-white rounded-xl p-4 border border-gray-100">
+        <h3 className="font-bold text-gray-900 mb-4">Community Topics</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
+                activeCategory === category.id
+                  ? 'bg-slate-100 border-2 border-slate-300'
+                  : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'
+              }`}
+            >
+              <div className={`${category.color} p-2 rounded-lg`}>
+                <category.icon className="h-4 w-4 text-white" />
+              </div>
+              <span className="text-sm font-medium text-gray-900">{category.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Community Feed */}
       <div className="space-y-4">
-        {communityPosts.map((post, index) => (
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-gray-900">
+            {categories.find(c => c.id === activeCategory)?.label} Posts
+          </h3>
+          <div className="flex items-center space-x-2">
+            <div className={`${categories.find(c => c.id === activeCategory)?.color} p-1 rounded`}>
+              {React.createElement(categories.find(c => c.id === activeCategory)?.icon || Heart, { 
+                className: "h-3 w-3 text-white" 
+              })}
+            </div>
+            <span className="text-sm text-gray-600">{currentPosts.length} posts</span>
+          </div>
+        </div>
+
+        {currentPosts.map((post, index) => (
           <div key={index} className="bg-white rounded-xl p-4 border border-gray-100">
             <div className="flex items-start space-x-3">
               <div className="bg-gradient-to-r from-slate-600 to-slate-800 text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold">
@@ -338,13 +551,12 @@ const CommunityTab = () => {
                     </div>
                   )}
                   <span className="text-xs text-gray-500">{post.time}</span>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    post.category === 'milestone' ? 'bg-green-100 text-green-700' :
-                    post.category === 'question' ? 'bg-blue-100 text-blue-700' :
-                    'bg-slate-100 text-slate-700'
-                  }`}>
-                    {post.category}
-                  </span>
+                  {post.badge && (
+                    <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 border border-yellow-200">
+                      <Award className="h-3 w-3 inline mr-1" />
+                      {post.badge}
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm text-gray-700 mb-3">{post.content}</p>
                 <div className="flex items-center space-x-4">
@@ -371,7 +583,7 @@ const CommunityTab = () => {
           </div>
           <input 
             type="text" 
-            placeholder="Share your progress or ask a question..."
+            placeholder={`Share your ${categories.find(c => c.id === activeCategory)?.label.toLowerCase()} experience...`}
             className="flex-1 bg-gray-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
           />
           <button className="bg-gradient-to-r from-slate-600 to-slate-800 text-white p-2 rounded-lg hover:shadow-lg transition-all duration-200">
