@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, RefreshCw, Star, Sun, Sparkles, Moon } from 'lucide-react';
+import { Heart, RefreshCw, Star, Sun, Sparkles, Moon, Zap, Rainbow } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 
 interface DailyAffirmationProps {
@@ -23,8 +23,7 @@ const DailyAffirmation: React.FC<DailyAffirmationProps> = ({ language }) => {
       "🎯 Progress, not perfection, is what matters on your health journey! 🚀",
       "🎉 You deserve to feel proud of every step you take toward better health! 👏",
       "💝 Your dedication to tracking and managing your health is truly inspiring! ⭐"
-    ],
-    // ...other languages omitted for brevity...
+    ]
   };
 
   const currentAffirmations = affirmations[language as keyof typeof affirmations] || affirmations.en;
@@ -55,36 +54,64 @@ const DailyAffirmation: React.FC<DailyAffirmationProps> = ({ language }) => {
   const TimeIcon = getTimeBasedIcon();
 
   return (
-    <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-10 rounded-full translate-y-12 -translate-x-12"></div>
+    <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl">
+      {/* Enhanced background decoration */}
+      <div className="absolute top-0 right-0 w-40 h-40 bg-white bg-opacity-10 rounded-full -translate-y-20 translate-x-20 animate-pulse-slow"></div>
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-white bg-opacity-10 rounded-full translate-y-16 -translate-x-16 animate-pulse-slow" style={{animationDelay: '1s'}}></div>
+      <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white bg-opacity-5 rounded-full animate-pulse-slow" style={{animationDelay: '2s'}}></div>
+      <div className="absolute top-1/4 right-1/4 w-16 h-16 bg-white bg-opacity-5 rounded-full animate-pulse-slow" style={{animationDelay: '3s'}}></div>
+      
+      {/* Floating sparkles */}
+      <div className="absolute top-8 left-8">
+        <Sparkles className="h-4 w-4 text-white text-opacity-60 animate-pulse" />
+      </div>
+      <div className="absolute bottom-8 right-8">
+        <Star className="h-5 w-5 text-white text-opacity-60 animate-pulse" style={{animationDelay: '1s'}} />
+      </div>
+      <div className="absolute top-16 right-16">
+        <Heart className="h-3 w-3 text-white text-opacity-60 animate-pulse" style={{animationDelay: '2s'}} />
+      </div>
       
       <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-              <TimeIcon className="h-5 w-5 text-white" />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4">
+            <div className="bg-white bg-opacity-20 p-3 rounded-2xl backdrop-blur-sm shadow-lg">
+              <TimeIcon className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white">✨ Daily Inspiration ✨</h3>
-              <p className="text-sm text-purple-100">Your moment of positivity 🌈</p>
+              <h3 className="font-bold text-white text-xl">✨ Daily Inspiration ✨</h3>
+              <p className="text-sm text-purple-100 font-medium">Your moment of positivity 🌈</p>
             </div>
           </div>
           <button
             onClick={handleRefresh}
-            className="bg-white bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30 transition-all duration-200"
+            className="bg-white bg-opacity-20 p-3 rounded-2xl hover:bg-opacity-30 transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl transform hover:scale-105"
             title="Get new affirmation"
           >
-            <RefreshCw className={`h-4 w-4 text-white transition-transform duration-300 ${isAnimating ? 'rotate-180' : ''}`} />
+            <RefreshCw className={`h-5 w-5 text-white transition-transform duration-500 ${isAnimating ? 'rotate-180' : ''}`} />
           </button>
         </div>
-        <div className="text-lg font-semibold text-white text-center min-h-[48px] flex items-center justify-center">
+        
+        <div className={`text-xl font-semibold text-white text-center min-h-[60px] flex items-center justify-center leading-relaxed transition-all duration-300 ${isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
           {currentAffirmations[currentAffirmation]}
+        </div>
+        
+        {/* Progress indicator */}
+        <div className="flex justify-center mt-6 space-x-2">
+          {currentAffirmations.map((_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentAffirmation 
+                  ? 'bg-white shadow-lg' 
+                  : 'bg-white bg-opacity-40'
+              }`}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default DailyAffirmation; 
+export default DailyAffirmation;

@@ -1,19 +1,8 @@
 import React, { useState } from 'react';
 import { Target, Calendar, Trophy, Plus, X, Save, Edit2, Check, Trash2, Star, Zap, Heart, Activity } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
-
-interface Goal {
-  id: number;
-  title: string;
-  description: string;
-  type: 'weekly' | 'monthly' | 'yearly';
-  target: number;
-  current: number;
-  unit: string;
-  deadline: string;
-  completed: boolean;
-  category: 'glucose' | 'exercise' | 'nutrition' | 'lifestyle';
-}
+import GoalForm from './GoalForm';
+import { useGoals, Goal } from '../hooks/useGoals';
 
 interface GoalsModalProps {
   isOpen: boolean;
@@ -23,7 +12,7 @@ interface GoalsModalProps {
 
 const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) => {
   const t = useTranslation(language);
-  const [goals, setGoals] = useState<Goal[]>([
+  const initialGoals: Goal[] = [
     {
       id: 1,
       title: 'Time in Range',
@@ -72,19 +61,21 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) =>
       completed: false,
       category: 'lifestyle'
     }
-  ]);
-
+  ];
+  const {
+    goals,
+    addGoal,
+    updateGoal,
+    deleteGoal,
+    completeGoal,
+    getProgressPercentage,
+    getProgressColor,
+    completedGoals,
+    inProgressGoals,
+    successRate
+  } = useGoals(initialGoals);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
-  const [newGoal, setNewGoal] = useState({
-    title: '',
-    description: '',
-    type: 'weekly' as 'weekly' | 'monthly' | 'yearly',
-    target: '',
-    unit: '',
-    deadline: '',
-    category: 'glucose' as 'glucose' | 'exercise' | 'nutrition' | 'lifestyle'
-  });
 
   const categoryIcons = {
     glucose: { icon: Target, color: 'bg-blue-500' },
@@ -93,66 +84,10 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) =>
     lifestyle: { icon: Star, color: 'bg-purple-500' }
   };
 
-  const handleAddGoal = () => {
-    if (!newGoal.title || !newGoal.target) return;
-
-    const goal: Goal = {
-      id: Date.now(),
-      title: newGoal.title,
-      description: newGoal.description,
-      type: newGoal.type,
-      target: parseInt(newGoal.target),
-      current: 0,
-      unit: newGoal.unit,
-      deadline: newGoal.deadline,
-      completed: false,
-      category: newGoal.category
-    };
-
-    setGoals(prev => [...prev, goal]);
-    setNewGoal({
-      title: '',
-      description: '',
-      type: 'weekly',
-      target: '',
-      unit: '',
-      deadline: '',
-      category: 'glucose'
-    });
-    setShowAddForm(false);
-  };
-
-  const handleUpdateGoal = (goalId: number, updates: Partial<Goal>) => {
-    setGoals(prev => prev.map(goal => 
-      goal.id === goalId ? { ...goal, ...updates } : goal
-    ));
-  };
-
-  const handleDeleteGoal = (goalId: number) => {
-    setGoals(prev => prev.filter(goal => goal.id !== goalId));
-  };
-
-  const handleCompleteGoal = (goalId: number) => {
-    setGoals(prev => prev.map(goal => 
-      goal.id === goalId ? { ...goal, completed: true, current: goal.target } : goal
-    ));
-  };
-
-  const getProgressPercentage = (goal: Goal) => {
-    return Math.min(100, (goal.current / goal.target) * 100);
-  };
-
-  const getProgressColor = (percentage: number) => {
-    if (percentage >= 100) return 'bg-green-500';
-    if (percentage >= 75) return 'bg-blue-500';
-    if (percentage >= 50) return 'bg-yellow-500';
-    return 'bg-gray-400';
-  };
-
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-label="Goals Modal">
       <div className="bg-white rounded-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           <div className="flex items-center space-x-3">
@@ -187,14 +122,14 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) =>
                 <Trophy className="h-5 w-5 text-green-600" />
                 <span className="text-sm font-medium text-green-900">Completed</span>
               </div>
-              <p className="text-2xl font-bold text-green-600">{goals.filter(g => g.completed).length}</p>
+              <p className="text-2xl font-bold text-green-600">{completedGoals.length}</p>
             </div>
             <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
               <div className="flex items-center space-x-2 mb-2">
                 <Zap className="h-5 w-5 text-yellow-600" />
                 <span className="text-sm font-medium text-yellow-900">In Progress</span>
               </div>
-              <p className="text-2xl font-bold text-yellow-600">{goals.filter(g => !g.completed && g.current > 0).length}</p>
+              <p className="text-2xl font-bold text-yellow-600">{inProgressGoals.length}</p>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
               <div className="flex items-center space-x-2 mb-2">
@@ -202,7 +137,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) =>
                 <span className="text-sm font-medium text-purple-900">Success Rate</span>
               </div>
               <p className="text-2xl font-bold text-purple-600">
-                {goals.length > 0 ? Math.round((goals.filter(g => g.completed).length / goals.length) * 100) : 0}%
+                {successRate}%
               </p>
             </div>
           </div>
@@ -258,7 +193,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) =>
                             <Edit2 className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => handleCompleteGoal(goal.id)}
+                            onClick={() => completeGoal(goal.id)}
                             className="p-2 text-gray-400 hover:text-green-600 transition-colors"
                             title="Mark as complete"
                           >
@@ -267,7 +202,7 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) =>
                         </>
                       )}
                       <button
-                        onClick={() => handleDeleteGoal(goal.id)}
+                        onClick={() => deleteGoal(goal.id)}
                         className="p-2 text-gray-400 hover:text-red-600 transition-colors"
                         title="Delete goal"
                       >
@@ -318,109 +253,25 @@ const GoalsModal: React.FC<GoalsModalProps> = ({ isOpen, onClose, language }) =>
                     <X className="h-5 w-5" />
                   </button>
                 </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Goal Title</label>
-                    <input
-                      type="text"
-                      value={newGoal.title}
-                      onChange={(e) => setNewGoal({...newGoal, title: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="e.g., Daily Exercise"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea
-                      value={newGoal.description}
-                      onChange={(e) => setNewGoal({...newGoal, description: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Describe your goal..."
-                      rows={2}
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                      <select
-                        value={newGoal.category}
-                
-                        onChange={(e) => setNewGoal({...newGoal, category: e.target.value as any})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="glucose">Glucose</option>
-                        <option value="exercise">Exercise</option>
-                        <option value="nutrition">Nutrition</option>
-                        <option value="lifestyle">Lifestyle</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                      <select
-                        value={newGoal.type}
-                        onChange={(e) => setNewGoal({...newGoal, type: e.target.value as any})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="yearly">Yearly</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Target</label>
-                      <input
-                        type="number"
-                        value={newGoal.target}
-                        onChange={(e) => setNewGoal({...newGoal, target: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="100"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
-                      <input
-                        type="text"
-                        value={newGoal.unit}
-                        onChange={(e) => setNewGoal({...newGoal, unit: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="steps, %, hours"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
-                    <input
-                      type="date"
-                      value={newGoal.deadline}
-                      onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex space-x-3 mt-6">
-                  <button
-                    onClick={() => setShowAddForm(false)}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAddGoal}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Add Goal
-                  </button>
-                </div>
+                <GoalForm
+                  initialGoal={{
+                    title: '',
+                    description: '',
+                    type: 'weekly',
+                    target: '',
+                    unit: '',
+                    deadline: '',
+                    category: 'glucose'
+                  }}
+                  onSave={goal => {
+                    addGoal({
+                      ...goal,
+                      target: parseInt(goal.target, 10),
+                    });
+                    setShowAddForm(false);
+                  }}
+                  onCancel={() => setShowAddForm(false)}
+                />
               </div>
             </div>
           )}

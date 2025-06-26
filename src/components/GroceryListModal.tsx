@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Plus, X, Save, Trash2, DollarSign, TrendingDown, Star, Check, Brain, Filter, Search } from 'lucide-react';
-
-interface GroceryItem {
-  id: number;
-  name: string;
-  category: string;
-  estimatedPrice: number;
-  glucoseImpact: 'low' | 'medium' | 'high';
-  budgetFriendly: boolean;
-  quantity: string;
-  notes?: string;
-  purchased: boolean;
-}
+import GroceryItemForm from './GroceryItemForm';
+import { useGroceryList, GroceryItem } from '../hooks/useGroceryList';
 
 interface GroceryListModalProps {
   isVisible: boolean;
@@ -19,7 +9,7 @@ interface GroceryListModalProps {
 }
 
 const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose }) => {
-  const [groceryList, setGroceryList] = useState<GroceryItem[]>([
+  const initialList: GroceryItem[] = [
     {
       id: 1,
       name: 'Dried Black Beans',
@@ -75,20 +65,21 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
       notes: 'Natural, no added sugar variety',
       purchased: false
     }
-  ]);
-
-  const [newItem, setNewItem] = useState({
-    name: '',
-    category: 'Vegetables',
-    estimatedPrice: '',
-    glucoseImpact: 'low' as 'low' | 'medium' | 'high',
-    quantity: '',
-    notes: ''
-  });
-
+  ];
+  const {
+    groceryList,
+    addItem,
+    deleteItem,
+    togglePurchased,
+    filteredItems,
+    totalCost,
+    budgetFriendlyCount,
+    selectedCategory,
+    setSelectedCategory,
+    searchTerm,
+    setSearchTerm
+  } = useGroceryList(initialList);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
 
   const categories = ['all', 'Vegetables', 'Protein', 'Grains', 'Dairy', 'Fruits', 'Pantry'];
 
@@ -134,43 +125,6 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
     "🥚 Eggs are one of the cheapest complete proteins available"
   ];
 
-  const handleAddItem = () => {
-    if (!newItem.name || !newItem.estimatedPrice) return;
-
-    const item: GroceryItem = {
-      id: Date.now(),
-      name: newItem.name,
-      category: newItem.category,
-      estimatedPrice: parseFloat(newItem.estimatedPrice),
-      glucoseImpact: newItem.glucoseImpact,
-      budgetFriendly: parseFloat(newItem.estimatedPrice) <= 3.00,
-      quantity: newItem.quantity,
-      notes: newItem.notes,
-      purchased: false
-    };
-
-    setGroceryList(prev => [...prev, item]);
-    setNewItem({
-      name: '',
-      category: 'Vegetables',
-      estimatedPrice: '',
-      glucoseImpact: 'low',
-      quantity: '',
-      notes: ''
-    });
-    setShowAddForm(false);
-  };
-
-  const handleTogglePurchased = (id: number) => {
-    setGroceryList(prev => prev.map(item => 
-      item.id === id ? { ...item, purchased: !item.purchased } : item
-    ));
-  };
-
-  const handleDeleteItem = (id: number) => {
-    setGroceryList(prev => prev.filter(item => item.id !== id));
-  };
-
   const handleAddRecommendation = (recommendation: any) => {
     const item: GroceryItem = {
       id: Date.now(),
@@ -184,27 +138,13 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
       purchased: false
     };
 
-    setGroceryList(prev => [...prev, item]);
+    addItem(item);
   };
-
-  const filteredItems = groceryList.filter(item => {
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const totalCost = groceryList
-    .filter(item => !item.purchased)
-    .reduce((sum, item) => sum + item.estimatedPrice, 0);
-
-  const budgetFriendlyCount = groceryList
-    .filter(item => !item.purchased && item.budgetFriendly)
-    .length;
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Grocery List Modal">
       <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
       <div className="relative bg-white w-full max-w-4xl mx-4 rounded-2xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-6 bg-gradient-to-r from-green-600 to-teal-600 text-white">
@@ -321,7 +261,7 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3">
                     <button
-                      onClick={() => handleTogglePurchased(item.id)}
+                      onClick={() => togglePurchased(item.id)}
                       className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                         item.purchased 
                           ? 'bg-green-500 border-green-500 text-white' 
@@ -361,7 +301,7 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
                     </div>
                   </div>
                   <button
-                    onClick={() => handleDeleteItem(item.id)}
+                    onClick={() => deleteItem(item.id)}
                     className="text-gray-400 hover:text-red-600 transition-colors"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -395,98 +335,24 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
-                  <input
-                    type="text"
-                    value={newItem.name}
-                    onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., Whole Wheat Bread"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select
-                      value={newItem.category}
-                      onChange={(e) => setNewItem({...newItem, category: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      {categories.slice(1).map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Glucose Impact</label>
-                    <select
-                      value={newItem.glucoseImpact}
-                      onChange={(e) => setNewItem({...newItem, glucoseImpact: e.target.value as any})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Price</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={newItem.estimatedPrice}
-                      onChange={(e) => setNewItem({...newItem, estimatedPrice: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="2.99"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-                    <input
-                      type="text"
-                      value={newItem.quantity}
-                      onChange={(e) => setNewItem({...newItem, quantity: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="1 loaf"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
-                  <textarea
-                    value={newItem.notes}
-                    onChange={(e) => setNewItem({...newItem, notes: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Any special notes..."
-                    rows={2}
-                  />
-                </div>
-              </div>
-              
-              <div className="flex space-x-3 mt-6">
-                <button
-                  onClick={() => setShowAddForm(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleAddItem}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Add Item
-                </button>
-              </div>
+              <GroceryItemForm
+                initialItem={{
+                  name: '',
+                  category: 'Vegetables',
+                  estimatedPrice: '',
+                  glucoseImpact: 'low',
+                  quantity: '',
+                  notes: ''
+                }}
+                onSave={item => {
+                  addItem({
+                    ...item,
+                    estimatedPrice: parseFloat(item.estimatedPrice),
+                  });
+                  setShowAddForm(false);
+                }}
+                onCancel={() => setShowAddForm(false)}
+              />
             </div>
           </div>
         )}

@@ -1,22 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { X } from 'lucide-react';
-import Header from './components/Header';
+import ImprovedHeader from './components/ImprovedHeader';
 import Sidebar from './components/Sidebar';
 import TabNavigation from './components/TabNavigation';
-import HomeTab from './components/HomeTab';
-import TrackingTab from './components/TrackingTab';
-import CommunityTab from './components/CommunityTab';
-import PetTab from './components/PetTab';
-import AchievementsTab from './components/AchievementsTab';
-import PredictionsTab from './components/PredictionsTab';
-import SubscriptionPlans from './components/SubscriptionPlans';
-import FlowSenseAI from './components/FlowSenseAI';
+import AuthModal from './components/AuthModal';
+import PremiumSubscriptionModal from './components/PremiumSubscriptionModal';
+import { authService, AuthUser } from './services/authService';
+import { revenueCatService } from './services/revenueCatService';
+import { fetchUserLogs } from './services/logService';
+
+// Lazy load main tab components
+const HomeTab = lazy(() => import('./components/HomeTab'));
+const TrackingTab = lazy(() => import('./components/TrackingTab'));
+const CommunityTab = lazy(() => import('./components/CommunityTab'));
+const PetTab = lazy(() => import('./components/PetTab'));
+const AchievementsTab = lazy(() => import('./components/AchievementsTab'));
+const PredictionsTab = lazy(() => import('./components/PredictionsTab'));
+const FlowSenseAI = lazy(() => import('./components/FlowSenseAI'));
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [language, setLanguage] = useState('en');
-  const [showSubscriptionPlans, setShowSubscriptionPlans] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const [allLogs, setAllLogs] = useState([
     { 
       id: 1, 
@@ -80,96 +89,139 @@ function App() {
     }
   ]);
   const [useDemoData, setUseDemoData] = useState(false);
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isGuest, setIsGuest] = useState(false);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [logsError, setLogsError] = useState<string | null>(null);
+
+  // Initialize app
+  useEffect(() => {
+    initializeApp();
+  }, []);
+
+  // Listen to auth state changes
+  useEffect(() => {
+    const unsubscribe = authService.onAuthStateChange((user) => {
+      setUser(user);
+      if (!user) {
+        setShowAuthModal(true);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Fetch logs from Supabase when not using demo data and user is real
+  useEffect(() => {
+    const shouldFetch = user && user.id !== 'guest' && !useDemoData;
+    if (!shouldFetch) return;
+    setLogsLoading(true);
+    setLogsError(null);
+    fetchUserLogs(user.id)
+      .then(setAllLogs)
+      .catch(err => {
+        setLogsError('Failed to load logs. Please try again.');
+        setAllLogs([]);
+      })
+      .finally(() => setLogsLoading(false));
+  }, [user, useDemoData]);
+
+  const initializeApp = async () => {
+    try {
+      // Initialize RevenueCat
+      const revenueCatApiKey = import.meta.env.VITE_REVENUECAT_API_KEY;
+      if (revenueCatApiKey) {
+        await revenueCatService.initialize(revenueCatApiKey);
+      } else {
+        // Use web fallback
+        await revenueCatService.initializeWeb();
+      }
+
+      // Check for existing user session
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+      
+      if (!currentUser) {
+        setShowAuthModal(true);
+      }
+    } catch (error) {
+      console.error('App initialization error:', error);
+      setShowAuthModal(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDataLogged = (newLog: any) => {
     setAllLogs(prev => [newLog, ...prev]);
   };
 
-  const handleSubscribe = (plan: 'monthly' | 'annual') => {
-    setIsPremium(true);
-    setShowSubscriptionPlans(false);
-    // In a real app, this would handle payment processing
-    console.log(`Subscribed to ${plan} plan`);
+  const handleAuthSuccess = (user: AuthUser) => {
+    setUser(user);
+    setShowAuthModal(false);
+  };
+
+  const handleSignOut = () => {
+    setUser(null);
+    setShowAuthModal(true);
+  };
+
+  const handleSubscriptionSuccess = () => {
+    // Refresh user data to get updated premium status
+    authService.getCurrentUser().then(setUser);
+  };
+
+  const handleUpgradeClick = () => {
+    if (!user) {
+      setAuthMode('signup');
+      setShowAuthModal(true);
+    } else {
+      setShowSubscriptionModal(true);
+    }
+  };
+
+  const handleGuestAccess = () => {
+    // Create a temporary guest user
+    const guestUser: AuthUser = {
+      id: 'guest',
+      email: 'guest@auroraflow.com',
+      firstName: 'Guest',
+      lastName: 'User',
+      isPremium: false,
+      createdAt: new Date().toISOString()
+    };
+    setUser(guestUser);
+    setShowAuthModal(false);
   };
 
   const renderActiveTab = () => {
-    switch (activeTab) {
-      case 'home':
-        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} useDemoData={useDemoData} />;
-      case 'tracking':
-        return <TrackingTab onDataLogged={handleDataLogged} useDemoData={useDemoData} />;
-      case 'predictions':
-        return <PredictionsTab language={language} useDemoData={useDemoData} />;
-      case 'flowsense':
-        return <FlowSenseAI />;
-      case 'community':
-        return <CommunityTab />;
-      case 'pet':
-        return <PetTab />;
-      case 'achievements':
-        return <AchievementsTab />;
-      default:
-        return <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} useDemoData={useDemoData} />;
-    }
+    return (
+      <Suspense fallback={<div className="flex justify-center items-center h-full"><span className="text-gray-500">Loading...</span></div>}>
+        {activeTab === 'home' && (
+          <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} useDemoData={useDemoData} />
+        )}
+        {activeTab === 'tracking' && (
+          <TrackingTab onDataLogged={handleDataLogged} useDemoData={useDemoData} />
+        )}
+        {activeTab === 'community' && <CommunityTab />}
+        {activeTab === 'pet' && <PetTab />}
+        {activeTab === 'achievements' && <AchievementsTab />}
+        {activeTab === 'predictions' && (
+          <PredictionsTab language={language} useDemoData={useDemoData} />
+        )}
+        {activeTab === 'flowsense' && <FlowSenseAI />}
+      </Suspense>
+    );
   };
 
-  useEffect(() => {
-    const root = document.getElementById('elevenlabs-widget-root');
-    if (!root) return;
-    if (isAuthenticated || isGuest) {
-      // Inject widget if not already present
-      if (!document.getElementById('elevenlabs-convai-widget')) {
-        const widget = document.createElement('elevenlabs-convai');
-        widget.setAttribute('agent-id', 'agent_01jx7qvt4zez38683ke9ad4eke');
-        widget.id = 'elevenlabs-convai-widget';
-        root.appendChild(widget);
-        // Inject script if not present
-        if (!document.getElementById('elevenlabs-convai-script')) {
-          const script = document.createElement('script');
-          script.src = 'https://unpkg.com/@elevenlabs/convai-widget-embed';
-          script.async = true;
-          script.type = 'text/javascript';
-          script.id = 'elevenlabs-convai-script';
-          document.body.appendChild(script);
-        }
-      }
-    } else {
-      // Remove widget if present
-      const widget = document.getElementById('elevenlabs-convai-widget');
-      if (widget) widget.remove();
-    }
-  }, [isAuthenticated, isGuest]);
-
-  // Show auth modal if not authenticated or guest
-  if (!isAuthenticated && !isGuest) {
+  // Show loading screen
+  if (loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md mx-4">
-          <h2 className="text-2xl font-bold mb-4 text-center">Welcome to AuroraFlow</h2>
-          <p className="text-gray-600 mb-6 text-center">Sign up, log in, or continue as a guest to access AI-powered diabetes insights.</p>
-          <div className="space-y-4">
-            <button
-              className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              onClick={() => {/* TODO: Implement sign up logic */ alert('Sign up not implemented. Use guest for now.')}}
-            >
-              Sign Up
-            </button>
-            <button
-              className="w-full py-3 px-4 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition-colors"
-              onClick={() => {/* TODO: Implement login logic */ alert('Login not implemented. Use guest for now.')}}
-            >
-              Log In
-            </button>
-            <button
-              className="w-full py-3 px-4 bg-gray-100 text-gray-900 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-              onClick={() => setIsGuest(true)}
-            >
-              Continue as Guest
-            </button>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <span className="text-white text-2xl font-bold">A</span>
           </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">AuroraFlow</h2>
+          <p className="text-gray-600">Loading your health dashboard...</p>
         </div>
       </div>
     );
@@ -177,84 +229,116 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <Header 
-        userName="Sarah"
-        currentGlucose={94}
-        isConnected={true}
-        language={language}
-        onLanguageChange={setLanguage}
-        isPremium={isPremium}
-        onUpgradeClick={() => setShowSubscriptionPlans(true)}
-        onProfileClick={() => setShowProfileModal(true)}
-      />
-      
-      <div className="flex">
-        {/* Desktop Sidebar Navigation */}
-        <Sidebar 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          language={language}
-        />
-        
-        {/* Main Content */}
-        <main className="flex-1 lg:ml-64">
-          <div className="max-w-6xl mx-auto">
-            {renderActiveTab()}
-          </div>
-        </main>
-      </div>
-
-      {/* Mobile Bottom Navigation */}
-      <TabNavigation 
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onAuthSuccess={handleAuthSuccess}
+        initialMode={authMode}
       />
 
-      {/* Subscription Plans Modal */}
-      {showSubscriptionPlans && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowSubscriptionPlans(false)}></div>
-            <div className="relative bg-white w-full max-w-4xl mx-4 rounded-2xl shadow-xl">
-              <button 
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-                onClick={() => setShowSubscriptionPlans(false)}
-              >
-                <X className="h-6 w-6" />
-              </button>
-              <SubscriptionPlans />
+      {/* Premium Subscription Modal */}
+      <PremiumSubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        onSubscriptionSuccess={handleSubscriptionSuccess}
+        currentPlan={user?.isPremium ? 'premium' : 'free'}
+      />
+
+      {/* Guest Access Prompt */}
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40">
+          <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md mx-4">
+            <div className="text-center">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-white text-2xl font-bold">A</span>
+              </div>
+              <h2 className="text-2xl font-bold mb-4 text-center">Welcome to AuroraFlow</h2>
+              <p className="text-gray-600 mb-6 text-center">
+                Your AI-powered diabetes management companion. Sign up for the full experience or continue as a guest.
+              </p>
+              <div className="space-y-3">
+                <button
+                  className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+                  onClick={() => {
+                    setAuthMode('signup');
+                    // Keep modal open to show auth form
+                  }}
+                >
+                  Create Account
+                </button>
+                <button
+                  className="w-full py-3 px-4 bg-white border-2 border-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  onClick={() => {
+                    setAuthMode('signin');
+                    // Keep modal open to show auth form
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  className="w-full py-2 px-4 text-gray-600 hover:text-gray-800 transition-colors text-sm"
+                  onClick={handleGuestAccess}
+                >
+                  Continue as Guest
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Profile Modal with Demo Data Toggle */}
-      {showProfileModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="mt-6 border-t pt-6">
-              <label className="flex items-center space-x-3">
+      {/* Main App */}
+      {user && (
+        <>
+          {/* Header */}
+          <ImprovedHeader 
+            user={user}
+            currentGlucose={94}
+            isConnected={true}
+            language={language}
+            onLanguageChange={setLanguage}
+            onSignOut={handleSignOut}
+            onUpgradeClick={handleUpgradeClick}
+          />
+          
+          <div className="flex">
+            {/* Desktop Sidebar Navigation */}
+            <Sidebar 
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              language={language}
+            />
+            
+            {/* Main Content */}
+            <main className="flex-1 lg:ml-64">
+              <div className="max-w-6xl mx-auto">
+                {renderActiveTab()}
+              </div>
+            </main>
+          </div>
+
+          {/* Mobile Bottom Navigation */}
+          <TabNavigation 
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+
+          {/* Demo Data Toggle (for development) */}
+          {user.id === 'guest' && (
+            <div className="fixed bottom-20 right-4 bg-white rounded-lg shadow-lg p-4 border border-gray-200 lg:bottom-4">
+              <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   checked={useDemoData}
                   onChange={e => setUseDemoData(e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-blue-600"
+                  className="form-checkbox h-4 w-4 text-blue-600"
                 />
-                <span className="text-sm font-medium text-gray-700">Use Demo/Placeholder Data (for testing/demo only)</span>
+                <span className="text-sm font-medium text-gray-700">Demo Mode</span>
               </label>
-              <p className="text-xs text-gray-500 mt-1">When enabled, the app will use demo values for predictions. Disable for real, user-only data.</p>
             </div>
-            <div className="flex space-x-3 pt-6 mt-6 border-t border-gray-200">
-              <button
-                onClick={() => setShowProfileModal(false)}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );
