@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { revenueCatService } from './revenueCatService';
 
@@ -28,6 +28,10 @@ class AuthService {
   private session: Session | null = null;
 
   async signUp({ email, password, firstName, lastName }: SignUpData): Promise<{ user: AuthUser | null; error: AuthError | null }> {
+    if (!isSupabaseConfigured) {
+      return { user: null, error: null };
+    }
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -76,6 +80,10 @@ class AuthService {
   }
 
   async signIn({ email, password }: SignInData): Promise<{ user: AuthUser | null; error: AuthError | null }> {
+    if (!isSupabaseConfigured) {
+      return { user: null, error: null };
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -134,6 +142,10 @@ class AuthService {
   }
 
   async signOut(): Promise<{ error: AuthError | null }> {
+    if (!isSupabaseConfigured) {
+      return { error: null };
+    }
+
     try {
       // Logout from RevenueCat
       await revenueCatService.logout();
@@ -151,6 +163,10 @@ class AuthService {
   }
 
   async resetPassword(email: string): Promise<{ error: AuthError | null }> {
+    if (!isSupabaseConfigured) {
+      return { error: null };
+    }
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -164,6 +180,10 @@ class AuthService {
   }
 
   async updatePassword(newPassword: string): Promise<{ error: AuthError | null }> {
+    if (!isSupabaseConfigured) {
+      return { error: null };
+    }
+
     try {
       const { error } = await supabase.auth.updateUser({
         password: newPassword
@@ -177,6 +197,10 @@ class AuthService {
   }
 
   async getCurrentUser(): Promise<AuthUser | null> {
+    if (!isSupabaseConfigured) {
+      return null;
+    }
+
     if (this.currentUser) {
       return this.currentUser;
     }
@@ -221,6 +245,10 @@ class AuthService {
       return { error: new Error('No authenticated user') };
     }
 
+    if (!isSupabaseConfigured) {
+      return { error: new Error('Supabase is not configured') };
+    }
+
     try {
       const { error } = await supabase
         .from('user_profiles')
@@ -247,6 +275,10 @@ class AuthService {
   }
 
   private async createUserProfile(user: User, firstName: string, lastName: string): Promise<void> {
+    if (!isSupabaseConfigured) {
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('user_profiles')
@@ -268,6 +300,10 @@ class AuthService {
   }
 
   private async getUserProfile(userId: string): Promise<any> {
+    if (!isSupabaseConfigured) {
+      return null;
+    }
+
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -289,6 +325,10 @@ class AuthService {
 
   // Listen to auth state changes
   onAuthStateChange(callback: (user: AuthUser | null) => void): () => void {
+    if (!isSupabaseConfigured) {
+      return () => {};
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         const user = await this.getCurrentUser();

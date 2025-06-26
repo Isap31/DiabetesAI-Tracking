@@ -1,24 +1,28 @@
-import { supabase, GlucoseReading, MealLog, ExerciseLog } from '../lib/supabase';
+import { supabase, GlucoseReading, MealLog, ExerciseLog, isSupabaseConfigured } from '../lib/supabase';
 
 export async function fetchUserLogs(userId: string) {
+  if (!isSupabaseConfigured || !supabase) {
+    // Return demo/local data
+    return [];
+  }
   try {
     // Fetch glucose readings
-    const { data: glucose, error: glucoseError } = await supabase
-      .from<GlucoseReading>('glucose_readings')
+    const { data: glucoseReadings, error: glucoseError } = await supabase
+      .from('glucose_readings')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     // Fetch meal logs
-    const { data: meals, error: mealError } = await supabase
-      .from<MealLog>('meal_logs')
+    const { data: mealLogs, error: mealError } = await supabase
+      .from('meal_logs')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     // Fetch exercise logs
-    const { data: exercises, error: exerciseError } = await supabase
-      .from<ExerciseLog>('exercise_logs')
+    const { data: exerciseLogs, error: exerciseError } = await supabase
+      .from('exercise_logs')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
@@ -29,40 +33,25 @@ export async function fetchUserLogs(userId: string) {
 
     // Normalize logs to match allLogs format
     const logs = [
-      ...(glucose || []).map(g => ({
+      ...((glucoseReadings || []) as GlucoseReading[]).map(g => ({
         id: g.id,
         type: 'glucose',
-        data: {
-          glucose: g.glucose_value,
-          context: g.context,
-          notes: g.notes,
-          time: new Date(g.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        },
-        time: new Date(g.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        data: g,
+        time: g.created_at,
         date: new Date(g.created_at).toISOString().split('T')[0]
       })),
-      ...(meals || []).map(m => ({
+      ...((mealLogs || []) as MealLog[]).map(m => ({
         id: m.id,
         type: 'meal',
-        data: {
-          mealName: m.meal_name,
-          carbs: m.carbohydrates,
-          calories: m.calories,
-          time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        },
-        time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        data: m,
+        time: m.created_at,
         date: new Date(m.created_at).toISOString().split('T')[0]
       })),
-      ...(exercises || []).map(e => ({
+      ...((exerciseLogs || []) as ExerciseLog[]).map(e => ({
         id: e.id,
         type: 'exercise',
-        data: {
-          exerciseType: e.exercise_type,
-          duration: e.duration_minutes,
-          intensity: e.intensity,
-          time: new Date(e.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        },
-        time: new Date(e.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        data: e,
+        time: e.created_at,
         date: new Date(e.created_at).toISOString().split('T')[0]
       })),
     ];

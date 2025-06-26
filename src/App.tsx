@@ -8,6 +8,7 @@ import PremiumSubscriptionModal from './components/PremiumSubscriptionModal';
 import { authService, AuthUser } from './services/authService';
 import { revenueCatService } from './services/revenueCatService';
 import { fetchUserLogs } from './services/logService';
+import { isSupabaseConfigured } from './lib/supabase';
 
 // Lazy load main tab components
 const HomeTab = lazy(() => import('./components/HomeTab'));
@@ -88,7 +89,7 @@ function App() {
       date: '2024-01-15' 
     }
   ]);
-  const [useDemoData, setUseDemoData] = useState(false);
+  const [useDemoData, setUseDemoData] = useState(!isSupabaseConfigured);
   const [logsLoading, setLogsLoading] = useState(false);
   const [logsError, setLogsError] = useState<string | null>(null);
 
@@ -193,7 +194,7 @@ function App() {
   };
 
   const renderActiveTab = () => {
-    return (
+      return (
       <Suspense fallback={<div className="flex justify-center items-center h-full"><span className="text-gray-500">Loading...</span></div>}>
         {activeTab === 'home' && (
           <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} useDemoData={useDemoData} />
