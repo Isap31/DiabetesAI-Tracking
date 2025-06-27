@@ -47,9 +47,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
       title: t.currentGlucose,
       value: userData.currentGlucose.toString(),
       unit: t.mgdl,
-      trend: 'stable' as const,
+      trend: 'stable',
       icon: Droplets,
-      color: 'emerald' as const,
+      color: 'emerald',
       bgGradient: 'from-emerald-50 to-teal-50',
       iconBg: 'from-emerald-500 to-teal-600'
     },
@@ -57,9 +57,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
       title: t.timeInRange,
       value: userData.timeInRange.toString(),
       unit: '%',
-      trend: 'up' as const,
+      trend: 'up',
       icon: Target,
-      color: 'blue' as const,
+      color: 'blue',
       bgGradient: 'from-blue-50 to-indigo-50',
       iconBg: 'from-blue-500 to-indigo-600'
     },
@@ -67,9 +67,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
       title: t.loggingStreak,
       value: userData.streak.toString(),
       unit: t.days,
-      trend: 'up' as const,
+      trend: 'up',
       icon: Zap,
-      color: 'amber' as const,
+      color: 'amber',
       bgGradient: 'from-amber-50 to-yellow-50',
       iconBg: 'from-amber-500 to-yellow-600'
     },
@@ -77,9 +77,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
       title: t.healthScore,
       value: userData.healthScore.toString(),
       unit: '/100',
-      trend: 'up' as const,
+      trend: 'up',
       icon: Heart,
-      color: 'rose' as const,
+      color: 'rose',
       bgGradient: 'from-rose-50 to-pink-50',
       iconBg: 'from-rose-500 to-pink-600'
     }
@@ -127,23 +127,23 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-radial from-blue-500/30 to-transparent rounded-full blur-2xl animate-pulse-slow" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-radial from-purple-500/30 to-transparent rounded-full blur-2xl animate-pulse-slow" />
-              </div>
+        </div>
         <div className="relative z-10 flex flex-col items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="bg-white/10 p-5 rounded-2xl shadow-glow flex items-center justify-center">
               <timeGreeting.icon className="h-10 w-10 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight drop-shadow-lg">{timeGreeting.greeting}, {userData.name}!</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight drop-shadow-lg text-blue-200">{timeGreeting.greeting}, <span className="text-blue-400 font-extrabold">{userData.name}</span>!</h1>
           </div>
-          <p className="text-lg md:text-xl text-slate-200 font-medium">Empowering your health journey with AI</p>
+          <p className="text-lg md:text-xl font-semibold text-cyan-200">Empowering your health journey with AI</p>
           <div className="flex items-center gap-6 mt-4">
-            <div className="bg-slate-800/80 rounded-2xl px-8 py-4 flex flex-col items-center shadow-lg border-2 border-blue-700">
-              <span className="text-3xl font-bold text-blue-400">{userData.currentGlucose}</span>
-              <span className="text-xs text-slate-300">mg/dL • In Range</span>
+            <div className="bg-slate-800/80 rounded-2xl px-8 py-4 flex flex-col items-center shadow-lg border-2 border-blue-400">
+              <span className="text-3xl font-extrabold text-blue-300 drop-shadow-lg">{userData.currentGlucose}</span>
+              <span className="text-xs text-blue-200 font-bold tracking-wide">mg/dL • In Range</span>
             </div>
-            <div className="bg-slate-800/80 rounded-2xl px-8 py-4 flex flex-col items-center shadow-lg border-2 border-purple-700">
-              <span className="text-3xl font-bold text-purple-400">{userData.timeInRange}%</span>
-              <span className="text-xs text-slate-300">Time in Range</span>
+            <div className="bg-slate-800/80 rounded-2xl px-8 py-4 flex flex-col items-center shadow-lg border-2 border-purple-400">
+              <span className="text-3xl font-extrabold text-purple-200 drop-shadow-lg">{userData.timeInRange}%</span>
+              <span className="text-xs text-purple-200 font-bold tracking-wide">Time in Range</span>
             </div>
           </div>
         </div>
@@ -159,15 +159,15 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
                 <stat.icon className="h-7 w-7 text-white" />
               </div>
               <div className={`w-3 h-3 rounded-full ${
-                stat.trend === 'up' ? 'bg-emerald-500' : 
-                stat.trend === 'down' ? 'bg-red-500' : 'bg-amber-500'
+                stat.trend === 'up' ? 'bg-emerald-400' : 
+                stat.trend === 'down' ? 'bg-rose-400' : 'bg-amber-400'
               } shadow-glow`}></div>
             </div>
             <div className="space-y-2">
-              <p className="text-base font-medium text-slate-100 dark:text-slate-300 tracking-wide">{stat.title}</p>
+              <p className="text-base font-bold text-blue-200 tracking-wide">{stat.title}</p>
               <div className="flex items-baseline space-x-2">
-                <span className="text-4xl font-extrabold text-white dark:text-white drop-shadow">{stat.value}</span>
-                <span className="text-lg font-medium text-slate-200">{stat.unit}</span>
+                <span className="text-4xl font-extrabold text-blue-400 drop-shadow-lg">{stat.value}</span>
+                <span className="text-lg font-bold text-cyan-200">{stat.unit}</span>
               </div>
             </div>
           </div>
@@ -177,9 +177,9 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
       {/* Interactive Feature Cards */}
       <section className="space-y-8">
         <div className="flex items-center justify-between">
-          <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Your Health Ecosystem</h3>
-          <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-300">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+          <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">Your Health Ecosystem</h3>
+          <div className="flex items-center space-x-2 text-sm text-emerald-400 dark:text-emerald-300">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
             <span>All systems operational</span>
           </div>
         </div>
@@ -191,21 +191,21 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
                   <feature.icon className="h-9 w-9 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-bold dark:bg-emerald-900 dark:text-emerald-200">
+                  <div className="bg-emerald-400/20 text-emerald-400 px-4 py-2 rounded-full text-sm font-bold dark:bg-emerald-900 dark:text-emerald-200">
                     {feature.status}
                   </div>
                 </div>
               </div>
               <div className="space-y-4">
-                <h4 className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-blue-400 transition-all duration-300">
+                <h4 className="text-2xl font-extrabold text-blue-200 group-hover:text-blue-400 transition-all duration-300">
                   {feature.title}
                 </h4>
-                <p className="text-slate-200 dark:text-slate-300 leading-relaxed text-base">{feature.description}</p>
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
+                <p className="text-cyan-100 leading-relaxed text-base font-semibold">{feature.description}</p>
+                <div className="pt-4 border-t border-blue-100 dark:border-blue-900">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-slate-300">Explore</span>
-                    <div className="w-10 h-10 bg-slate-200/30 dark:bg-slate-700/50 rounded-full flex items-center justify-center group-hover:bg-blue-600/80 transition-all">
-                      <TrendingUp className="h-5 w-5 text-slate-600 dark:text-slate-200 group-hover:text-white" />
+                    <span className="text-sm font-bold text-blue-200">Explore</span>
+                    <div className="w-10 h-10 bg-blue-600/20 dark:bg-blue-700/50 rounded-full flex items-center justify-center group-hover:bg-blue-600/80 transition-all">
+                      <TrendingUp className="h-5 w-5 text-blue-200 group-hover:text-white" />
                     </div>
                   </div>
                 </div>
@@ -216,8 +216,8 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
       </section>
 
       {/* Modern Activity Feed */}
-      <section className="bg-white/80 dark:bg-slate-900/80 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl mt-8">
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Recent Activity</h3>
+      <section className="bg-white/90 dark:bg-slate-900/90 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl mt-8">
+        <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6">Recent Activity</h3>
         <div className="flex flex-col gap-6">
           {allLogs.slice(0, 6).map((log, idx) => (
             <div key={log.id} className="flex items-center gap-4">
@@ -228,26 +228,26 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
                   log.type === 'glucose' ? 'bg-gradient-to-br from-blue-400 to-indigo-500' :
                   'bg-gradient-to-br from-purple-400 to-pink-500'
                 }`}>
-                {log.type === 'meal' && <Utensils className="h-5 w-5 text-white" />}
-                {log.type === 'exercise' && <Activity className="h-5 w-5 text-white" />}
-                {log.type === 'glucose' && <Droplets className="h-5 w-5 text-white" />}
-                {log.type === 'profile' && <Heart className="h-5 w-5 text-white" />}
-              </div>
+                  {log.type === 'meal' && <Utensils className="h-5 w-5 text-white" />}
+                  {log.type === 'exercise' && <Activity className="h-5 w-5 text-white" />}
+                  {log.type === 'glucose' && <Droplets className="h-5 w-5 text-white" />}
+                  {log.type === 'profile' && <Heart className="h-5 w-5 text-white" />}
+                </div>
                 {idx < allLogs.slice(0, 6).length - 1 && (
                   <div className="w-1 h-8 bg-gradient-to-b from-blue-400 to-purple-400 mx-auto" />
                 )}
               </div>
-              <div className="flex-1 bg-white/60 dark:bg-slate-800/60 rounded-xl p-4 shadow border border-slate-100 dark:border-slate-700">
+              <div className="flex-1 bg-white/80 dark:bg-slate-800/80 rounded-xl p-4 shadow border border-slate-100 dark:border-slate-700">
                 <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-semibold text-slate-900 dark:text-white">
+                  <h4 className="font-extrabold text-slate-900 dark:text-white">
                     {log.type === 'meal' && log.data.mealName}
                     {log.type === 'exercise' && `${log.data.exerciseType} - ${log.data.duration} min`}
                     {log.type === 'glucose' && `${log.data.glucose} mg/dL`}
                     {log.type === 'profile' && 'Profile Updated'}
                   </h4>
-                  <span className="text-xs font-medium text-slate-400">{log.time}</span>
+                  <span className="text-xs font-semibold text-blue-400">{log.time}</span>
                 </div>
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-200 mt-1">
                   {log.type === 'meal' && `${log.data.carbs}g carbs • ${log.data.calories} cal`}
                   {log.type === 'exercise' && `${log.data.intensity} intensity`}
                   {log.type === 'glucose' && log.data.context}
