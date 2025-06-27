@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, Users, Heart, ThumbsUp, Send, Bot, X, Mic, Paperclip, Trophy, Target, Utensils, Activity, Calendar, BookOpen, HelpCircle, Star, Award, Flame } from 'lucide-react';
+import { MessageCircle, Users, Heart, ThumbsUp, Send, Bot, X, Mic, Paperclip, Trophy, Target, Utensils, Activity, Calendar, BookOpen, HelpCircle, Star, Award, Flame, Info } from 'lucide-react';
 
 const CommunityTab = () => {
   const [showAIChat, setShowAIChat] = useState(false);
@@ -309,6 +309,34 @@ const CommunityTab = () => {
 
   return (
     <div className="space-y-6 pb-20">
+      {/* Explanation Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
+        <div className="flex items-start space-x-4">
+          <div className="bg-blue-500 p-3 rounded-xl">
+            <Info className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Care Circle Community</h2>
+            <p className="text-gray-700 leading-relaxed">
+              Welcome to your supportive diabetes community! This is a safe space where people with diabetes share experiences, 
+              celebrate milestones, ask questions, and support each other. Connect with others who understand your journey, 
+              share tips that work for you, and find motivation from real people achieving their health goals.
+            </p>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="bg-white p-3 rounded-lg border border-blue-200">
+                <strong className="text-blue-700">Share & Learn:</strong> Post your wins, challenges, and helpful tips with the community.
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-blue-200">
+                <strong className="text-blue-700">Get Support:</strong> Ask questions and receive encouragement from people who understand.
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-blue-200">
+                <strong className="text-blue-700">Stay Motivated:</strong> Celebrate others' achievements and find inspiration for your own journey.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* AI Chat Modal */}
       {showAIChat && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

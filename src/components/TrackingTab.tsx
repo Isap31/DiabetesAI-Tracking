@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Bed } from 'lucide-react';
+import { Plus, Camera, Utensils, Activity, Droplets, Clock, X, Save, User, Scale, Brain, Thermometer, Bed, Info } from 'lucide-react';
 import { predictGlucose } from '../services/predictiveModelService';
 
 interface TrackingTabProps {
@@ -16,13 +16,15 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
     name: '',
     carbs: '',
     calories: '',
-    time: new Date().toTimeString().slice(0, 5)
+    time: new Date().toTimeString().slice(0, 5),
+    notes: ''
   });
   const [exerciseData, setExerciseData] = useState({
     type: '',
     duration: '',
     intensity: 'moderate',
-    time: new Date().toTimeString().slice(0, 5)
+    time: new Date().toTimeString().slice(0, 5),
+    notes: ''
   });
   const [glucoseData, setGlucoseData] = useState({
     reading: '',
@@ -174,7 +176,8 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
         mealName: mealData.name,
         carbs: mealData.carbs,
         calories: mealData.calories,
-        time: mealData.time
+        time: mealData.time,
+        notes: mealData.notes
       },
       time: mealData.time,
       date: new Date().toISOString().split('T')[0]
@@ -187,7 +190,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
       onDataLogged(newMealLog);
     }
     
-    setMealData({ name: '', carbs: '', calories: '', time: new Date().toTimeString().slice(0, 5) });
+    setMealData({ name: '', carbs: '', calories: '', time: new Date().toTimeString().slice(0, 5), notes: '' });
     setShowMealForm(false);
     fetchPrediction();
   };
@@ -201,7 +204,8 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
         exerciseType: exerciseData.type,
         duration: exerciseData.duration,
         intensity: exerciseData.intensity,
-        time: exerciseData.time
+        time: exerciseData.time,
+        notes: exerciseData.notes
       },
       time: exerciseData.time,
       date: new Date().toISOString().split('T')[0]
@@ -214,7 +218,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
       onDataLogged(newExerciseLog);
     }
     
-    setExerciseData({ type: '', duration: '', intensity: 'moderate', time: new Date().toTimeString().slice(0, 5) });
+    setExerciseData({ type: '', duration: '', intensity: 'moderate', time: new Date().toTimeString().slice(0, 5), notes: '' });
     setShowExerciseForm(false);
     fetchPrediction();
   };
@@ -319,6 +323,34 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
 
   return (
     <div className="space-y-8">
+      {/* Explanation Section */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200">
+        <div className="flex items-start space-x-4">
+          <div className="bg-blue-500 p-3 rounded-xl">
+            <Info className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Track Your Health Data</h2>
+            <p className="text-gray-700 leading-relaxed">
+              This is where you log your daily health information. Tracking your meals, glucose readings, exercise, 
+              and other health metrics helps our AI provide personalized insights and predictions. The more consistently 
+              you log your data, the more accurate our recommendations will be.
+            </p>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="bg-white p-3 rounded-lg border border-blue-200">
+                <strong className="text-blue-700">Meal Logging:</strong> Track carbs, calories, and meal timing to understand glucose impact.
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-blue-200">
+                <strong className="text-blue-700">Glucose Tracking:</strong> Record readings with context (before/after meals, fasting, etc.).
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-blue-200">
+                <strong className="text-blue-700">Exercise & Profile:</strong> Log activities and update your health profile for better predictions.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Minimal & Modern Predictive Model Card */}
       <div className="relative max-w-xl mx-auto bg-slate-900/80 rounded-2xl shadow-lg p-6 text-white flex flex-col items-center gap-4 mt-4">
         <div className="flex items-center gap-3 mb-2">
@@ -442,6 +474,16 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                 />
                 <p className="text-xs text-gray-500 mt-1">Meal timing affects glucose response</p>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                <textarea
+                  value={mealData.notes}
+                  onChange={(e) => setMealData({...mealData, notes: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  placeholder="Add any notes about this meal..."
+                  rows={2}
+                />
+              </div>
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-xs text-blue-800">
                   <strong>AI Integration:</strong> Carb content and meal timing are key factors for glucose predictions.
@@ -553,6 +595,16 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                   required
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
+                <textarea
+                  value={exerciseData.notes}
+                  onChange={(e) => setExerciseData({...exerciseData, notes: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  placeholder="How did you feel during/after exercise? Any observations?"
+                  rows={2}
+                />
+              </div>
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-xs text-blue-800">
                   <strong>Exercise Impact:</strong> Type, duration, and intensity all affect glucose response patterns.
@@ -645,7 +697,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                   value={glucoseData.notes}
                   onChange={(e) => setGlucoseData({...glucoseData, notes: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                  placeholder="How are you feeling? Any symptoms?"
+                  placeholder="How are you feeling? Any symptoms? What were you doing?"
                   rows={3}
                 />
               </div>
