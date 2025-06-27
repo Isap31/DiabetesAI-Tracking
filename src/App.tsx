@@ -229,7 +229,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 dark:text-slate-100" data-theme="dark">
       {/* Auth Modal */}
       <AuthModal
         isOpen={showAuthModal}

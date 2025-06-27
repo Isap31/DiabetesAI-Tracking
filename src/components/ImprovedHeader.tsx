@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 import { authService, AuthUser } from '../services/authService';
+import blackCircle from '../../misc/black_circle_360x360.png';
 
 interface ImprovedHeaderProps {
   user: AuthUser | null;
@@ -215,6 +216,8 @@ const ImprovedHeader: React.FC<ImprovedHeaderProps> = ({
         <div className="flex justify-between items-center">
           {/* Enhanced Logo and Title */}
           <div className="flex items-center space-x-4">
+            {/* Black Circle Image for Branding */}
+            <img src={blackCircle} alt="Brand Logo" className="h-12 w-12 rounded-full shadow-lg border-2 border-gray-200 object-cover" style={{background: 'white'}} />
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-2xl shadow-lg">
               <Activity className="h-7 w-7 text-white" />
             </div>
