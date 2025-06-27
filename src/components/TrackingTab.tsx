@@ -318,18 +318,60 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
   }
 
   return (
-    <div className="space-y-6">
-      {/* Prediction Toast */}
-      <div>
-        {predictionLoading ? (
-          <div className="bg-blue-50 text-blue-700 p-3 rounded-lg text-center font-semibold mb-2">Loading prediction...</div>
-        ) : predictionError ? (
-          <div className="bg-red-50 text-red-700 p-3 rounded-lg text-center font-semibold mb-2">{predictionError}</div>
-        ) : predictedGlucose !== null ? (
-          <div className="bg-green-50 text-green-700 p-3 rounded-lg text-center font-semibold mb-2">
-            Predicted Glucose (30 min): {predictedGlucose} mg/dL
+    <div className="space-y-8">
+      {/* Minimal & Modern Predictive Model Card */}
+      <div className="relative max-w-xl mx-auto bg-slate-900/80 rounded-2xl shadow-lg p-6 text-white flex flex-col items-center gap-4 mt-4">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-800">
+            <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity text-blue-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </span>
+          <span className="text-xl font-semibold tracking-tight">AI Glucose Prediction</span>
+        </div>
+        <div className="w-full flex flex-col md:flex-row gap-3 items-center justify-center">
+          {/* Prediction Inputs */}
+          <div className="flex flex-col gap-2 w-full md:w-2/3">
+            {Object.entries(predictionParams).map(([key, value]) => (
+              <div key={key} className="flex flex-col">
+                <label className="text-xs font-semibold text-blue-200 mb-1 capitalize">{key.replace(/_/g, ' ')}</label>
+                <input
+                  type="number"
+                  value={value}
+                  onChange={e => setPredictionParams(p => ({ ...p, [key]: e.target.value }))}
+                  placeholder={key.replace(/_/g, ' ')}
+                  className="px-3 py-2 rounded-lg border-2 border-blue-700 bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                  min="0"
+                  required
+                />
+              </div>
+            ))}
           </div>
-        ) : null}
+          {/* Predict Button */}
+          <button
+            className="mt-2 md:mt-0 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow transition-colors"
+            onClick={fetchPrediction}
+          >
+            Predict
+          </button>
+        </div>
+        {/* Prediction Result */}
+        {predictionLoading ? (
+          <div className="w-full mt-4 flex flex-col items-center">
+            <span className="text-sm text-slate-400">Loading prediction...</span>
+          </div>
+        ) : predictionError ? (
+          <div className="w-full mt-4 flex flex-col items-center">
+            <span className="text-sm text-red-400">{predictionError}</span>
+          </div>
+        ) : predictedGlucose !== null ? (
+          <div className="w-full mt-4 flex flex-col items-center">
+            <span className="text-sm text-slate-400">Predicted Glucose (30min):</span>
+            <span className="text-3xl font-bold text-blue-400 mt-1">{predictedGlucose} mg/dL</span>
+          </div>
+        ) : (
+          <div className="w-full mt-4 flex flex-col items-center">
+            <span className="text-sm text-slate-400">Enter all values and click Predict to see your result.</span>
+          </div>
+        )}
       </div>
 
       {/* Meal Logging Modal */}

@@ -121,152 +121,91 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
   ];
 
   return (
-    <div className="space-y-8 pb-20">
-      {/* Enhanced Hero Section */}
-      <div className={`bg-gradient-to-br ${timeGreeting.color} rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl`}>
-        {/* Animated background elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white bg-opacity-10 rounded-full -translate-y-32 translate-x-32 animate-pulse-slow"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white bg-opacity-10 rounded-full translate-y-24 -translate-x-24 animate-pulse-slow" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-white bg-opacity-5 rounded-full -translate-x-16 -translate-y-16 animate-pulse-slow" style={{animationDelay: '2s'}}></div>
-        
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white bg-opacity-20 p-4 rounded-2xl backdrop-blur-sm">
-                <timeGreeting.icon className="h-8 w-8 text-white" />
+    <div className="space-y-14 pb-24">
+      {/* Modern Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-900 via-slate-900 to-purple-900 rounded-3xl shadow-2xl p-10 md:p-16 text-white overflow-hidden flex flex-col items-center justify-center min-h-[320px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-radial from-blue-500/30 to-transparent rounded-full blur-2xl animate-pulse-slow" />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-radial from-purple-500/30 to-transparent rounded-full blur-2xl animate-pulse-slow" />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{timeGreeting.greeting}, {userData.name}! ✨</h1>
-                <p className="text-lg text-white text-opacity-90">Your health journey continues to inspire</p>
-              </div>
+        <div className="relative z-10 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-white/10 p-5 rounded-2xl shadow-glow flex items-center justify-center">
+              <timeGreeting.icon className="h-10 w-10 text-white" />
             </div>
-            <div className="text-right">
-              <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-2xl p-4">
-                <div className="text-2xl font-bold">{userData.currentGlucose}</div>
-                <div className="text-sm text-white text-opacity-80">mg/dL • In Range</div>
-              </div>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight drop-shadow-lg">{timeGreeting.greeting}, {userData.name}!</h1>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white bg-opacity-15 backdrop-blur-sm rounded-2xl p-6">
-              <div className="flex items-center space-x-3 mb-3">
-                <Shield className="h-6 w-6 text-white" />
-                <span className="font-semibold text-white">System Status</span>
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">Optimal</div>
-              <div className="text-sm text-white text-opacity-80">All monitoring systems active</div>
+          <p className="text-lg md:text-xl text-slate-200 font-medium">Empowering your health journey with AI</p>
+          <div className="flex items-center gap-6 mt-4">
+            <div className="bg-slate-800/80 rounded-2xl px-8 py-4 flex flex-col items-center shadow-lg border-2 border-blue-700">
+              <span className="text-3xl font-bold text-blue-400">{userData.currentGlucose}</span>
+              <span className="text-xs text-slate-300">mg/dL • In Range</span>
             </div>
-            
-            <div className="bg-white bg-opacity-15 backdrop-blur-sm rounded-2xl p-6">
-              <div className="flex items-center space-x-3 mb-3">
-                <Calendar className="h-6 w-6 text-white" />
-                <span className="font-semibold text-white">Today's Progress</span>
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">{userData.timeInRange}%</div>
-              <div className="text-sm text-white text-opacity-80">Time in target range</div>
-            </div>
-            
-            <div className="bg-white bg-opacity-15 backdrop-blur-sm rounded-2xl p-6">
-              <div className="flex items-center space-x-3 mb-3">
-                <Crown className="h-6 w-6 text-white" />
-                <span className="font-semibold text-white">Experience</span>
-              </div>
-              <div className="text-2xl font-bold text-white mb-1">{userData.yearsSinceDiagnosis}</div>
-              <div className="text-sm text-white text-opacity-80">Years of wisdom</div>
+            <div className="bg-slate-800/80 rounded-2xl px-8 py-4 flex flex-col items-center shadow-lg border-2 border-purple-700">
+              <span className="text-3xl font-bold text-purple-400">{userData.timeInRange}%</span>
+              <span className="text-xs text-slate-300">Time in Range</span>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Daily Affirmation */}
-      <DailyAffirmation language={language} />
-
-      {/* Enhanced Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Glassmorphic Stats Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {quickStats.map((stat, index) => (
-          <div key={index} className={`bg-gradient-to-br ${stat.bgGradient} rounded-2xl p-6 border border-white border-opacity-50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}>
-            <div className="flex items-center justify-between mb-4">
-              <div className={`p-3 rounded-xl bg-gradient-to-r ${stat.iconBg} shadow-lg`}>
-                <stat.icon className="h-6 w-6 text-white" />
+          <div key={index} className="relative bg-white/20 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden">
+            <div className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-blue-400/30 to-purple-400/10 rounded-full blur-2xl group-hover:scale-110 transition-transform" />
+            <div className="flex items-center justify-between mb-6">
+              <div className={`p-4 rounded-xl bg-gradient-to-r ${stat.iconBg} shadow-glow animate-pulse-slow`}>
+                <stat.icon className="h-7 w-7 text-white" />
               </div>
               <div className={`w-3 h-3 rounded-full ${
                 stat.trend === 'up' ? 'bg-emerald-500' : 
                 stat.trend === 'down' ? 'bg-red-500' : 'bg-amber-500'
-              } shadow-lg`}></div>
+              } shadow-glow`}></div>
             </div>
-            
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">{stat.title}</p>
+              <p className="text-base font-medium text-slate-100 dark:text-slate-300 tracking-wide">{stat.title}</p>
               <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-bold text-gray-900">{stat.value}</span>
-                <span className="text-sm font-medium text-gray-600">{stat.unit}</span>
+                <span className="text-4xl font-extrabold text-white dark:text-white drop-shadow">{stat.value}</span>
+                <span className="text-lg font-medium text-slate-200">{stat.unit}</span>
               </div>
             </div>
           </div>
         ))}
-      </div>
+      </section>
 
-      {/* Pet Companion Section */}
-      <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 rounded-3xl p-8 border border-purple-200 shadow-xl">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-3 rounded-2xl shadow-lg">
-              <Heart className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">Your Companion</h3>
-              <p className="text-purple-600 font-medium">{userData.petName} • Level {userData.petLevel}</p>
-            </div>
-          </div>
-          <div className="text-6xl animate-bounce">🐕</div>
-        </div>
-        
-        <PetCompanion
-          petHealth={userData.petHealth}
-          petHappiness={userData.petHappiness}
-          petLevel={userData.petLevel}
-          petName={userData.petName}
-          glucoseInRange={userData.currentGlucose >= 70 && userData.currentGlucose <= 140}
-          streakDays={userData.streak}
-        />
-      </div>
-
-      {/* Enhanced Feature Cards */}
-      <div className="space-y-6">
+      {/* Interactive Feature Cards */}
+      <section className="space-y-8">
         <div className="flex items-center justify-between">
-          <h3 className="text-2xl font-bold text-gray-900">Your Health Ecosystem</h3>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <h3 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Your Health Ecosystem</h3>
+          <div className="flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-300">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
             <span>All systems operational</span>
           </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="group bg-white rounded-2xl p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-4 rounded-2xl bg-gradient-to-r ${feature.gradient} shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
-                  <feature.icon className="h-8 w-8 text-white" />
+            <div key={index} className="group bg-white/20 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 cursor-pointer overflow-hidden">
+              <div className="flex items-center justify-between mb-6">
+                <div className={`p-5 rounded-2xl bg-gradient-to-r ${feature.gradient} shadow-glow group-hover:scale-110 transition-transform`}>
+                  <feature.icon className="h-9 w-9 text-white" />
                 </div>
                 <div className="text-right">
-                  <div className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">
+                  <div className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-bold dark:bg-emerald-900 dark:text-emerald-200">
                     {feature.status}
                   </div>
                 </div>
               </div>
-              
-              <div className="space-y-3">
-                <h4 className="text-xl font-bold text-gray-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-600 transition-all duration-300">
+              <div className="space-y-4">
+                <h4 className="text-2xl font-bold text-slate-900 dark:text-white group-hover:text-blue-400 transition-all duration-300">
                   {feature.title}
                 </h4>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                
-                <div className="pt-4 border-t border-gray-100">
+                <p className="text-slate-200 dark:text-slate-300 leading-relaxed text-base">{feature.description}</p>
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-500">Explore</span>
-                    <div className="w-8 h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full flex items-center justify-center group-hover:from-purple-500 group-hover:to-pink-600 transition-all duration-300">
-                      <TrendingUp className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors duration-300" />
+                    <span className="text-sm font-medium text-slate-300">Explore</span>
+                    <div className="w-10 h-10 bg-slate-200/30 dark:bg-slate-700/50 rounded-full flex items-center justify-center group-hover:bg-blue-600/80 transition-all">
+                      <TrendingUp className="h-5 w-5 text-slate-600 dark:text-slate-200 group-hover:text-white" />
                     </div>
                   </div>
                 </div>
@@ -274,83 +213,51 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Enhanced Quick Actions */}
-      <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-3xl p-8 border border-slate-200 shadow-xl">
-        <div className="flex items-center space-x-4 mb-6">
-          <div className="bg-gradient-to-r from-slate-700 to-slate-900 p-3 rounded-2xl shadow-lg">
-            <Zap className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900">Quick Actions</h3>
-            <p className="text-slate-600">Log your health data instantly</p>
-          </div>
-        </div>
-        
-        <QuickActions onDataLogged={onDataLogged} language={language} />
-      </div>
-
-      {/* Recent Activity with Enhanced Design */}
-      <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-xl">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-3 rounded-2xl shadow-lg">
-              <Clock className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">Recent Activity</h3>
-              <p className="text-indigo-600">Your latest health entries</p>
-            </div>
-          </div>
-          <div className="bg-gradient-to-r from-indigo-100 to-purple-100 px-4 py-2 rounded-full">
-            <span className="text-sm font-bold text-indigo-700">{allLogs.length} entries today</span>
-          </div>
-        </div>
-        
-        <div className="space-y-4">
-          {allLogs.slice(0, 5).map((log, index) => (
-            <div key={log.id} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-gray-50 to-slate-50 rounded-2xl border border-gray-200 hover:shadow-lg transition-all duration-300">
-              <div className={`p-3 rounded-xl ${
-                log.type === 'meal' ? 'bg-gradient-to-r from-orange-500 to-red-600' :
-                log.type === 'exercise' ? 'bg-gradient-to-r from-green-500 to-emerald-600' :
-                log.type === 'glucose' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' :
-                'bg-gradient-to-r from-purple-500 to-pink-600'
-              } shadow-lg`}>
+      {/* Modern Activity Feed */}
+      <section className="bg-white/80 dark:bg-slate-900/80 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl mt-8">
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Recent Activity</h3>
+        <div className="flex flex-col gap-6">
+          {allLogs.slice(0, 6).map((log, idx) => (
+            <div key={log.id} className="flex items-center gap-4">
+              <div className="flex flex-col items-center">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+                  log.type === 'meal' ? 'bg-gradient-to-br from-orange-400 to-red-500' :
+                  log.type === 'exercise' ? 'bg-gradient-to-br from-green-400 to-emerald-500' :
+                  log.type === 'glucose' ? 'bg-gradient-to-br from-blue-400 to-indigo-500' :
+                  'bg-gradient-to-br from-purple-400 to-pink-500'
+                }`}>
                 {log.type === 'meal' && <Utensils className="h-5 w-5 text-white" />}
                 {log.type === 'exercise' && <Activity className="h-5 w-5 text-white" />}
                 {log.type === 'glucose' && <Droplets className="h-5 w-5 text-white" />}
                 {log.type === 'profile' && <Heart className="h-5 w-5 text-white" />}
               </div>
-              
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-gray-900">
+                {idx < allLogs.slice(0, 6).length - 1 && (
+                  <div className="w-1 h-8 bg-gradient-to-b from-blue-400 to-purple-400 mx-auto" />
+                )}
+              </div>
+              <div className="flex-1 bg-white/60 dark:bg-slate-800/60 rounded-xl p-4 shadow border border-slate-100 dark:border-slate-700">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-semibold text-slate-900 dark:text-white">
                     {log.type === 'meal' && log.data.mealName}
                     {log.type === 'exercise' && `${log.data.exerciseType} - ${log.data.duration} min`}
                     {log.type === 'glucose' && `${log.data.glucose} mg/dL`}
                     {log.type === 'profile' && 'Profile Updated'}
                   </h4>
-                  <span className="text-sm font-medium text-gray-500">{log.time}</span>
+                  <span className="text-xs font-medium text-slate-400">{log.time}</span>
                 </div>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-slate-500 mt-1">
                   {log.type === 'meal' && `${log.data.carbs}g carbs • ${log.data.calories} cal`}
                   {log.type === 'exercise' && `${log.data.intensity} intensity`}
                   {log.type === 'glucose' && log.data.context}
                   {log.type === 'profile' && 'Health profile information updated'}
                 </p>
               </div>
-              
-              <div className={`w-3 h-3 rounded-full ${
-                log.type === 'meal' ? 'bg-orange-400' :
-                log.type === 'exercise' ? 'bg-green-400' :
-                log.type === 'glucose' ? 'bg-blue-400' :
-                'bg-purple-400'
-              } shadow-lg`}></div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 };

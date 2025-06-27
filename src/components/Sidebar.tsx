@@ -77,24 +77,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) =
           ))}
         </nav>
       </div>
-      {/* AI Assistant Quick Access */}
-      <div className="absolute bottom-20 left-6 right-6">
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-4 text-white shadow-lg border-2 border-blue-400">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="bg-white bg-opacity-20 p-2 rounded-lg">
-              <Brain className="h-5 w-5" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-white">{t.flowSenseAI}</h4>
-              <p className="text-xs text-blue-100">Always here to help</p>
-            </div>
-          </div>
-          <button className="w-full bg-white bg-opacity-20 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center space-x-2">
-            <Mic className="h-4 w-4" />
-            <span>Voice Assistant</span>
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
