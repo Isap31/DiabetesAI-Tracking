@@ -202,7 +202,7 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
             </div>
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
-                <button
+            <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
                   className={`px-3 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors ${
@@ -212,7 +212,7 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
                   }`}
                 >
                   {category.charAt(0).toUpperCase() + category.slice(1)}
-                </button>
+                  </button>
               ))}
             </div>
           </div>
@@ -267,19 +267,19 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
                     <button
                       onClick={() => togglePurchased(item.id)}
                       className={`p-1.5 rounded-full transition-colors ${
-                        item.purchased
+                        item.purchased 
                           ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400'
                           : 'bg-gray-100 text-gray-400 dark:bg-slate-600 dark:text-gray-500 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900 dark:hover:text-green-400'
                       }`}
                     >
                       <Check className="h-4 w-4" />
                     </button>
-                    <button
-                      onClick={() => deleteItem(item.id)}
+                  <button
+                    onClick={() => deleteItem(item.id)}
                       className="p-1.5 rounded-full bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                   </div>
                 </div>
               </div>
@@ -332,40 +332,40 @@ const GroceryListModal: React.FC<GroceryListModalProps> = ({ isVisible, onClose 
 
         {/* Add Item Button */}
         <div className="p-4 md:p-6 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600">
-          <button
+                <button 
             onClick={() => setShowAddForm(true)}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
-          >
+                >
             <Plus className="h-5 w-5" />
             <span>Add Custom Item</span>
-          </button>
-        </div>
+                </button>
+              </div>
       </div>
 
       {/* Add Item Form Modal */}
       {showAddForm && (
-        <GroceryItemForm
-          initialItem={{
-            name: '',
-            category: 'Vegetables',
-            estimatedPrice: '',
-            glucoseImpact: 'low',
-            quantity: '',
-            notes: ''
-          }}
+              <GroceryItemForm
+                initialItem={{
+                  name: '',
+                  category: 'Vegetables',
+                  estimatedPrice: '',
+                  glucoseImpact: 'low',
+                  quantity: '',
+                  notes: ''
+                }}
           onSave={(item) => {
-            addItem({
-              ...item,
+                  addItem({
+                    ...item,
               id: Date.now(),
               estimatedPrice: parseFloat(item.estimatedPrice) || 0,
               budgetFriendly: true,
               purchased: false
-            });
-            setShowAddForm(false);
-          }}
-          onCancel={() => setShowAddForm(false)}
-        />
-      )}
+                  });
+                  setShowAddForm(false);
+                }}
+                onCancel={() => setShowAddForm(false)}
+              />
+        )}
     </div>
   );
 };
