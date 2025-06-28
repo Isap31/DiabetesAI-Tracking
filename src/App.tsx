@@ -5,6 +5,8 @@ import Sidebar from './components/Sidebar';
 import TabNavigation from './components/TabNavigation';
 import AuthModal from './components/AuthModal';
 import PremiumSubscriptionModal from './components/PremiumSubscriptionModal';
+import OnboardingSurvey from './components/OnboardingSurvey';
+import AccessibilitySettingsModal from './components/AccessibilitySettings';
 import { authService, AuthUser } from './services/authService';
 import { revenueCatService } from './services/revenueCatService';
 import { fetchUserLogs } from './services/logService';
@@ -24,6 +26,8 @@ function App() {
   const [language, setLanguage] = useState('en');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showOnboardingSurvey, setShowOnboardingSurvey] = useState(false);
+  const [showAccessibilitySettings, setShowAccessibilitySettings] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,6 +96,23 @@ function App() {
   const [useDemoData, setUseDemoData] = useState(!isSupabaseConfigured);
   const [logsLoading, setLogsLoading] = useState(false);
   const [logsError, setLogsError] = useState<string | null>(null);
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
+  const [accessibilitySettings, setAccessibilitySettings] = useState({
+    fontSize: 'medium' as const,
+    contrast: 'normal' as const,
+    theme: 'light' as const,
+    colorBlindFriendly: false,
+    voiceNavigation: false,
+    screenReader: false,
+    soundEffects: true,
+    backgroundSounds: false,
+    reducedMotion: false,
+    simplifiedInterface: false,
+    largeButtons: false,
+    voiceInstructions: false,
+    language: 'en',
+    readingLevel: 'standard' as const
+  });
 
   // Initialize app
   useEffect(() => {
@@ -158,11 +179,17 @@ function App() {
   const handleAuthSuccess = (user: AuthUser) => {
     setUser(user);
     setShowAuthModal(false);
+    
+    // Show onboarding survey for new users (not guests)
+    if (user.id !== 'guest' && !surveyCompleted) {
+      setShowOnboardingSurvey(true);
+    }
   };
 
   const handleSignOut = () => {
     setUser(null);
     setShowAuthModal(true);
+    setSurveyCompleted(false);
   };
 
   const handleSubscriptionSuccess = () => {
@@ -192,6 +219,44 @@ function App() {
     setUser(guestUser);
     setShowAuthModal(false);
   };
+
+  const handleSurveyComplete = (surveyData: any) => {
+    console.log('Survey completed:', surveyData);
+    setSurveyCompleted(true);
+    setShowOnboardingSurvey(false);
+    
+    // Here you would typically save the survey data to your backend
+    // For now, we'll just store it locally
+    localStorage.setItem('auroraflow_survey_data', JSON.stringify(surveyData));
+  };
+
+  const handleAccessibilityUpdate = (newSettings: Partial<typeof accessibilitySettings>) => {
+    setAccessibilitySettings(prev => ({ ...prev, ...newSettings }));
+    
+    // Apply settings immediately
+    if (newSettings.language) {
+      setLanguage(newSettings.language);
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('auroraflow_accessibility', JSON.stringify({ ...accessibilitySettings, ...newSettings }));
+  };
+
+  // Load accessibility settings on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('auroraflow_accessibility');
+    if (saved) {
+      try {
+        const settings = JSON.parse(saved);
+        setAccessibilitySettings(settings);
+        if (settings.language) {
+          setLanguage(settings.language);
+        }
+      } catch (error) {
+        console.error('Failed to load accessibility settings:', error);
+      }
+    }
+  }, []);
 
   const renderActiveTab = () => {
       return (
@@ -229,7 +294,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 dark:text-slate-100" data-theme="dark">
+    <div className={`min-h-screen bg-gray-50 dark:bg-slate-900 dark:text-slate-100 ${accessibilitySettings.fontSize === 'large' ? 'text-lg' : accessibilitySettings.fontSize === 'extra-large' ? 'text-xl' : ''} ${accessibilitySettings.reducedMotion ? 'motion-reduce' : ''}`} data-theme="dark">
       {/* Auth Modal */}
       <AuthModal
         isOpen={showAuthModal}
@@ -244,6 +309,21 @@ function App() {
         onClose={() => setShowSubscriptionModal(false)}
         onSubscriptionSuccess={handleSubscriptionSuccess}
         currentPlan={user?.isPremium ? 'premium' : 'free'}
+      />
+
+      {/* Onboarding Survey */}
+      <OnboardingSurvey
+        isOpen={showOnboardingSurvey}
+        onClose={() => setShowOnboardingSurvey(false)}
+        onComplete={handleSurveyComplete}
+      />
+
+      {/* Accessibility Settings */}
+      <AccessibilitySettingsModal
+        isOpen={showAccessibilitySettings}
+        onClose={() => setShowAccessibilitySettings(false)}
+        settings={accessibilitySettings}
+        onUpdateSettings={handleAccessibilityUpdate}
       />
 
       {/* Guest Access Prompt */}
@@ -282,6 +362,16 @@ function App() {
                   onClick={handleGuestAccess}
                 >
                   Continue as Guest
+                </button>
+              </div>
+              
+              {/* Accessibility Settings Access */}
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => setShowAccessibilitySettings(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  Accessibility Settings
                 </button>
               </div>
             </div>
@@ -339,6 +429,17 @@ function App() {
               </label>
             </div>
           )}
+
+          {/* Floating Accessibility Button */}
+          <button
+            onClick={() => setShowAccessibilitySettings(true)}
+            className="fixed bottom-4 left-4 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-colors z-40"
+            title="Accessibility Settings"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+            </svg>
+          </button>
         </>
       )}
     </div>
