@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gift, Star, Heart, Zap, Crown, Bone, ChevronDown, Sparkles, Trophy } from 'lucide-react';
+import { Gift, Star, Heart, Zap, Crown, Bone, ChevronDown, Sparkles, Trophy, Info } from 'lucide-react';
 
 const PetTab = () => {
   const [petStats, setPetStats] = useState({
@@ -133,6 +133,34 @@ const PetTab = () => {
 
   return (
     <div className="space-y-6 pb-20">
+      {/* Explanation Section */}
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+        <div className="flex items-start space-x-4">
+          <div className="bg-purple-500 p-3 rounded-xl">
+            <Info className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Your Virtual Health Companion</h2>
+            <p className="text-gray-700 leading-relaxed">
+              Meet your personal health companion! This virtual pet grows and thrives based on your diabetes management habits. 
+              The better you take care of yourself by logging meals, checking glucose levels, and staying active, the happier 
+              and healthier your companion becomes. It's a fun, motivating way to stay consistent with your health routine.
+            </p>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="bg-white p-3 rounded-lg border border-purple-200">
+                <strong className="text-purple-700">Earn Coins:</strong> Log meals, glucose readings, and exercise to earn coins for pet care.
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-purple-200">
+                <strong className="text-purple-700">Pet Growth:</strong> Your companion's health reflects your diabetes management consistency.
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-purple-200">
+                <strong className="text-purple-700">Motivation:</strong> A happy pet means you're doing great with your health goals!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Feedback Messages */}
       {feedbacks.length > 0 && (
         <div className="fixed top-20 right-4 z-50 space-y-2">
