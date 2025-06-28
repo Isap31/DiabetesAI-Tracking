@@ -31,57 +31,57 @@ function App() {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [allLogs, setAllLogs] = useState([
+  const [allLogs, setAllLogs] = useState<any[]>([
     { 
-      id: 1, 
+      id: '1', 
       type: 'meal', 
       data: { 
-        mealName: 'Grilled Chicken Salad', 
-        carbs: '15', 
-        calories: '350',
-        time: '12:30 PM'
-      }, 
-      time: '12:30 PM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 2, 
-      type: 'exercise', 
-      data: { 
-        exerciseType: 'Walking', 
-        duration: '30', 
-        intensity: 'moderate',
-        time: '11:00 AM'
-      }, 
-      time: '11:00 AM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 3, 
-      type: 'glucose', 
-      data: { 
-        glucose: '94', 
-        context: 'before-meal', 
-        notes: 'Feeling good',
-        time: '10:30 AM'
-      }, 
-      time: '10:30 AM', 
-      date: '2024-01-15' 
-    },
-    { 
-      id: 4, 
-      type: 'meal', 
-      data: { 
-        mealName: 'Oatmeal with Berries', 
-        carbs: '25', 
-        calories: '280',
+        mealName: 'Breakfast', 
+        carbs: '45', 
+        calories: '320',
         time: '8:00 AM'
       }, 
       time: '8:00 AM', 
       date: '2024-01-15' 
     },
     { 
-      id: 5, 
+      id: '2', 
+      type: 'exercise', 
+      data: { 
+        exerciseType: 'walking', 
+        duration: '30', 
+        intensity: 'moderate',
+        time: '6:00 PM'
+      }, 
+      time: '6:00 PM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: '3', 
+      type: 'glucose', 
+      data: { 
+        glucose: '120', 
+        context: 'post-meal', 
+        notes: 'After breakfast',
+        time: '9:30 AM'
+      }, 
+      time: '9:30 AM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: '4', 
+      type: 'meal', 
+      data: { 
+        mealName: 'Lunch', 
+        carbs: '60', 
+        calories: '450',
+        time: '12:30 PM'
+      }, 
+      time: '12:30 PM', 
+      date: '2024-01-15' 
+    },
+    { 
+      id: '5', 
       type: 'glucose', 
       data: { 
         glucose: '89', 
@@ -98,7 +98,7 @@ function App() {
   const [logsError, setLogsError] = useState<string | null>(null);
   const [surveyCompleted, setSurveyCompleted] = useState(false);
   const [accessibilitySettings, setAccessibilitySettings] = useState({
-    fontSize: 'medium' as const,
+    fontSize: 'medium' as 'small' | 'medium' | 'large' | 'extra-large',
     contrast: 'normal' as const,
     theme: 'light' as const,
     colorBlindFriendly: false,
