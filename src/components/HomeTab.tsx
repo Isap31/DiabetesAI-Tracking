@@ -127,7 +127,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-radial from-blue-500/30 to-transparent rounded-full blur-2xl animate-pulse-slow" />
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-radial from-purple-500/30 to-transparent rounded-full blur-2xl animate-pulse-slow" />
-        </div>
+              </div>
         <div className="relative z-10 flex flex-col items-center gap-4">
           <div className="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
             <div className="bg-white/10 p-4 md:p-5 rounded-2xl shadow-glow flex items-center justify-center">
@@ -234,7 +234,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
                   {log.type === 'exercise' && <Activity className="h-4 w-4 md:h-5 md:w-5 text-white" />}
                   {log.type === 'glucose' && <Droplets className="h-4 w-4 md:h-5 md:w-5 text-white" />}
                   {log.type === 'profile' && <Heart className="h-4 w-4 md:h-5 md:w-5 text-white" />}
-                </div>
+      </div>
                 {idx < allLogs.slice(0, 6).length - 1 && (
                   <div className="w-1 h-6 md:h-8 bg-gradient-to-b from-blue-400 to-purple-400 mx-auto" />
                 )}

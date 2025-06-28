@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { TrendingUp, Target, Clock, Activity, Calendar, ChevronDown, Moon, Baby, Brain, Scale, User, Utensils, Bed } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
 import { predictGlucose } from '../services/predictiveModelService';
@@ -26,10 +26,6 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
   const [realPrediction, setRealPrediction] = useState<number | null>(null);
   const [predictionLoading, setPredictionLoading] = useState(false);
   const [predictionError, setPredictionError] = useState<string | null>(null);
-  const [hrMean, setHrMean] = useState<string>('');
-  const [protein, setProtein] = useState<string>('');
-  const [fat, setFat] = useState<string>('');
-  const [showParamPrompt, setShowParamPrompt] = useState(false);
   const [predictionParams, setPredictionParams] = useState({
     glucose: '',
     hr_mean_30min: '',
@@ -38,7 +34,12 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
     protein_30min: '',
     fat_30min: '',
   });
-  const allParamsFilled = Object.values(predictionParams).every(v => v !== '');
+
+  // Memoize the allParamsFilled check to prevent unnecessary re-renders
+  const allParamsFilled = useMemo(() => 
+    Object.values(predictionParams).every(v => v !== ''), 
+    [predictionParams]
+  );
 
   // Use custom hook for calculations
   const {
@@ -67,39 +68,17 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
   const stats = useMemo(() => getParameterInfluencedStats(), [getParameterInfluencedStats]);
   const xAxisLabels = useMemo(() => getXAxisLabels(), [getXAxisLabels]);
 
-  // Recent logged data affecting predictions
-  const recentLogs = {
-    lastMeal: { carbs: 25, time: '8:00 AM', type: 'Oatmeal with Berries' },
-    lastExercise: { type: 'Walking', duration: 30, intensity: 'moderate', time: '11:00 AM' },
-    currentGlucose: 94,
-    timeOfDay: new Date().getHours(),
-    lastSleep: { quality: 7, duration: 7.5, bedtime: '22:30', wakeTime: '06:00' }
-  };
-
-  const periods = [
-    { id: 'days', label: 'Days', range: '7 days' },
-    { id: 'weeks', label: 'Weeks', range: '4 weeks' },
-    { id: 'months', label: 'Months', range: '6 months' }
-  ];
-
-  // Helper for sleep quality description
-  const getSleepQualityDescription = (quality: number) => {
-    if (quality >= 8) return t.excellent;
-    if (quality >= 6) return t.good;
-    if (quality >= 4) return t.fair;
-    return t.poor;
-  };
-
+  // Optimized useEffect with proper error handling
   useEffect(() => {
     if (!useDemoData && !allParamsFilled) {
-      setShowParamPrompt(true);
       setRealPrediction(null);
       return;
     }
-    setShowParamPrompt(false);
+
     const fetchPrediction = async () => {
       setPredictionLoading(true);
       setPredictionError(null);
+      
       try {
         let input;
         if (useDemoData) {
@@ -129,20 +108,44 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
             time_cos: Math.cos((2 * Math.PI * hours) / 24),
           };
         }
+        
         const res = await predictGlucose(input);
         setRealPrediction(res.predicted_glucose_30min);
-        setPredictionLoading(false);
       } catch (err) {
-        setPredictionError('Prediction unavailable');
+        console.error('Prediction error:', err);
+        setPredictionError('Prediction unavailable. Please try again later.');
+        setRealPrediction(null);
+      } finally {
         setPredictionLoading(false);
       }
     };
+
     fetchPrediction();
-  }, [recentLogs.currentGlucose, recentLogs.lastExercise.duration, recentLogs.lastMeal.carbs, hrMean, protein, fat, useDemoData, ...Object.values(predictionParams)]);
+  }, [useDemoData, allParamsFilled, predictionParams]);
+
+  // Memoized callback for parameter updates
+  const handleParamChange = useCallback((key: string, value: string) => {
+    setPredictionParams(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const periods = [
+    { id: 'days', label: 'Days', range: '7 days' },
+    { id: 'weeks', label: 'Weeks', range: '4 weeks' },
+    { id: 'months', label: 'Months', range: '6 months' }
+  ];
+
+  // Helper for sleep quality description
+  const getSleepQualityDescription = useCallback((quality: number) => {
+    if (quality >= 8) return t.excellent;
+    if (quality >= 6) return t.good;
+    if (quality >= 4) return t.fair;
+    return t.poor;
+  }, [t]);
 
   const targetRange = { min: 70, max: 140 };
   const optimalRange = { min: 80, max: 120 };
 
+  // Early return for missing data
   if (!useDemoData && !allParamsFilled) {
     return (
       <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-4 md:p-6">
@@ -156,7 +159,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
                 <input
                   type="number"
                   value={value}
-                  onChange={e => setPredictionParams(p => ({ ...p, [key]: e.target.value }))}
+                  onChange={e => handleParamChange(key, e.target.value)}
                   placeholder="0"
                   className="w-full px-2 py-2 md:py-1 border border-yellow-200 dark:border-yellow-700 rounded text-xs bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                   min="0"
@@ -194,7 +197,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
                 <input
                   type="number"
                   value={value}
-                  onChange={e => setPredictionParams(p => ({ ...p, [key]: e.target.value }))}
+                  onChange={e => handleParamChange(key, e.target.value)}
                   placeholder="0"
                   className="w-full px-2 py-2 md:py-1 border border-yellow-200 dark:border-yellow-700 rounded text-xs bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                   min="0"
