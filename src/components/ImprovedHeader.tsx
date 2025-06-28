@@ -212,23 +212,23 @@ const ImprovedHeader: React.FC<ImprovedHeaderProps> = ({
 
   return (
     <header className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
-      <div className="px-4 md:px-8 py-4">
+      <div className="px-4 md:px-8 py-3 md:py-4">
         <div className="flex justify-between items-center">
           {/* Enhanced Logo and Title */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             {/* Black Circle Image for Branding */}
-            <img src={blackCircle} alt="Brand Logo" className="h-12 w-12 rounded-full shadow-lg border-2 border-gray-200 object-cover" style={{background: 'white'}} />
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-2xl shadow-lg">
-              <Activity className="h-7 w-7 text-white" />
+            <img src={blackCircle} alt="Brand Logo" className="h-8 w-8 md:h-12 md:w-12 rounded-full shadow-lg border-2 border-gray-200 object-cover" style={{background: 'white'}} />
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg">
+              <Activity className="h-5 w-5 md:h-7 md:w-7 text-white" />
             </div>
-            <div className="hidden md:block">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{t.appName}</h1>
-              <p className="text-sm text-gray-500 font-medium">{t.appSubtitle}</p>
+            <div className="hidden sm:block">
+              <h1 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{t.appName}</h1>
+              <p className="text-xs md:text-sm text-gray-500 font-medium">{t.appSubtitle}</p>
             </div>
           </div>
 
           {/* Enhanced Center - Glucose Status */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
             <div className={`${glucoseStatus.bg} ${glucoseStatus.color} px-6 py-3 rounded-2xl flex items-center space-x-3 shadow-lg border-2 ${glucoseStatus.border}`}>
               <Activity className="h-5 w-5" />
               <div className="text-center">
@@ -241,27 +241,27 @@ const ImprovedHeader: React.FC<ImprovedHeaderProps> = ({
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 md:space-x-6">
+          <div className="flex items-center space-x-2 md:space-x-6">
             {/* Enhanced Premium Status */}
             {user?.isPremium ? (
-              <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-2xl shadow-lg">
+              <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 md:px-4 py-2 rounded-xl md:rounded-2xl shadow-lg">
                 <Crown className="h-4 w-4" />
                 <Sparkles className="h-3 w-3 animate-pulse" />
-                <span className="text-sm font-medium hidden md:inline">Premium</span>
+                <span className="text-xs md:text-sm font-medium hidden lg:inline">Premium</span>
               </div>
             ) : (
               <button 
                 onClick={onUpgradeClick}
-                className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-2xl hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 md:px-4 py-2 rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 <Crown className="h-4 w-4" />
                 <Zap className="h-3 w-3" />
-                <span className="text-sm font-medium hidden md:inline">Upgrade</span>
+                <span className="text-xs md:text-sm font-medium hidden lg:inline">Upgrade</span>
               </button>
             )}
             
             {/* Enhanced Language Selector */}
-            <div className="relative hidden md:block" ref={languageMenuRef}>
+            <div className="relative hidden lg:block" ref={languageMenuRef}>
               <button
                 onClick={() => setShowLanguageMenu(!showLanguageMenu)}
                 className="flex items-center space-x-2 px-4 py-2 rounded-2xl hover:bg-gray-100 transition-all duration-200 border border-gray-200 hover:border-gray-300 shadow-sm"
@@ -299,13 +299,13 @@ const ImprovedHeader: React.FC<ImprovedHeaderProps> = ({
             </div>
             
             {/* Enhanced Connection Status */}
-            <div className="relative hidden md:block" ref={connectionMenuRef}>
+            <div className="relative hidden lg:block" ref={connectionMenuRef}>
               <button
                 onClick={() => setShowConnectionMenu(!showConnectionMenu)}
                 className="flex items-center space-x-2 px-4 py-2 rounded-2xl hover:bg-gray-100 transition-all duration-200 border border-gray-200 hover:border-gray-300 shadow-sm"
               >
                 <Wifi className={`h-4 w-4 ${isConnected ? 'text-emerald-600' : 'text-gray-400'}`} />
-                <span className="text-sm text-gray-600 hidden lg:inline font-medium">
+                <span className="text-sm text-gray-600 hidden xl:inline font-medium">
                   {isConnected ? t.connected : t.disconnected}
                 </span>
                 <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -340,11 +340,11 @@ const ImprovedHeader: React.FC<ImprovedHeaderProps> = ({
             <div className="relative" ref={notificationsRef}>
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-3 text-gray-600 hover:text-gray-900 transition-all duration-200 rounded-2xl hover:bg-gray-100 border border-gray-200 hover:border-gray-300 shadow-sm"
+                className="relative p-2 md:p-3 text-gray-600 hover:text-gray-900 transition-all duration-200 rounded-xl md:rounded-2xl hover:bg-gray-100 border border-gray-200 hover:border-gray-300 shadow-sm"
               >
-                <Bell className="h-5 w-5" />
+                <Bell className="h-4 w-4 md:h-5 md:w-5" />
                 {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 h-6 w-6 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-lg animate-pulse">
+                  <span className="absolute -top-1 -right-1 h-5 w-5 md:h-6 md:w-6 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-lg animate-pulse">
                     {unreadNotifications}
                   </span>
                 )}
@@ -387,8 +387,8 @@ const ImprovedHeader: React.FC<ImprovedHeaderProps> = ({
             </div>
 
             {/* Enhanced Settings */}
-            <button className="p-3 text-gray-600 hover:text-gray-900 transition-all duration-200 rounded-2xl hover:bg-gray-100 border border-gray-200 hover:border-gray-300 shadow-sm">
-              <Settings className="h-5 w-5" />
+            <button className="p-2 md:p-3 text-gray-600 hover:text-gray-900 transition-all duration-200 rounded-xl md:rounded-2xl hover:bg-gray-100 border border-gray-200 hover:border-gray-300 shadow-sm">
+              <Settings className="h-4 w-4 md:h-5 md:w-5" />
             </button>
             
             {/* Enhanced User Menu */}
@@ -396,7 +396,7 @@ const ImprovedHeader: React.FC<ImprovedHeaderProps> = ({
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-3 bg-gradient-to-r from-gray-100 to-gray-200 px-4 py-2 rounded-2xl hover:from-gray-200 hover:to-gray-300 transition-all duration-200 shadow-sm border border-gray-300"
+                  className="flex items-center space-x-2 md:space-x-3 bg-gradient-to-r from-gray-100 to-gray-200 px-3 md:px-4 py-2 rounded-xl md:rounded-2xl hover:from-gray-200 hover:to-gray-300 transition-all duration-200 shadow-sm border border-gray-300"
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-white text-sm font-bold">

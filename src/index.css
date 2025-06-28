@@ -1,3 +1,186 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom mobile-responsive utilities */
+@layer utilities {
+  /* Safe area padding for mobile devices */
+  .safe-area-padding {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Mobile-first responsive text sizes */
+  .text-responsive-xs {
+    font-size: 0.75rem; /* 12px */
+  }
+  
+  .text-responsive-sm {
+    font-size: 0.875rem; /* 14px */
+  }
+  
+  .text-responsive-base {
+    font-size: 1rem; /* 16px */
+  }
+  
+  .text-responsive-lg {
+    font-size: 1.125rem; /* 18px */
+  }
+  
+  .text-responsive-xl {
+    font-size: 1.25rem; /* 20px */
+  }
+  
+  .text-responsive-2xl {
+    font-size: 1.5rem; /* 24px */
+  }
+  
+  .text-responsive-3xl {
+    font-size: 1.875rem; /* 30px */
+  }
+  
+  .text-responsive-4xl {
+    font-size: 2.25rem; /* 36px */
+  }
+  
+  .text-responsive-5xl {
+    font-size: 3rem; /* 48px */
+  }
+  
+  /* Mobile touch-friendly button sizes */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile-optimized spacing */
+  .mobile-spacing-xs {
+    margin: 0.25rem;
+    padding: 0.25rem;
+  }
+  
+  .mobile-spacing-sm {
+    margin: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .mobile-spacing-md {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .mobile-spacing-lg {
+    margin: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .mobile-spacing-xl {
+    margin: 2rem;
+    padding: 2rem;
+  }
+}
+
+/* Mobile-specific styles */
+@layer components {
+  /* Mobile-optimized cards */
+  .mobile-card {
+    @apply rounded-xl p-4 md:p-6 shadow-lg border border-gray-200 dark:border-gray-700;
+  }
+  
+  /* Mobile-optimized buttons */
+  .mobile-button {
+    @apply touch-target px-4 py-3 rounded-lg font-medium transition-all duration-200;
+  }
+  
+  /* Mobile-optimized inputs */
+  .mobile-input {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base;
+  }
+  
+  /* Mobile-optimized modals */
+  .mobile-modal {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4;
+  }
+  
+  .mobile-modal-content {
+    @apply bg-white rounded-xl p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto;
+  }
+}
+
+/* Responsive breakpoint utilities */
+@layer utilities {
+  .container-mobile {
+    @apply max-w-full mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .grid-mobile {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6;
+  }
+  
+  .flex-mobile {
+    @apply flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6;
+  }
+}
+
+/* Dark mode mobile optimizations */
+@media (prefers-color-scheme: dark) {
+  .mobile-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .mobile-input {
+    @apply bg-gray-800 border-gray-600 text-white;
+  }
+}
+
+/* Mobile-specific animations */
+@keyframes mobile-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-mobile-pulse {
+  animation: mobile-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Mobile scrollbar styling */
+.mobile-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.mobile-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mobile-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mobile-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 2px;
+}
+
+.mobile-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
+
+/* Mobile touch feedback */
+.touch-feedback {
+  @apply active:scale-95 transition-transform duration-150;
+}
+
+/* Mobile-safe viewport */
+@supports (padding: max(0px)) {
+  .mobile-safe {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}

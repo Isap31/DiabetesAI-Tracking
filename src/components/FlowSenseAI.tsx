@@ -93,31 +93,31 @@ const FlowSenseAI: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 rounded-3xl shadow-2xl p-8 text-white">
-      <h2 className="text-3xl font-extrabold mb-6 flex items-center space-x-3">
-        <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-blue-600 shadow-glow">
-          <Mic className="h-7 w-7 text-white" />
+    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 text-white">
+      <h2 className="text-2xl md:text-3xl font-extrabold mb-4 md:mb-6 flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-3">
+        <span className="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-emerald-500 to-blue-600 shadow-glow">
+          <Mic className="h-6 w-6 md:h-7 md:w-7 text-white" />
         </span>
         <span className="text-white">FlowSense AI</span>
       </h2>
-      <div className="mb-8 text-lg">
+      <div className="mb-6 md:mb-8 text-base md:text-lg text-center">
         <p>Status: <span className={connectionStatus === 'Connected' ? 'text-emerald-400' : 'text-rose-400'}>{connectionStatus}</span></p>
         <p>Agent is <span className="text-blue-400">{agentStatus}</span></p>
       </div>
       {/* Chat History */}
       <div
         ref={chatHistoryRef}
-        className="w-full max-w-xl flex-1 overflow-y-auto mb-6 bg-slate-800 rounded-xl p-4 space-y-3 shadow-inner min-h-[200px] max-h-72"
+        className="w-full max-w-xl flex-1 overflow-y-auto mb-4 md:mb-6 bg-slate-800 rounded-xl p-3 md:p-4 space-y-3 shadow-inner min-h-[150px] md:min-h-[200px] max-h-60 md:max-h-72"
         aria-label="Chat history"
         tabIndex={0}
       >
         {chatHistory.length === 0 && (
-          <div className="text-center text-gray-400 italic py-8">Start a conversation with FlowSense AI...</div>
+          <div className="text-center text-gray-400 italic py-6 md:py-8">Start a conversation with FlowSense AI...</div>
         )}
         {chatHistory.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-[80%] p-3 rounded-2xl text-base shadow-lg break-words ${msg.type === 'user' ? 'bg-gradient-to-r from-blue-600 to-emerald-500 text-white' : 'bg-gray-100 text-gray-900'}`}
+              className={`max-w-[85%] p-2 md:p-3 rounded-2xl text-sm md:text-base shadow-lg break-words ${msg.type === 'user' ? 'bg-gradient-to-r from-blue-600 to-emerald-500 text-white' : 'bg-gray-100 text-gray-900'}`}
               aria-label={msg.type === 'user' ? 'You' : 'AI'}
             >
               {msg.message}
@@ -132,25 +132,25 @@ const FlowSenseAI: React.FC = () => {
           value={chatInput}
           onChange={e => setChatInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
-          className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg shadow text-gray-900"
+          className="flex-1 px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-base md:text-lg shadow text-gray-900"
           placeholder="Type your message..."
           disabled={connectionStatus !== 'Connected'}
           aria-label="Type your message"
         />
         <button
-          className="p-3 bg-gradient-to-r from-blue-600 to-emerald-500 text-white rounded-xl hover:from-blue-700 hover:to-emerald-600 transition-colors shadow-glow disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 md:p-3 bg-gradient-to-r from-blue-600 to-emerald-500 text-white rounded-xl hover:from-blue-700 hover:to-emerald-600 transition-colors shadow-glow disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleSend}
           disabled={!chatInput.trim() || connectionStatus !== 'Connected'}
           aria-label="Send message"
         >
-          <Send className="h-6 w-6" />
+          <Send className="h-5 w-5 md:h-6 md:w-6" />
         </button>
       </div>
       {/* Start/Stop Buttons */}
-      <div className="flex space-x-4 mt-8">
+      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mt-6 md:mt-8 w-full max-w-xl">
         <button
           id="startButton"
-          className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-bold text-lg shadow-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-bold text-base md:text-lg shadow-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleStartConversation}
           disabled={isLoading || connectionStatus === 'Connected'}
         >
@@ -158,14 +158,14 @@ const FlowSenseAI: React.FC = () => {
         </button>
         <button
           id="stopButton"
-          className="px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-full font-bold text-lg shadow-lg hover:from-slate-800 hover:to-slate-900 transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-full font-bold text-base md:text-lg shadow-lg hover:from-slate-800 hover:to-slate-900 transition-all duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleStopConversation}
           disabled={connectionStatus !== 'Connected'}
         >
           Stop Conversation
         </button>
       </div>
-      {micError && <p className="mt-6 text-rose-400 font-bold animate-pulse" role="alert">{micError}</p>}
+      {micError && <p className="mt-4 md:mt-6 text-rose-400 font-bold animate-pulse text-center px-4" role="alert">{micError}</p>}
     </div>
   );
 };

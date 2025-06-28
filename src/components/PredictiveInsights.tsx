@@ -211,44 +211,44 @@ const PredictiveInsights: React.FC<PredictiveInsightsProps> = ({ language, useDe
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Predictions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {predictions.map((prediction, index) => (
           <div
             key={index}
-            className={`${prediction.bgColor} ${prediction.borderColor} border rounded-xl p-6 transition-transform duration-300 hover:scale-105`}
+            className={`${prediction.bgColor} ${prediction.borderColor} border rounded-xl p-4 md:p-6 transition-transform duration-300 hover:scale-105`}
           >
-            <div className="flex items-start space-x-4">
-              <div className={`${prediction.textColor} p-2 rounded-lg bg-white bg-opacity-50`}>
-                <prediction.icon className="h-6 w-6" />
+            <div className="flex items-start space-x-3 md:space-x-4">
+              <div className={`${prediction.textColor} p-2 rounded-lg bg-white bg-opacity-50 flex-shrink-0`}>
+                <prediction.icon className="h-5 w-5 md:h-6 md:w-6" />
               </div>
-              <div className="flex-1">
-                <h3 className={`font-semibold ${prediction.textColor} mb-2`}>{prediction.title}</h3>
-                <p className="text-gray-700 text-sm mb-4">{prediction.message}</p>
+              <div className="flex-1 min-w-0">
+                <h3 className={`font-semibold ${prediction.textColor} mb-2 text-sm md:text-base`}>{prediction.title}</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-xs md:text-sm mb-3 md:mb-4">{prediction.message}</p>
                 
                 {/* Confidence and Timeframe */}
-                <div className="flex items-center space-x-4 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4 mb-3 md:mb-4">
                   <div className="flex items-center space-x-2">
-                    <Target className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">
+                    <Target className="h-3 w-3 md:h-4 md:w-4 text-gray-500" />
+                    <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                       {prediction.confidence}% {t.modelConfidence}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">{prediction.timeframe}</span>
+                    <Clock className="h-3 w-3 md:h-4 md:w-4 text-gray-500" />
+                    <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400">{prediction.timeframe}</span>
                   </div>
                 </div>
 
                 {/* Factors */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Contributing Factors:</h4>
-                  <div className="flex flex-wrap gap-2">
+                <div className="mb-3 md:mb-4">
+                  <h4 className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contributing Factors:</h4>
+                  <div className="flex flex-wrap gap-1.5 md:gap-2">
                     {prediction.factors.map((factor, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white bg-opacity-50 text-gray-700"
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white bg-opacity-50 text-gray-700 dark:text-gray-300"
                       >
                         {factor}
                       </span>
@@ -257,9 +257,9 @@ const PredictiveInsights: React.FC<PredictiveInsightsProps> = ({ language, useDe
                 </div>
 
                 {/* Action */}
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Recommended Action:</h4>
-                  <p className="text-sm text-gray-600">{prediction.action}</p>
+                <div className="mt-3 md:mt-4">
+                  <h4 className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Recommended Action:</h4>
+                  <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">{prediction.action}</p>
                 </div>
               </div>
             </div>
@@ -268,30 +268,30 @@ const PredictiveInsights: React.FC<PredictiveInsightsProps> = ({ language, useDe
       </div>
 
       {/* Parameter Influence */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Parameter Influences</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 md:p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Parameter Influences</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {/* Sleep Quality */}
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <Bed className="h-5 w-5 text-purple-500" />
-              <span className="text-sm font-medium text-gray-700">Sleep Quality</span>
+              <Bed className="h-4 w-4 md:h-5 md:w-5 text-purple-500" />
+              <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">Sleep Quality</span>
             </div>
             <div className="flex items-end space-x-2">
-              <span className="text-2xl font-bold text-gray-900">{userProfile.sleepQuality}/10</span>
-              <span className="text-sm text-gray-500 mb-1">({userProfile.sleepDuration}h)</span>
+              <span className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{userProfile.sleepQuality}/10</span>
+              <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">({userProfile.sleepDuration}h)</span>
             </div>
           </div>
 
           {/* Stress Level */}
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <Brain className="h-5 w-5 text-blue-500" />
-              <span className="text-sm font-medium text-gray-700">Stress Level</span>
+              <Brain className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
+              <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">Stress Level</span>
             </div>
             <div className="flex items-end space-x-2">
-              <span className="text-2xl font-bold text-gray-900">{userProfile.currentStress}/10</span>
-              <span className="text-sm text-gray-500 mb-1">
+              <span className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{userProfile.currentStress}/10</span>
+              <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">
                 {userProfile.currentStress <= 3 ? t.good : userProfile.currentStress <= 7 ? t.fair : t.poor}
               </span>
             </div>
@@ -301,16 +301,16 @@ const PredictiveInsights: React.FC<PredictiveInsightsProps> = ({ language, useDe
           {userProfile.gender === 'female' && (
             <div>
               <div className="flex items-center space-x-2 mb-2">
-                <Moon className="h-5 w-5 text-pink-500" />
-                <span className="text-sm font-medium text-gray-700">Hormonal Status</span>
+                <Moon className="h-4 w-4 md:h-5 md:w-5 text-pink-500" />
+                <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">Hormonal Status</span>
               </div>
               <div className="flex items-end space-x-2">
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                   {menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause'
                     ? 'Post-M'
                     : getMenstrualPhase() || 'N/A'}
                 </span>
-                <span className="text-sm text-gray-500 mb-1">
+                <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">
                   {menopauseStatus === 'menopause' || menopauseStatus === 'postmenopause'
                     ? t.good
                     : `${t.days} ${userProfile.menstrualCycleDay}`}
@@ -322,51 +322,51 @@ const PredictiveInsights: React.FC<PredictiveInsightsProps> = ({ language, useDe
           {/* Experience Level */}
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <User className="h-5 w-5 text-green-500" />
-              <span className="text-sm font-medium text-gray-700">Experience</span>
+              <User className="h-4 w-4 md:h-5 md:w-5 text-green-500" />
+              <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">Experience</span>
             </div>
             <div className="flex items-end space-x-2">
-              <span className="text-2xl font-bold text-gray-900">{userProfile.yearsSinceDiagnosis}y</span>
-              <span className="text-sm text-gray-500 mb-1">{t.type1}</span>
+              <span className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{userProfile.yearsSinceDiagnosis}y</span>
+              <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">{t.type1}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Model Performance */}
-      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-6 text-white">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl p-4 md:p-6 text-white">
         <h3 className="text-lg font-semibold mb-4">{t.flowSenseAI}</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <Target className="h-5 w-5 text-blue-400" />
-              <span className="text-sm font-medium">{t.predictionAccuracy}</span>
+              <Target className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
+              <span className="text-xs md:text-sm font-medium">{t.predictionAccuracy}</span>
             </div>
-            <p className="text-2xl font-bold text-blue-400">93.1%</p>
+            <p className="text-xl md:text-2xl font-bold text-blue-400">93.1%</p>
             <p className="text-xs text-gray-400">Last 7 {t.days}</p>
           </div>
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <Activity className="h-5 w-5 text-green-400" />
-              <span className="text-sm font-medium">{t.dataPoints}</span>
+              <Activity className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
+              <span className="text-xs md:text-sm font-medium">{t.dataPoints}</span>
             </div>
-            <p className="text-2xl font-bold text-green-400">3,247</p>
+            <p className="text-xl md:text-2xl font-bold text-green-400">3,247</p>
             <p className="text-xs text-gray-400">Total analyzed</p>
           </div>
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <Brain className="h-5 w-5 text-purple-400" />
-              <span className="text-sm font-medium">Parameters</span>
+              <Brain className="h-4 w-4 md:h-5 md:w-5 text-purple-400" />
+              <span className="text-xs md:text-sm font-medium">Parameters</span>
             </div>
-            <p className="text-2xl font-bold text-purple-400">15+</p>
+            <p className="text-xl md:text-2xl font-bold text-purple-400">15+</p>
             <p className="text-xs text-gray-400">Tracked factors</p>
           </div>
           <div>
             <div className="flex items-center space-x-2 mb-2">
-              <TrendingUp className="h-5 w-5 text-pink-400" />
-              <span className="text-sm font-medium">Improvement</span>
+              <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-pink-400" />
+              <span className="text-xs md:text-sm font-medium">Improvement</span>
             </div>
-            <p className="text-2xl font-bold text-pink-400">+12.4%</p>
+            <p className="text-xl md:text-2xl font-bold text-pink-400">+12.4%</p>
             <p className="text-xs text-gray-400">vs. last month</p>
           </div>
         </div>
