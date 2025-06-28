@@ -1,5 +1,23 @@
 import '@testing-library/jest-dom';
 
+// Mock import.meta for Vite environment variables - must be before any other imports
+if (!('import' in global)) {
+  Object.defineProperty(global, 'import', {
+    value: {
+      meta: {
+        env: {
+          VITE_REVENUECAT_API_KEY: 'test-revenuecat-key',
+          VITE_ELEVENLABS_API_KEY: 'test-elevenlabs-key',
+          VITE_ELEVENLABS_VOICE_ID: 'test-voice-id',
+          VITE_SUPABASE_URL: 'http://localhost:54321',
+          VITE_SUPABASE_ANON_KEY: 'test-supabase-key'
+        }
+      }
+    },
+    writable: true
+  });
+}
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -70,18 +88,4 @@ global.console = {
   // info: jest.fn(),
   // warn: jest.fn(),
   // error: jest.fn(),
-};
-
-// Mock import.meta for Vite environment variables
-Object.defineProperty(global, 'import', {
-  value: {
-    meta: {
-      env: {
-        VITE_REVENUECAT_API_KEY: 'test-revenuecat-key',
-        VITE_ELEVENLABS_API_KEY: 'test-elevenlabs-key',
-        VITE_ELEVENLABS_VOICE_ID: 'test-voice-id'
-      }
-    }
-  },
-  writable: true
-}); 
+}; 

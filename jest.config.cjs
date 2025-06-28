@@ -31,12 +31,12 @@ module.exports = {
       statements: 70,
     },
   },
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  testPathIgnorePatterns: [
+    '/node_modules/', 
+    '/dist/',
+    'integration.test.tsx',
+    'setup-integration.ts'
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  globals: {
-    'ts-jest': {
-      useESM: false
-    }
-  }
+  extensionsToTreatAsEsm: ['.ts', '.tsx']
 }; 

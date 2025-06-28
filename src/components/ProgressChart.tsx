@@ -110,7 +110,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
         }
         
         const res = await predictGlucose(input);
-        setRealPrediction(res.predicted_glucose_30min);
+        if (res && typeof res.predicted_glucose_30min === 'number') {
+          setRealPrediction(res.predicted_glucose_30min);
+        } else {
+          throw new Error('Invalid prediction response format');
+        }
       } catch (err) {
         console.error('Prediction error:', err);
         setPredictionError('Prediction unavailable. Please try again later.');
