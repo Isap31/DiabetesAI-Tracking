@@ -328,14 +328,14 @@ function App() {
 
       {/* Guest Access Prompt */}
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40">
-          <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 p-4">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-auto">
             <div className="text-center">
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <span className="text-white text-2xl font-bold">A</span>
               </div>
-              <h2 className="text-2xl font-bold mb-4 text-center">Welcome to AuroraFlow</h2>
-              <p className="text-gray-600 mb-6 text-center">
+              <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">Welcome to AuroraFlow</h2>
+              <p className="text-gray-600 mb-6 text-center text-sm md:text-base">
                 Your AI-powered diabetes management companion. Sign up for the full experience or continue as a guest.
               </p>
               <div className="space-y-3">
@@ -402,8 +402,8 @@ function App() {
             />
             
             {/* Main Content */}
-            <main className="flex-1 lg:ml-64">
-              <div className="max-w-6xl mx-auto">
+            <main className="flex-1 lg:ml-64 pb-20 lg:pb-0">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {renderActiveTab()}
               </div>
             </main>
@@ -417,7 +417,7 @@ function App() {
 
           {/* Demo Data Toggle (for development) */}
           {user.id === 'guest' && (
-            <div className="fixed bottom-20 right-4 bg-white rounded-lg shadow-lg p-4 border border-gray-200 lg:bottom-4">
+            <div className="fixed bottom-20 right-4 bg-white rounded-lg shadow-lg p-4 border border-gray-200 lg:bottom-4 z-40">
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"

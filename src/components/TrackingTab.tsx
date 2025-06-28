@@ -352,12 +352,12 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
       </div>
 
       {/* Minimal & Modern Predictive Model Card */}
-      <div className="relative max-w-xl mx-auto bg-slate-900/80 rounded-2xl shadow-lg p-6 text-white flex flex-col items-center gap-4 mt-4">
+      <div className="relative max-w-xl mx-auto bg-slate-900/80 rounded-2xl shadow-lg p-4 md:p-6 text-white flex flex-col items-center gap-4 mt-4">
         <div className="flex items-center gap-3 mb-2">
-          <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-800">
-            <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity text-blue-400"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span className="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-800">
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity text-blue-400 md:w-6 md:h-6"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </span>
-          <span className="text-xl font-semibold tracking-tight">AI Glucose Prediction</span>
+          <span className="text-lg md:text-xl font-semibold tracking-tight">AI Glucose Prediction</span>
         </div>
         <div className="w-full flex flex-col md:flex-row gap-3 items-center justify-center">
           {/* Prediction Inputs */}
@@ -379,7 +379,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
           </div>
           {/* Predict Button */}
           <button
-            className="mt-2 md:mt-0 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow transition-colors"
+            className="mt-2 md:mt-0 px-4 md:px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow transition-colors w-full md:w-auto"
             onClick={fetchPrediction}
           >
             Predict
@@ -397,19 +397,19 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
         ) : predictedGlucose !== null ? (
           <div className="w-full mt-4 flex flex-col items-center">
             <span className="text-sm text-slate-400">Predicted Glucose (30min):</span>
-            <span className="text-3xl font-bold text-blue-400 mt-1">{predictedGlucose} mg/dL</span>
+            <span className="text-2xl md:text-3xl font-bold text-blue-400 mt-1">{predictedGlucose} mg/dL</span>
           </div>
         ) : (
           <div className="w-full mt-4 flex flex-col items-center">
-            <span className="text-sm text-slate-400">Enter all values and click Predict to see your result.</span>
+            <span className="text-sm text-slate-400 text-center">Enter all values and click Predict to see your result.</span>
           </div>
         )}
       </div>
 
       {/* Meal Logging Modal */}
       {showMealForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Log Meal</h3>
               <button 
@@ -431,7 +431,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     <span className="flex items-center space-x-1">
@@ -489,7 +489,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                   <strong>AI Integration:</strong> Carb content and meal timing are key factors for glucose predictions.
                 </p>
               </div>
-              <div className="flex space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowMealForm(false)}
@@ -512,8 +512,8 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
 
       {/* Exercise Logging Modal */}
       {showExerciseForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Log Exercise</h3>
               <button 
@@ -549,7 +549,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                   <option value="Other">Other</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     <span className="flex items-center space-x-1">
@@ -610,7 +610,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                   <strong>Exercise Impact:</strong> Type, duration, and intensity all affect glucose response patterns.
                 </p>
               </div>
-              <div className="flex space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowExerciseForm(false)}
@@ -633,8 +633,8 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
 
       {/* Glucose Logging Modal */}
       {showGlucoseForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Log Glucose Reading</h3>
               <button 
@@ -664,7 +664,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                 />
                 <p className="text-xs text-gray-500 mt-1">From CGM or manual testing</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Context</label>
                   <select
@@ -706,7 +706,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                   <strong>Glucose Tracking:</strong> Regular readings help AI learn your patterns and improve predictions.
                 </p>
               </div>
-              <div className="flex space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowGlucoseForm(false)}
@@ -729,8 +729,8 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
 
       {/* Profile Update Modal */}
       {showProfileForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Update Health Profile</h3>
               <button 
@@ -743,7 +743,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
             <form onSubmit={handleProfileSubmit} className="space-y-4">
               <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Basic Information</h4>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <span className="flex items-center space-x-1">
@@ -802,7 +802,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
 
               <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Physical Measurements</h4>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       <span className="flex items-center space-x-1">
@@ -852,7 +852,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
 
               <div className="bg-slate-50 p-4 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-3">Sleep & Stress</h4>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Sleep Quality (1-10)
@@ -910,7 +910,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
                 </p>
               </div>
 
-              <div className="flex space-x-3 pt-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowProfileForm(false)}
@@ -932,14 +932,14 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
       )}
 
       {/* Quick Log Actions */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
+      <div className="bg-white rounded-xl p-4 md:p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Data Logging</h3>
         <div className="bg-blue-50 p-3 rounded-lg mb-4">
           <p className="text-sm text-blue-800">
             <strong>AI-Powered Insights:</strong> Log all parameters for comprehensive glucose predictions and personalized recommendations.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {quickLog.map((action, index) => (
             <button
               key={index}
@@ -955,9 +955,9 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
       </div>
 
       {/* Today's Summary */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
+      <div className="bg-white rounded-xl p-4 md:p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Today's Summary</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <div className="text-center">
             <div className="bg-gray-100 p-3 rounded-lg mb-2">
               <Utensils className="h-5 w-5 text-gray-600 mx-auto" />
@@ -990,7 +990,7 @@ const TrackingTab: React.FC<TrackingTabProps> = ({ onDataLogged, useDemoData }) 
       </div>
 
       {/* Recent Logs with AI Insights */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
+      <div className="bg-white rounded-xl p-4 md:p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Logs & AI Insights</h3>
         <div className="space-y-3">
           {recentLogs.map((log, index) => (
