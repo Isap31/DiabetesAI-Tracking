@@ -32,6 +32,18 @@ export function useGoals(initialGoals: Goal[] = []) {
     setGoals(prev => prev.map(goal => goal.id === goalId ? { ...goal, ...updates } : goal));
   }, []);
 
+  const updateProgress = useCallback((goalId: number, newProgress: number) => {
+    setGoals(prev => prev.map(goal => 
+      goal.id === goalId 
+        ? { 
+            ...goal, 
+            current: Math.min(newProgress, goal.target),
+            completed: newProgress >= goal.target 
+          } 
+        : goal
+    ));
+  }, []);
+
   const deleteGoal = useCallback((goalId: number) => {
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
   }, []);
@@ -60,6 +72,7 @@ export function useGoals(initialGoals: Goal[] = []) {
     setGoals,
     addGoal,
     updateGoal,
+    updateProgress,
     deleteGoal,
     completeGoal,
     getProgressPercentage,

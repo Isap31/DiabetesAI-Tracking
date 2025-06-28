@@ -17,16 +17,23 @@ export function useGroceryList(initialList: GroceryItem[] = []) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const addItem = useCallback((item: Omit<GroceryItem, 'id' | 'purchased' | 'budgetFriendly'>) => {
+  const addItem = useCallback((item: Omit<GroceryItem, 'id' | 'purchased'>) => {
     setGroceryList(prev => [
       ...prev,
       {
         ...item,
         id: Date.now(),
-        purchased: false,
-        budgetFriendly: true
+        purchased: false
       }
     ]);
+  }, []);
+
+  const removeItem = useCallback((id: number) => {
+    setGroceryList(prev => prev.filter(item => item.id !== id));
+  }, []);
+
+  const updateItem = useCallback((id: number, updates: Partial<Omit<GroceryItem, 'id'>>) => {
+    setGroceryList(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item));
   }, []);
 
   const deleteItem = useCallback((id: number) => {
@@ -57,6 +64,8 @@ export function useGroceryList(initialList: GroceryItem[] = []) {
     groceryList,
     setGroceryList,
     addItem,
+    removeItem,
+    updateItem,
     deleteItem,
     togglePurchased,
     filteredItems,

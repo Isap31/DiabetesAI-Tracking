@@ -110,7 +110,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
         }
         
         const res = await predictGlucose(input);
-        setRealPrediction(res.predicted_glucose_30min);
+        if (res && typeof res.predicted_glucose_30min === 'number') {
+          setRealPrediction(res.predicted_glucose_30min);
+        } else {
+          throw new Error('Invalid prediction response format');
+        }
       } catch (err) {
         console.error('Prediction error:', err);
         setPredictionError('Prediction unavailable. Please try again later.');
@@ -153,10 +157,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
             {Object.entries(predictionParams).map(([key, value]) => (
               <div key={key} className="flex flex-col">
-                <label className="text-xs text-yellow-700 dark:text-yellow-300 font-medium mb-1">
+                <label htmlFor={key} className="text-xs text-yellow-700 dark:text-yellow-300 font-medium mb-1">
                   {key.replace(/_/g, ' ')}
                 </label>
                 <input
+                  id={key}
                   type="number"
                   value={value}
                   onChange={e => handleParamChange(key, e.target.value)}
@@ -191,10 +196,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
             {Object.entries(predictionParams).map(([key, value]) => (
               <div key={key} className="flex flex-col">
-                <label className="text-xs text-yellow-700 dark:text-yellow-300 font-medium mb-1">
+                <label htmlFor={key} className="text-xs text-yellow-700 dark:text-yellow-300 font-medium mb-1">
                   {key.replace(/_/g, ' ')}
                 </label>
                 <input
+                  id={key}
                   type="number"
                   value={value}
                   onChange={e => handleParamChange(key, e.target.value)}
@@ -312,7 +318,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ language, useDemoData }) 
 
       {/* Enhanced Chart with darker theme */}
       <div className="relative h-64 md:h-80 bg-slate-900 rounded-lg p-3 md:p-4 overflow-hidden">
-        <svg className="w-full h-full" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
+        <svg className="w-full h-full" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet" data-testid="chart-svg">
           {/* Grid lines */}
           <defs>
             <pattern id="grid" width="40" height="30" patternUnits="userSpaceOnUse">
