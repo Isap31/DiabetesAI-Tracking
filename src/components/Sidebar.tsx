@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { Home, Activity, MessageCircle, Trophy, Heart, Brain, Users, TrendingUp, Mic, Book, Bot, X, Send } from 'lucide-react';
+import React from 'react';
+import { Home, Activity, TrendingUp, Bot, Users, Heart, Trophy } from 'lucide-react';
 import { useTranslation } from '../utils/translations';
-import { elevenLabsService } from '../services/elevenLabsService';
 
 interface SidebarProps {
   activeTab: string;
@@ -11,41 +10,6 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) => {
   const t = useTranslation(language);
-  const [showFlowSense, setShowFlowSense] = useState(false);
-  const [micAllowed, setMicAllowed] = useState(false);
-  const [micError, setMicError] = useState<string | null>(null);
-  const [chatInput, setChatInput] = useState('');
-  const [chatHistory, setChatHistory] = useState<{ type: 'user' | 'ai'; message: string }[]>([]);
-  const [sessionActive, setSessionActive] = useState(false);
-
-  const handleExplainMic = async () => {
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-      setMicAllowed(true);
-    } catch (err) {
-      setMicError('Microphone access denied or unavailable. Please allow microphone access to use FlowSense AI.');
-    }
-  };
-
-  const handleStartVoice = async () => {
-    try {
-      // Placeholder for future integration with the Vite SDK
-    } catch (err) {
-      setMicError('Failed to start voice session.');
-    }
-  };
-
-  const handleEndVoice = async () => {
-    // Placeholder for future integration with the Vite SDK
-    setSessionActive(false);
-  };
-
-  const handleSend = () => {
-    if (chatInput.trim()) {
-      // Placeholder for future integration with the Vite SDK
-      setChatInput('');
-    }
-  };
 
   const tabs = [
     { id: 'home', label: t.dashboard, icon: Home },
@@ -58,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) =
   ];
 
   return (
-    <div className="fixed left-0 top-16 h-full w-64 bg-white border-r border-gray-200 z-40 hidden lg:block">
+    <div className="fixed left-0 top-16 h-full w-64 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 z-40 hidden lg:block">
       <div className="p-6">
         <nav className="space-y-1">
           {tabs.map((tab) => (
@@ -67,8 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, language }) =
               onClick={() => onTabChange(tab.id)}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
                 activeTab === tab.id
-                  ? 'bg-slate-900 text-white'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  ? 'bg-slate-900 dark:bg-slate-700 text-white'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <tab.icon className="h-5 w-5" />
