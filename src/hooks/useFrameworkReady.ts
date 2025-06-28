@@ -1,0 +1,1 @@
+// This file is included in tsconfig.app.json for ESLint compatibility 
