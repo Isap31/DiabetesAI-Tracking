@@ -1,76 +1,98 @@
 import React from 'react';
-import { DivideIcon as LucideIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface StatsCardProps {
   title: string;
   value: string;
-  unit?: string;
-  trend?: 'up' | 'down' | 'stable';
-  icon: LucideIcon;
-  color: 'blue' | 'green' | 'orange' | 'red' | 'gray' | 'emerald' | 'amber' | 'rose' | 'violet' | 'cyan';
-  bgGradient?: string;
-  iconBg?: string;
+  unit: string;
+  change: string;
+  changeType: 'increase' | 'decrease';
+  icon: React.ComponentType<{ className?: string }>;
+  gradient: string;
+  status: string;
+  delay?: number;
 }
 
-const StatsCard: React.FC<StatsCardProps> = ({ 
-  title, 
-  value, 
-  unit, 
-  trend, 
-  icon: Icon, 
-  color,
-  bgGradient,
-  iconBg
+const StatsCard: React.FC<StatsCardProps> = ({
+  title,
+  value,
+  unit,
+  change,
+  changeType,
+  icon: Icon,
+  gradient,
+  status,
+  delay = 0
 }) => {
-  const colorClasses = {
-    blue: 'text-blue-600 bg-blue-50 border-blue-200',
-    green: 'text-green-600 bg-green-50 border-green-200',
-    orange: 'text-orange-600 bg-orange-50 border-orange-200',
-    red: 'text-red-600 bg-red-50 border-red-200',
-    gray: 'text-gray-600 bg-gray-50 border-gray-200',
-    emerald: 'text-emerald-600 bg-emerald-50 border-emerald-200',
-    amber: 'text-amber-600 bg-amber-50 border-amber-200',
-    rose: 'text-rose-600 bg-rose-50 border-rose-200',
-    violet: 'text-violet-600 bg-violet-50 border-violet-200',
-    cyan: 'text-cyan-600 bg-cyan-50 border-cyan-200'
-  };
-
-  const iconGradients = {
-    blue: 'from-blue-500 to-indigo-600',
-    green: 'from-green-500 to-emerald-600',
-    orange: 'from-orange-500 to-red-600',
-    red: 'from-red-500 to-pink-600',
-    gray: 'from-gray-500 to-slate-600',
-    emerald: 'from-emerald-500 to-teal-600',
-    amber: 'from-amber-500 to-yellow-600',
-    rose: 'from-rose-500 to-pink-600',
-    violet: 'from-violet-500 to-purple-600',
-    cyan: 'from-cyan-500 to-blue-600'
-  };
-
-  const trendColors = {
-    up: 'bg-emerald-500 shadow-emerald-200',
-    down: 'bg-red-500 shadow-red-200',
-    stable: 'bg-amber-500 shadow-amber-200'
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'normal':
+      case 'excellent':
+        return 'text-emerald-400';
+      case 'warning':
+        return 'text-orange-400';
+      case 'danger':
+        return 'text-red-400';
+      case 'on-track':
+        return 'text-blue-400';
+      case 'maintained':
+        return 'text-purple-400';
+      default:
+        return 'text-white';
+    }
   };
 
   return (
-    <div className={`${bgGradient ? `bg-gradient-to-br ${bgGradient}` : `bg-white ${colorClasses[color].split(' ')[1]}`} rounded-2xl p-6 border ${bgGradient ? 'border-white border-opacity-50' : colorClasses[color].split(' ')[2]} shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-xl bg-gradient-to-r ${iconBg || iconGradients[color]} shadow-lg group-hover:shadow-xl transition-shadow duration-300`}>
-          <Icon className="h-6 w-6 text-white" />
-        </div>
-        {trend && (
-          <div className={`w-3 h-3 rounded-full ${trendColors[trend]} shadow-lg animate-pulse`}></div>
-        )}
-      </div>
+    <div 
+      className="glass rounded-2xl p-6 relative overflow-hidden group hover-lift"
+      style={{ animationDelay: `${delay}s` }}
+    >
+      {/* Gradient background */}
+      <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
       
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors duration-200">{title}</p>
-        <div className="flex items-baseline space-x-2">
-          <span className="text-3xl font-bold text-gray-900 group-hover:scale-105 transition-transform duration-200">{value}</span>
-          {unit && <span className="text-sm font-medium text-gray-600">{unit}</span>}
+      {/* Animated border */}
+      <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300`} />
+      
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className={`p-3 rounded-xl bg-gradient-to-r ${gradient} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+            <Icon className="w-6 h-6 text-white" />
+          </div>
+          
+          <div className="flex items-center space-x-1">
+            {changeType === 'increase' ? (
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+            ) : (
+              <TrendingDown className="w-4 h-4 text-red-400" />
+            )}
+            <span className={`text-sm font-medium ${
+              changeType === 'increase' ? 'text-emerald-400' : 'text-red-400'
+            }`}>
+              {change}
+            </span>
+          </div>
         </div>
+
+        {/* Content */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-white/60">{title}</h3>
+          
+          <div className="flex items-baseline space-x-1">
+            <span className="text-3xl font-bold text-white">{value}</span>
+            <span className="text-lg text-white/60">{unit}</span>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${gradient} animate-pulse`} />
+            <span className={`text-sm font-medium ${getStatusColor(status)} capitalize`}>
+              {status}
+            </span>
+          </div>
+        </div>
+
+        {/* Hover effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
       </div>
     </div>
   );
