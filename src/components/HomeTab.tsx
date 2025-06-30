@@ -44,7 +44,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
 
   const quickStats = [
     {
-      title: t.currentGlucose,
+      title: t.recentGlucoseReading,
       value: userData.currentGlucose.toString(),
       unit: t.mgdl,
       trend: 'stable',
@@ -207,7 +207,7 @@ const HomeTab: React.FC<HomeTabProps> = ({ allLogs, onDataLogged, language, useD
                   <div className="flex items-center justify-between">
                     <span className="text-xs md:text-sm font-bold text-blue-200">Explore</span>
                     <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600/20 dark:bg-blue-700/50 rounded-full flex items-center justify-center group-hover:bg-blue-600/80 transition-all">
-                      <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-blue-200 group-hover:text-white" />
+                      <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all duration-300" />
                     </div>
                   </div>
                 </div>
