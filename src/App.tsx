@@ -20,7 +20,7 @@ const PetTab = lazy(() => import('./components/PetTab'));
 const AchievementsTab = lazy(() => import('./components/AchievementsTab'));
 const PredictionsTab = lazy(() => import('./components/PredictionsTab'));
 const FlowSenseAI = lazy(() => import('./components/FlowSenseAI'));
-const OnboardingSurveyPage = lazy(() => import('./pages/OnboardingSurveyPage'));
+const OnboardingSurveyPage = lazy(() => import('./pages/OnboardingSurveyPage.tsx'));
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
