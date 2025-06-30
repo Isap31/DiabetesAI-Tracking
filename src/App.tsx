@@ -5,12 +5,12 @@ import Sidebar from './components/Sidebar';
 import TabNavigation from './components/TabNavigation';
 import AuthModal from './components/AuthModal';
 import PremiumSubscriptionModal from './components/PremiumSubscriptionModal';
-import OnboardingSurvey from './components/OnboardingSurvey';
 import AccessibilitySettingsModal from './components/AccessibilitySettings';
 import { authService, AuthUser } from './services/authService';
 import { revenueCatService } from './services/revenueCatService';
 import { fetchUserLogs } from './services/logService';
 import { isSupabaseConfigured } from './lib/supabase';
+import Footer from './components/Footer';
 
 // Lazy load main tab components
 const HomeTab = lazy(() => import('./components/HomeTab'));
@@ -20,6 +20,7 @@ const PetTab = lazy(() => import('./components/PetTab'));
 const AchievementsTab = lazy(() => import('./components/AchievementsTab'));
 const PredictionsTab = lazy(() => import('./components/PredictionsTab'));
 const FlowSenseAI = lazy(() => import('./components/FlowSenseAI'));
+const OnboardingSurveyPage = lazy(() => import('./pages/OnboardingSurveyPage'));
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -259,7 +260,15 @@ function App() {
   }, []);
 
   const renderActiveTab = () => {
+    if (showOnboardingSurvey) {
       return (
+        <Suspense fallback={<div className="flex justify-center items-center h-full"><span className="text-gray-500">Loading survey...</span></div>}>
+          <OnboardingSurveyPage onComplete={handleSurveyComplete} onSkip={() => setShowOnboardingSurvey(false)} />
+        </Suspense>
+      );
+    }
+    
+    return (
       <Suspense fallback={<div className="flex justify-center items-center h-full"><span className="text-gray-500">Loading...</span></div>}>
         {activeTab === 'home' && (
           <HomeTab allLogs={allLogs} onDataLogged={handleDataLogged} language={language} useDemoData={useDemoData} />
@@ -301,6 +310,7 @@ function App() {
         onClose={() => setShowAuthModal(false)}
         onAuthSuccess={handleAuthSuccess}
         initialMode={authMode}
+        onGuestAccess={handleGuestAccess}
       />
 
       {/* Premium Subscription Modal */}
@@ -311,13 +321,6 @@ function App() {
         currentPlan={user?.isPremium ? 'premium' : 'free'}
       />
 
-      {/* Onboarding Survey */}
-      <OnboardingSurvey
-        isOpen={showOnboardingSurvey}
-        onClose={() => setShowOnboardingSurvey(false)}
-        onComplete={handleSurveyComplete}
-      />
-
       {/* Accessibility Settings */}
       <AccessibilitySettingsModal
         isOpen={showAccessibilitySettings}
@@ -325,59 +328,6 @@ function App() {
         settings={accessibilitySettings}
         onUpdateSettings={handleAccessibilityUpdate}
       />
-
-      {/* Guest Access Prompt */}
-      {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 p-4">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-auto">
-            <div className="text-center">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <span className="text-white text-2xl font-bold">A</span>
-              </div>
-              <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">Welcome to AuroraFlow</h2>
-              <p className="text-gray-600 mb-6 text-center text-sm md:text-base">
-                Your AI-powered diabetes management companion. Sign up for the full experience or continue as a guest.
-              </p>
-              <div className="space-y-3">
-                <button
-                  className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
-                  onClick={() => {
-                    setAuthMode('signup');
-                    // Keep modal open to show auth form
-                  }}
-                >
-                  Create Account
-                </button>
-                <button
-                  className="w-full py-3 px-4 bg-white border-2 border-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-                  onClick={() => {
-                    setAuthMode('signin');
-                    // Keep modal open to show auth form
-                  }}
-                >
-                  Sign In
-                </button>
-                <button
-                  className="w-full py-2 px-4 text-gray-600 hover:text-gray-800 transition-colors text-sm"
-                  onClick={handleGuestAccess}
-                >
-                  Continue as Guest
-                </button>
-              </div>
-              
-              {/* Accessibility Settings Access */}
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <button
-                  onClick={() => setShowAccessibilitySettings(true)}
-                  className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                >
-                  Accessibility Settings
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main App */}
       {user && (
@@ -406,6 +356,7 @@ function App() {
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {renderActiveTab()}
               </div>
+              <Footer />
             </main>
           </div>
 

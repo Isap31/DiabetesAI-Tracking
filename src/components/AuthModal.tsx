@@ -7,13 +7,15 @@ interface AuthModalProps {
   onClose: () => void;
   onAuthSuccess: (user: any) => void;
   initialMode?: 'signin' | 'signup';
+  onGuestAccess?: () => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ 
   isOpen, 
   onClose, 
   onAuthSuccess, 
-  initialMode = 'signin' 
+  initialMode = 'signin',
+  onGuestAccess
 }) => {
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
@@ -77,23 +79,27 @@ const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   const handleGuestAccess = () => {
-    setLoading(true);
-    
-    // Create a guest user
-    const guestUser = {
-      id: 'guest-' + Date.now(),
-      email: 'guest@auroraflow.com',
-      firstName: 'Guest',
-      lastName: 'User',
-      isPremium: false,
-      createdAt: new Date().toISOString()
-    };
+    if (onGuestAccess) {
+      onGuestAccess();
+    } else {
+      setLoading(true);
+      
+      // Create a guest user
+      const guestUser = {
+        id: 'guest-' + Date.now(),
+        email: 'guest@auroraflow.com',
+        firstName: 'Guest',
+        lastName: 'User',
+        isPremium: false,
+        createdAt: new Date().toISOString()
+      };
 
-    setTimeout(() => {
-      setLoading(false);
-      onAuthSuccess(guestUser);
-      onClose();
-    }, 1000);
+      setTimeout(() => {
+        setLoading(false);
+        onAuthSuccess(guestUser);
+        onClose();
+      }, 1000);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
